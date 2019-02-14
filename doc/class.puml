@@ -1,0 +1,65 @@
+@startuml
+class AnalyzeDependenciesCommand {
+}
+
+class DumpDependenciesCommand {
+}
+
+class DependencyDumper {
+}
+
+AnalyzeDependenciesCommand "1" *-- "1" DependencyDumper
+DumpDependenciesCommand "1" *-- "1" DependencyDumper
+
+/'
+class CollectionBuilder {
+  - LogFile file
+}
+
+class ItemCollection {
+  - array items
+}
+
+class View {
+  - string dimensions
+  - array columns
+}
+
+class SplFileObject {
+}
+
+class LogFile {
+  - string path
+  - ParserInterface parser
+}
+
+class Item {
+  - LogFile file
+  - int linePos
+}
+
+class ItemInterface {
+}
+
+class ApacheLogParser {
+  - string format
+}
+
+class LtsvParser {
+}
+
+class ParserInterface {
+}
+
+CollectionBuilder ..> ItemCollection : create
+ItemCollection o-- Item
+Item <|.. ItemInterface
+Item "1..n" -- "1" LogFile
+ApacheLogParser <|.. ParserInterface
+LtsvParser <|.. ParserInterface
+LogFile <|-- SplFileObject
+LogFile "0..n" -- "1" ParserInterface
+ItemCollection <..> View : create
+'/
+
+@enduml
