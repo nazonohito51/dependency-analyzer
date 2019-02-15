@@ -2,14 +2,54 @@
 class AnalyzeDependenciesCommand {
 }
 
-class DumpDependenciesCommand {
-}
-
 class DependencyDumper {
 }
 
-AnalyzeDependenciesCommand "1" *-- "1" DependencyDumper
-DumpDependenciesCommand "1" *-- "1" DependencyDumper
+class DirectedGraph {
+}
+
+class CycleDetector {
+}
+
+class RuleViolationDetector {
+}
+
+note top of AnalyzeDependenciesCommand
+  Command class for CLI.
+  This receive search directory, rule file, options, etc...
+end note
+
+AnalyzeDependenciesCommand "1" -- "1" DependencyDumper
+AnalyzeDependenciesCommand -- DirectedGraph
+DependencyDumper -- DirectedGraph: create
+AnalyzeDependenciesCommand *-- CycleDetector
+AnalyzeDependenciesCommand *-- RuleViolationDetector
+
+namespace PHPStan {
+  class Dependency\DumpDependenciesCommand {
+  }
+
+  class Dependency\DependencyDumper {
+  }
+
+  .DependencyDumper "1" *-- "1" Dependency\DependencyDumper
+  Dependency\DumpDependenciesCommand "1" *-- "1" Dependency\DependencyDumper
+}
+
+note top of PHPStan
+  PHPStan
+end note
+
+namespace Fhaculty {
+  class Graph\Graph {
+  }
+
+  .DirectedGraph "1" *-- "1" Graph\Graph
+}
+
+note top of PHPStan
+  PHPStan
+end note
 
 /'
 class CollectionBuilder {
