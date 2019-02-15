@@ -36,20 +36,12 @@ namespace PHPStan {
   Dependency\DumpDependenciesCommand "1" *-- "1" Dependency\DependencyDumper
 }
 
-note top of PHPStan
-  PHPStan
-end note
-
 namespace Fhaculty {
   class Graph\Graph {
   }
 
   .DirectedGraph "1" *-- "1" Graph\Graph
 }
-
-note top of PHPStan
-  PHPStan
-end note
 
 /'
 class CollectionBuilder {
