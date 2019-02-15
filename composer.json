@@ -11,5 +11,10 @@
         "psr-4": {
             "DependencyAnalyzer\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php"
+        ]
     }
 }
