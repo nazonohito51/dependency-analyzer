@@ -1,7 +1,7 @@
 <?php
 namespace Tests;
 
-class TestCase extends \PHPUnit\Framework\TestCase
+abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     public function getFixturePath($name)
     {
