@@ -34,14 +34,24 @@ class DependencyDumper
         $graph = new Graph();
         $vertices = array();
 
-        foreach (array_keys($dependencies) as $file) {
-            $vertices[$file] = $graph->createVertex($file);
+        foreach ($dependencies as $depender => $dependees) {
+            if (!isset($vertices[$depender])) {
+                $vertices[$depender] = $graph->createVertex($depender);
+            }
+
+            foreach ($dependees as $dependee) {
+                if (!isset($vertices[$dependee])) {
+                    $vertices[$dependee] = $graph->createVertex($dependee);
+                }
+            }
         }
 
         foreach ($vertices as $vertex) {
-            foreach ($dependencies[$vertex->getId()] as $dependency) {
-                $vertex->createEdgeTo($vertices[$dependency]);
-            };
+            if (isset($dependencies[$vertex->getId()])) {
+                foreach ($dependencies[$vertex->getId()] as $dependency) {
+                    $vertex->createEdgeTo($vertices[$dependency]);
+                };
+            }
         }
 
         return $graph;
