@@ -12,34 +12,21 @@ class DependencyDumper
      * @var \PHPStan\Dependency\DependencyDumper
      */
     private $dumper;
-    /**
-     * @var Finder
-     */
-    private $finder;
 
-    public function __construct(\PHPStan\Dependency\DependencyDumper $dumper, Finder $finder)
+    public function __construct(\PHPStan\Dependency\DependencyDumper $dumper)
     {
         $this->dumper = $dumper;
-        $this->finder = $finder;
     }
 
-    public function dump($path): DirectedGraph
+    /**
+     * @param string[] $files
+     * @return DirectedGraph
+     */
+    public function dump(array $files): DirectedGraph
     {
-        $files = $this->pathToFiles($path);
         $dependencies = $this->dumper->dumpDependencies($files, function() {}, function() {}, null);
 
         return new DirectedGraph($this->dependenciesToGraph($dependencies));
-    }
-
-    private function pathToFiles($path): array
-    {
-        $files = [];
-
-        foreach ($this->finder->files()->in($path) as $file) {
-            $files[] = $file->getRealPath();
-        };
-
-        return $files;
     }
 
     private function dependenciesToGraph(array $dependencies)
