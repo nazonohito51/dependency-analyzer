@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace DependencyAnalyzer;
 
 use Fhaculty\Graph\Graph;
-use Symfony\Component\Finder\Finder;
 
 class DependencyDumper
 {

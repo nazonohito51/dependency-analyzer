@@ -23,5 +23,10 @@ class DependencyDumperTest extends TestCase
 
         $this->assertInstanceOf(\DependencyAnalyzer\DirectedGraph::class, $actual);
         $this->assertCount(3, $actual);
+        $this->assertEquals([
+            'path/to/A.php' => [],
+            'path/to/B.php' => ['path/to/A.php'],
+            'path/to/C.php' => ['path/to/B.php'],
+        ], $actual->toArray());
     }
 }
