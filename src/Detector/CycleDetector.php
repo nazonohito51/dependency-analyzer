@@ -19,10 +19,7 @@ class CycleDetector
         $subGraphs = $this->collectConnectedSubGraphs($graph);
 
         foreach ($subGraphs as $subGraph) {
-            $edges = $subGraph->getEdges();
-            foreach ($edges as $edge) {
-                $subGraph->walkOnPath($edge, [$this, 'checkCycle']);
-            }
+            $subGraph->walkOnPath([$this, 'checkCycle']);
         }
 
         return array_map(function (Path $path) {

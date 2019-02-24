@@ -60,19 +60,22 @@ class DirectedGraph implements \Countable
         return new Vertices(array_values($visited));
     }
 
-    public function walkOnPath(Directed $edge, callable $carry, Path $path = null)
+    public function walkOnPath(callable $carry)
     {
-        if (is_null($path)) {
-            $path = new Path();
+        foreach ($this->graph->getEdges() as $edge) {
+            $this->walkThroughEdge($edge, new Path(), $carry);
         }
+    }
 
+    protected function walkThroughEdge(Directed $edge, Path $path, callable $carry)
+    {
         $path = $path->addEdge($edge);
         $carry($path);
 
         if (!$path->haveCycle()) {
             $edgesOut = $edge->getVertexEnd()->getEdgesOut();
             foreach ($edgesOut as $edgeOut) {
-                $this->walkOnPath($edgeOut, $carry, $path);
+                $this->walkThroughEdge($edgeOut, $path, $carry);
             }
         }
     }
