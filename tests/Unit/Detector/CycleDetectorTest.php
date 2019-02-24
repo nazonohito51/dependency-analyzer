@@ -5,12 +5,13 @@ namespace Tests\Unit\DependencyAnalyzer\Detector;
 
 use DependencyAnalyzer\Detector\CycleDetector;
 use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DirectedGraph\Path;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
 class CycleDetectorTest extends TestCase
 {
-    public function testDetect_shouldNotDetectCycle()
+    public function testInspect_shouldNotDetectCycle()
     {
         $graph = new Graph();
         $vertex1 = $graph->createVertex('v1');
@@ -26,7 +27,7 @@ class CycleDetectorTest extends TestCase
         $this->assertCount(0, $errors);
     }
 
-    public function provideTestDetect_shouldDetectCycle()
+    public function provideInspect_shouldDetectCycle()
     {
         $graph = new Graph();
         $vertex1 = $graph->createVertex('v1');
@@ -67,9 +68,9 @@ class CycleDetectorTest extends TestCase
     /**
      * @param DirectedGraph $graph
      * @param array $expected
-     * @dataProvider provideTestDetect_shouldDetectCycle
+     * @dataProvider provideInspect_shouldDetectCycle
      */
-    public function testDetect_shouldDetectCycle(DirectedGraph $graph, array $expected)
+    public function testInspect_shouldDetectCycle(DirectedGraph $graph, array $expected)
     {
         $detector = new CycleDetector();
 
@@ -96,5 +97,70 @@ class CycleDetectorTest extends TestCase
         }
 
         return new DirectedGraph($graph);
+    }
+
+    public function provideCheckCycle()
+    {
+        $cycle = $this->createMock(Path::class);
+        $cycle->method('isSimpleCycle')->willReturn(true);
+        $cycle->method('isEqual')->with($cycle)->willReturn(true);
+
+        $nonCycle = $this->createMock(Path::class);
+        $nonCycle->method('isSimpleCycle')->willReturn(false);
+
+        return [
+            [$cycle, [$cycle]],
+            [$nonCycle, []]
+        ];
+    }
+
+    /**
+     * @param Path $path
+     * @param Path[] $expectedCycles
+     * @dataProvider provideCheckCycle
+     */
+    public function testCheckCycle(Path $path, array $expectedCycles)
+    {
+        // For read private/protected property
+        $detector = new class extends CycleDetector {
+            public function getCycles()
+            {
+                return $this->cycles;
+            }
+        };
+
+        $detector->checkCycle($path);
+
+        $actualCycles = $detector->getCycles();
+        $this->assertCount(count($expectedCycles), $actualCycles);
+        foreach ($expectedCycles as $key => $expectedCycle) {
+            $this->assertTrue($expectedCycle->isEqual($actualCycles[$key]));
+        }
+    }
+
+    public function testCheckCycle_WhenExistSameCycle()
+    {
+        $cycle = $this->createMock(Path::class);
+        $cycle->method('isSimpleCycle')->willReturn(true);
+        $cycle->method('isEqual')->with($cycle)->willReturn(true);
+        // For read private/protected property
+        $detector = new class extends CycleDetector {
+            public function setCycles(Path $path)
+            {
+                $this->cycles[] = $path;
+            }
+
+            public function getCycles()
+            {
+                return $this->cycles;
+            }
+        };
+        $detector->setCycles($cycle);
+
+        $detector->checkCycle($cycle);
+
+        $actualCycles = $detector->getCycles();
+        $this->assertCount(1, $actualCycles);
+        $this->assertTrue($actualCycles[0]->isEqual($cycle));
     }
 }
