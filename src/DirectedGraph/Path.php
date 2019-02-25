@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\DirectedGraph;
 
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnPathException;
-use DependencyAnalyzer\Exceptions\LogicException;
 use Fhaculty\Graph\Edge\Directed;
 
 class Path implements \Countable
@@ -12,28 +11,35 @@ class Path implements \Countable
     /**
      * @var Directed[]
      */
-    private $edges;
+    private $edges = [];
 
     public function __construct(array $edges = [])
     {
         foreach ($edges as $edge) {
-            if (!$edge instanceof Directed) {
-                throw new LogicException();
+            if (!$this->isCanConnectTo($edge)) {
+                throw new InvalidEdgeOnPathException($edge);
             }
+
+            $this->edges[] = $edge;
         }
-        $this->edges = $edges;
     }
 
-    public function addEdge(Directed $edge)
+    protected function isCanConnectTo(Directed $edge): bool
     {
-        $last = end($this->edges);
+        if ($last = $this->getLastEdge()) {
+            return $last->getVertexEnd()->getId() === $edge->getVertexStart()->getId();
+        }
 
-        if ($last !== false && $last->getVertexEnd()->getId() !== $edge->getVertexStart()->getId()) {
+        return true;
+    }
+
+    public function addEdge(Directed $edge): self
+    {
+        if (!$this->isCanConnectTo($edge)) {
             throw new InvalidEdgeOnPathException($edge);
         }
-        $edges = $this->edges;
-        $edges[] = $edge;
-        return new self($edges);
+
+        return new self(array_merge($this->edges, [$edge]));
     }
 
     public function haveCycle(): bool
@@ -53,10 +59,19 @@ class Path implements \Countable
 
     public function isSimpleCycle(): bool
     {
-        return (
-            $this->haveCycle() &&
-            ($this->edges[0]->getVertexStart()->getId() === end($this->edges)->getVertexEnd()->getId())
-        );
+        if (!$this->haveCycle()) {
+            return false;
+        }
+
+        $visitedVertices = [];
+        foreach ($this->edges as $edge) {
+            if (in_array($edge->getVertexStart()->getId(), $visitedVertices)) {
+                return false;
+            }
+            $visitedVertices[] = $edge->getVertexStart()->getId();
+        }
+
+        return $this->getFirstEdge()->getVertexStart()->getId() === $this->getLastEdge()->getVertexEnd()->getId();
     }
 
     public function getIds(): array
@@ -77,7 +92,10 @@ class Path implements \Countable
 
     public function isEqual(Path $that): bool
     {
-        if ($this->count() !== $that->count()) {
+        if ($this->count() === 0 || $that->count() === 0) {
+            // Path do not have edge is not equal to anything.
+            return false;
+        } elseif ($this->count() !== $that->count()) {
             return false;
         } elseif ($this->haveCycle() !== $that->haveCycle()) {
             return false;
@@ -90,7 +108,28 @@ class Path implements \Countable
         }
     }
 
-    public function count()
+    protected function getFirstEdge(): ?Directed
+    {
+        if ($this->count() === 0) {
+            return null;
+        }
+
+        return $this->edges[0];
+    }
+
+    protected function getLastEdge(): ?Directed
+    {
+        if ($this->count() === 0) {
+            return null;
+        }
+
+        $edge = end($this->edges);
+        reset($this->edges);
+
+        return $edge;
+    }
+
+    public function count(): int
     {
         return count($this->edges);
     }
