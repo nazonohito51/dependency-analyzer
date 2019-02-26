@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer;
 
 use DependencyAnalyzer\DirectedGraph\Path;
+use DependencyAnalyzer\Exceptions\InvalidEdgeOnDirectedGraphException;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Vertices;
@@ -18,6 +19,11 @@ class DirectedGraph implements \Countable
 
     public function __construct(Graph $graph)
     {
+        foreach ($graph->getEdges() as $edge) {
+            if (!$edge instanceof Directed) {
+                throw new InvalidEdgeOnDirectedGraphException($edge);
+            }
+        }
         $this->graph = $graph;
     }
 
