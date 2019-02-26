@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Detector;
 
-use DependencyAnalyzer\Detector\RuleViolationDetector\Rule;
+use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRule;
 use DependencyAnalyzer\DirectedGraph;
 use Tests\TestCase;
 
@@ -13,15 +13,15 @@ class RuleViolationDetectorTest extends TestCase
     {
         $graph = $this->createMock(DirectedGraph::class);
 
-        $ruleNoError = $this->createMock(Rule::class);
+        $ruleNoError = $this->createMock(DependencyRule::class);
         $ruleNoError->method('isSatisfyBy')->with($graph)->willReturn([]);
 
         $dependErrorMessage = 'hoge do not have to depend on fuga';
-        $ruleDependError = $this->createMock(Rule::class);
+        $ruleDependError = $this->createMock(DependencyRule::class);
         $ruleDependError->method('isSatisfyBy')->with($graph)->willReturn([$dependErrorMessage]);
 
         $beDependedErrorMessage = 'fuga do not have to be depended on fuga';
-        $ruleBeDependedError = $this->createMock(Rule::class);
+        $ruleBeDependedError = $this->createMock(DependencyRule::class);
         $ruleBeDependedError->method('isSatisfyBy')->with($graph)->willReturn([$beDependedErrorMessage]);
 
         return [

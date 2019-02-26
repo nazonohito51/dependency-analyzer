@@ -1,13 +1,13 @@
 <?php
 namespace DependencyAnalyzer\Detector;
 
-use DependencyAnalyzer\Detector\RuleViolationDetector\Rule;
+use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRule;
 use DependencyAnalyzer\DirectedGraph;
 
 class RuleViolationDetector
 {
     /**
-     * @var Rule[]
+     * @var DependencyRule[]
      */
     protected $rules;
 
