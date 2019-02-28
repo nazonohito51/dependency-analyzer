@@ -3,7 +3,4 @@ services:
 		class: DependencyAnalyzer\DependencyDumper
 
 	-
-		class: DependencyAnalyzer\TestDumper
-
-	-
 		class: DependencyAnalyzer\DependencyDumper\DependencyResolver
