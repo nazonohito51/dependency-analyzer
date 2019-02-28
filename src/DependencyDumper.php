@@ -12,7 +12,7 @@ class DependencyDumper
      */
     private $dumper;
 
-    public function __construct(\PHPStan\Dependency\DependencyDumper $dumper)
+    public function __construct(TestDumper $dumper)
     {
         $this->dumper = $dumper;
     }
