@@ -12,34 +12,28 @@ use PHPStan\Analyser\ScopeFactory;
 use PHPStan\File\FileFinder;
 use PHPStan\File\FileHelper;
 use PHPStan\Parser\Parser;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
 
 class DependencyDumper
 {
     /** @var DependencyResolver */
-    private $dependencyResolver;
+    protected $dependencyResolver;
 
     /** @var NodeScopeResolver */
-    private $nodeScopeResolver;
+    protected $nodeScopeResolver;
 
     /** @var FileHelper */
-    private $fileHelper;
+    protected $fileHelper;
 
     /** @var Parser */
-    private $parser;
+    protected $parser;
 
     /** @var ScopeFactory */
-    private $scopeFactory;
+    protected $scopeFactory;
 
     /** @var FileFinder */
-    private $fileFinder;
-
-
-
-    public $file;
-    public $dependencies = [];
-
-
+    protected $fileFinder;
 
     public function __construct(
         DependencyResolver $dependencyResolver,
@@ -70,7 +64,6 @@ class DependencyDumper
         $dependencies = [];
 //        $countCallback(count($files));
         foreach ($files as $file) {
-$this->file = $file;
             try {
                 $parserNodes = $this->parser->parseFile($file);
             } catch (\PHPStan\Parser\ParserErrorsException $e) {
@@ -83,82 +76,74 @@ $this->file = $file;
                     $parserNodes,
                     $this->scopeFactory->create(ScopeContext::create($file)),
                     function (\PhpParser\Node $node, Scope $scope) use ($analysedFiles, &$fileDependencies): void {
-                        $fileDependencies = array_merge(
-                            $fileDependencies,
-                            $this->resolveDependencies($node, $scope, $analysedFiles)
-                        );
+                        foreach ($this->resolveDependencies($node, $scope, $analysedFiles) as $depender => $dependees) {
+                            foreach ($dependees as $dependee) {
+                                $fileDependencies = $this->addToDependencies($depender, $dependee, $fileDependencies);
+                            }
+                        }
                     }
                 );
             } catch (\PHPStan\AnalysedCodeException $e) {
                 // pass
             }
 
-            foreach (array_unique($fileDependencies) as $fileDependency) {
-                $relativeDependencyFile = $fileDependency;
-                $dependencies[$relativeDependencyFile][] = $file;
-            }
+            $dependencies = array_merge($dependencies, $fileDependencies);
 //            $progressCallback();
         }
 
         return new DirectedGraph($this->dependenciesToGraph($dependencies));
-//        return $dependencies;
     }
 
     /**
      * @param \PhpParser\Node $node
      * @param Scope $scope
-     * @param array<string, true> $analysedFiles
      * @return string[]
+     * @throws \PHPStan\Broker\FunctionNotFoundException
+     * @throws \PHPStan\Reflection\MissingMethodFromReflectionException
      */
-    private function resolveDependencies(
+    protected function resolveDependencies(
         \PhpParser\Node $node,
-        Scope $scope,
-        array $analysedFiles
+        Scope $scope
     ): array
     {
         $dependencies = [];
 
         foreach ($this->dependencyResolver->resolveDependencies($node, $scope) as $dependencyReflection) {
-            if (1) {
-                if (!method_exists($dependencyReflection, 'getDisplayName')) {
-                } elseif ($dependencyReflection instanceof PhpFunctionReflection) {
-                } elseif ($scope->isInClass() && $scope->getClassReflection()->getDisplayName() === $dependencyReflection->getDisplayName()) {
-                } elseif ($scope->isInClass()) {
-                    $className = $scope->getClassReflection()->getDisplayName();
-                    if (!in_array($dependencyReflection->getDisplayName(), isset($this->dependencies[$className]) ? $this->dependencies[$className] : [])) {
-                        $this->dependencies[$className][] = $dependencyReflection->getDisplayName();
+            if ($dependencyReflection instanceof ClassReflection) {
+                if ($scope->isInClass()) {
+                    if ($scope->getClassReflection()->getDisplayName() === $dependencyReflection->getDisplayName()) {
+                        // call same class method/property
+                    } else {
+                        $className = $scope->getClassReflection()->getDisplayName();
+                        $dependencies = $this->addToDependencies($className, $dependencyReflection->getDisplayName(), $dependencies);
                     }
                 } else {
+                    // Maybe, class declare statement
                     if ($node instanceof \PhpParser\Node\Stmt\Class_) {
-                        if (!in_array($dependencyReflection->getDisplayName(), isset($this->dependencies[$node->namespacedName->toString()]) ? $this->dependencies[$node->namespacedName->toString()] : [])) {
-                            $this->dependencies[$node->namespacedName->toString()][] = $dependencyReflection->getDisplayName();
-                        }
+                        $dependencies = $this->addToDependencies($node->namespacedName->toString(), $dependencyReflection->getDisplayName(), $dependencies);
                     } elseif ($node instanceof \PhpParser\Node\Stmt\Interface_) {
-                        if (!in_array($dependencyReflection->getDisplayName(), isset($this->dependencies[$node->namespacedName->toString()]) ? $this->dependencies[$node->namespacedName->toString()] : [])) {
-                            $this->dependencies[$node->namespacedName->toString()][] = $dependencyReflection->getDisplayName();
-                        }
+                        $dependencies = $this->addToDependencies($node->namespacedName->toString(), $dependencyReflection->getDisplayName(), $dependencies);
                     }
                 }
+            } elseif ($dependencyReflection instanceof PhpFunctionReflection) {
+                // function call
+            } else {
+                // error of DependencyResolver
             }
-
-            $dependencyFile = $dependencyReflection->getFileName();
-            if ($dependencyFile === false) {
-                continue;
-            }
-            $dependencyFile = $this->fileHelper->normalizePath($dependencyFile);
-
-            if ($scope->getFile() === $dependencyFile) {
-                continue;
-            }
-
-            if (!isset($analysedFiles[$dependencyFile])) {
-                continue;
-            }
-
-            $dependencies[$dependencyFile] = $dependencyFile;
         }
 
-        return array_values($dependencies);
+        return $dependencies;
+    }
+
+    protected function addToDependencies(string $depender, string $dependee, array $dependencies)
+    {
+        if (!isset($dependencies[$depender])) {
+            $dependencies[$depender][] = $dependee;
+        } elseif (!in_array($dependee, $dependencies[$depender])) {
+            $dependencies[$depender][] = $dependee;
+        }
+
+        return $dependencies;
     }
 
     protected function dependenciesToGraph(array $dependencies)
