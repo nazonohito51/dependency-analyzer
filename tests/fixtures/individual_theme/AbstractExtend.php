@@ -5,10 +5,6 @@ namespace Tests\Fixtures;
 
 use Tests\Fixtures\Foundations\SomeClass1;
 
-class Property
+abstract class AbstractExtend extends SomeClass1
 {
-    /**
-     * @var SomeClass1 $someClass
-     */
-    private $someClass;
 }

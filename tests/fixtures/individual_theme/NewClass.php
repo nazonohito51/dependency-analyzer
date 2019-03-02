@@ -5,10 +5,10 @@ namespace Tests\Fixtures;
 
 use Tests\Fixtures\Foundations\SomeClass1;
 
-class Property
+class NewClass
 {
-    /**
-     * @var SomeClass1 $someClass
-     */
-    private $someClass;
+    public function someMethod()
+    {
+        new SomeClass1();
+    }
 }

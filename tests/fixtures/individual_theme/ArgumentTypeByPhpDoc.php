@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures;
 
-class PhpDoc
+class ArgumentTypeByPhpDoc
 {
     /**
      * PhpDoc constructor.
-     * @param \Tests\Fixtures\Foundations\SomeClass $someClass
+     * @param \Tests\Fixtures\Foundations\SomeClass1 $someClass
      */
     public function __construct($someClass)
     {

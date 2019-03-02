@@ -9,13 +9,16 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Foreach_;
 use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\PropertyProperty;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ParametersAcceptorWithPhpDocs;
 use PHPStan\Reflection\Php\PhpMethodReflection;
+use PHPStan\Reflection\Php\PhpPropertyReflection;
 use PHPStan\Reflection\ReflectionWithFilename;
 use PHPStan\Type\ClosureType;
+use PHPStan\Type\TypeWithClassName;
 
 class DependencyResolver
 {
@@ -62,19 +65,19 @@ class DependencyResolver
 
                 $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
             }
-        } elseif ($node instanceof Function_) {
-            $functionName = $node->name->name;
-            if (isset($node->namespacedName)) {
-                $functionName = (string) $node->namespacedName;
-            }
-            $functionNameName = new Name($functionName);
-            if ($this->broker->hasCustomFunction($functionNameName, null)) {
-                $functionReflection = $this->broker->getCustomFunction($functionNameName, null);
-
-                /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
-                $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
-                $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
-            }
+//        } elseif ($node instanceof Function_) {
+//            $functionName = $node->name->name;
+//            if (isset($node->namespacedName)) {
+//                $functionName = (string) $node->namespacedName;
+//            }
+//            $functionNameName = new Name($functionName);
+//            if ($this->broker->hasCustomFunction($functionNameName, null)) {
+//                $functionReflection = $this->broker->getCustomFunction($functionNameName, null);
+//
+//                /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
+//                $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
+//                $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
+//            }
         } elseif ($node instanceof Closure) {
             /** @var ClosureType $closureType */
             $closureType = $scope->getType($node);
@@ -181,6 +184,19 @@ class DependencyResolver
                     foreach ($referencedClasses as $referencedClass) {
                         $this->addClassToDependencies($referencedClass, $dependenciesReflections);
                     }
+                }
+            }
+        }
+        // TODO: Additional logic...
+        elseif ($node instanceof PropertyProperty) {
+            if (!$scope->isInClass()) {
+                throw new \PHPStan\ShouldNotHappenException();
+            }
+            $nativeProperty = $scope->getClassReflection()->getNativeProperty($node->name->name);
+            if ($nativeProperty instanceof PhpPropertyReflection) {
+                $type = $nativeProperty->getType();
+                if ($type instanceof TypeWithClassName) {
+                    $this->addClassToDependencies($type->getClassName(), $dependenciesReflections);
                 }
             }
         }
