@@ -5,8 +5,28 @@ namespace Tests;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    public function getFixturePath($name)
+    /**
+     * @return string
+     */
+    protected function getRootDir(): string
     {
-        return __DIR__ . '/fixtures' . (substr($name, 0, 1) === '/' ? $name : "/{$name}");
+        return realpath(__DIR__ . '/../');
+    }
+
+    /**
+     * @param $name
+     * @return string
+     */
+    public function getFixturePath($name): string
+    {
+        return $this->getRootDir() . '/tests/fixtures' . (substr($name, 0, 1) === '/' ? $name : "/{$name}");
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTmpDir(): string
+    {
+        return $this->getRootDir() . '/tests/tmp/';
     }
 }
