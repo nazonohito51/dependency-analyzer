@@ -9,8 +9,6 @@ use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
-use PHPStan\File\FileFinder;
-use PHPStan\File\FileHelper;
 use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
@@ -23,36 +21,26 @@ class DependencyDumper
     /** @var NodeScopeResolver */
     protected $nodeScopeResolver;
 
-    /** @var FileHelper */
-    protected $fileHelper;
-
     /** @var Parser */
     protected $parser;
 
     /** @var ScopeFactory */
     protected $scopeFactory;
 
-    /** @var FileFinder */
-    protected $fileFinder;
-
     public function __construct(
         DependencyResolver $dependencyResolver,
         NodeScopeResolver $nodeScopeResolver,
-        FileHelper $fileHelper,
         Parser $parser,
-        ScopeFactory $scopeFactory,
-        FileFinder $fileFinder
+        ScopeFactory $scopeFactory
     )
     {
         $this->dependencyResolver = $dependencyResolver;
         $this->nodeScopeResolver = $nodeScopeResolver;
-        $this->fileHelper = $fileHelper;
         $this->parser = $parser;
         $this->scopeFactory = $scopeFactory;
-        $this->fileFinder = $fileFinder;
     }
 
-    public function dumpDependencies(array $files): DirectedGraph
+    public function dump(array $files): DirectedGraph
     {
         $analysedFiles = $files;
 //        if ($analysedPaths !== null) {
@@ -101,10 +89,7 @@ class DependencyDumper
      * @throws \PHPStan\Broker\FunctionNotFoundException
      * @throws \PHPStan\Reflection\MissingMethodFromReflectionException
      */
-    protected function resolveDependencies(
-        \PhpParser\Node $node,
-        Scope $scope
-    ): array
+    protected function resolveDependencies(\PhpParser\Node $node, Scope $scope): array
     {
         $dependencies = [];
 
