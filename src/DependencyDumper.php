@@ -46,18 +46,22 @@ class DependencyDumper
         foreach ($files as $file) {
             $parserNodes = $this->parser->parseFile($file);
 
-            $fileDependencies = [];
-            $this->nodeScopeResolver->processNodes(
-                $parserNodes,
-                $this->scopeFactory->create(ScopeContext::create($file)),
-                function (\PhpParser\Node $node, Scope $scope) use (&$fileDependencies): void {
-                    foreach ($this->resolveDependencies($node, $scope) as $depender => $dependees) {
-                        foreach ($dependees as $dependee) {
-                            $fileDependencies = $this->addToDependencies($depender, $dependee, $fileDependencies);
+            try {
+                $fileDependencies = [];
+                $this->nodeScopeResolver->processNodes(
+                    $parserNodes,
+                    $this->scopeFactory->create(ScopeContext::create($file)),
+                    function (\PhpParser\Node $node, Scope $scope) use (&$fileDependencies): void {
+                        foreach ($this->resolveDependencies($node, $scope) as $depender => $dependees) {
+                            foreach ($dependees as $dependee) {
+                                $fileDependencies = $this->addToDependencies($depender, $dependee, $fileDependencies);
+                            }
                         }
                     }
-                }
-            );
+                );
+            } catch (\PHPStan\AnalysedCodeException $e) {
+                // TODO: If there is file that can not is loaded.
+            }
 
             $dependencies = array_merge($dependencies, $fileDependencies);
         }
