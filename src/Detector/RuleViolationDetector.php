@@ -11,9 +11,24 @@ class RuleViolationDetector
      */
     protected $rules;
 
-    public function __construct(array $rules)
+    public function __construct()
     {
-        $this->rules = $rules;
+//        $this->rules = $rules;
+        $this->rules = [
+            new DependencyRule([
+                'Controller' => [
+                    'define' => 'App',
+                ],
+                'Application' => [
+                    'define' => 'Acme\Application',
+                    'white' => ['Controller']
+                ],
+                'Domain' => [
+                    'define' => 'Acme\Domain',
+                    'black' => ['Controller']
+                ]
+            ]),
+        ];
     }
 
     public function inspect(DirectedGraph $graph)

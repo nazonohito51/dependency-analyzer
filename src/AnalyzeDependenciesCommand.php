@@ -55,9 +55,9 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
         $allFiles = $this->getAllFilePaths();
 
         $dependencies = $dependencyDumper->dump($allFiles);
-        
-        $errors = $this->verify($dependencies);
-        var_dump($errors);
+
+        $verifier = $this->container->getByType(DirectedGraphVerifier::class);
+        $errors = $verifier->verify($dependencies);
 
 //        $output->writeln(Json::encode($dependencies, Json::PRETTY));
         var_dump($dependencies->toArray());
@@ -67,6 +67,8 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
             $count += count($dependees);
         }
         var_dump($count);
+
+        var_dump($errors);
 
         return 0;
     }
@@ -139,19 +141,5 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
         if (ini_set('memory_limit', $memoryLimit) === false) {
             throw new UnexpectedException("setting memory_limit to {$memoryLimit} is failed.");
         }
-    }
-
-    protected function verify(DirectedGraph $graph): array
-    {
-        $errors = $this->verifyDirectedAcyclicGraph($graph);
-
-        return $errors;
-    }
-
-    protected function verifyDirectedAcyclicGraph(DirectedGraph $graph)
-    {
-        // TODO: extract class
-        $detector = new CycleDetector();
-        return $detector->inspect($graph);
     }
 }
