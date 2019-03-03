@@ -42,41 +42,24 @@ class DependencyDumper
 
     public function dump(array $files): DirectedGraph
     {
-        $analysedFiles = $files;
-//        if ($analysedPaths !== null) {
-//            $analysedFiles = $this->fileFinder->findFiles($analysedPaths)->getFiles();
-//        }
-        $this->nodeScopeResolver->setAnalysedFiles($analysedFiles);
-        $analysedFiles = array_fill_keys($analysedFiles, true);
-
         $dependencies = [];
-//        $countCallback(count($files));
         foreach ($files as $file) {
-            try {
-                $parserNodes = $this->parser->parseFile($file);
-            } catch (\PHPStan\Parser\ParserErrorsException $e) {
-                continue;
-            }
+            $parserNodes = $this->parser->parseFile($file);
 
             $fileDependencies = [];
-            try {
-                $this->nodeScopeResolver->processNodes(
-                    $parserNodes,
-                    $this->scopeFactory->create(ScopeContext::create($file)),
-                    function (\PhpParser\Node $node, Scope $scope) use ($analysedFiles, &$fileDependencies): void {
-                        foreach ($this->resolveDependencies($node, $scope, $analysedFiles) as $depender => $dependees) {
-                            foreach ($dependees as $dependee) {
-                                $fileDependencies = $this->addToDependencies($depender, $dependee, $fileDependencies);
-                            }
+            $this->nodeScopeResolver->processNodes(
+                $parserNodes,
+                $this->scopeFactory->create(ScopeContext::create($file)),
+                function (\PhpParser\Node $node, Scope $scope) use (&$fileDependencies): void {
+                    foreach ($this->resolveDependencies($node, $scope) as $depender => $dependees) {
+                        foreach ($dependees as $dependee) {
+                            $fileDependencies = $this->addToDependencies($depender, $dependee, $fileDependencies);
                         }
                     }
-                );
-            } catch (\PHPStan\AnalysedCodeException $e) {
-                // pass
-            }
+                }
+            );
 
             $dependencies = array_merge($dependencies, $fileDependencies);
-//            $progressCallback();
         }
 
         return new DirectedGraph($this->dependenciesToGraph($dependencies));
