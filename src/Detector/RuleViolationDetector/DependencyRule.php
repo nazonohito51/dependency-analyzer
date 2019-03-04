@@ -74,4 +74,9 @@ class DependencyRule
 
         return true;
     }
+
+    public function getDefinition()
+    {
+        return $this->definition;
+    }
 }

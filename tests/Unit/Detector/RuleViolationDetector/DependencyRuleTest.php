@@ -14,95 +14,95 @@ class DependencyRuleTest extends TestCase
         return [
             'white list(valid)' => [
                 [
-                    'Controller' => [
-                        'define' => '/Controller',
+                    '@controller' => [
+                        'define' => '\Controller',
                     ],
-                    'Application' => [
-                        'define' => '/Application',
-                        'white' => ['Controller'],
+                    '@application' => [
+                        'define' => '\Application',
+                        'white' => ['@controller'],
                     ],
-                    'Domain' => [
-                        'define' => '/Domain',
+                    '@domain' => [
+                        'define' => '\Domain',
                     ]
                 ],
                 []
             ],
             'white list(invalid)' => [
                 [
-                    'Controller' => [
-                        'define' => '/Controller',
+                    '@controller' => [
+                        'define' => '\Controller',
                     ],
-                    'Application' => [
-                        'define' => '/Application',
-                        'white' => ['Domain'],
+                    '@application' => [
+                        'define' => '\Application',
+                        'white' => ['@domain'],
                     ],
-                    'Domain' => [
-                        'define' => '/Domain',
+                    '@domain' => [
+                        'define' => '\Domain',
                     ]
                 ],
-                ['/Controller/Dir/Class2.php(Controller) must not depend on /Application/Class1.php(Application).']
+                ['\Controller\Dir\Class2.php(@controller) must not depend on \Application\Class1.php(@application).']
             ],
             'black list(valid)' => [
                 [
-                    'Controller' => [
-                        'define' => '/Controller',
+                    '@controller' => [
+                        'define' => '\Controller',
                     ],
-                    'Application' => [
-                        'define' => '/Application',
-                        'black' => ['Domain'],
+                    '@application' => [
+                        'define' => '\Application',
+                        'black' => ['@domain'],
                     ],
-                    'Domain' => [
-                        'define' => '/Domain',
+                    '@domain' => [
+                        'define' => '\Domain',
                     ]
                 ],
                 []
             ],
             'black list(invalid)' => [
                 [
-                    'Controller' => [
-                        'define' => '/Controller',
+                    '@controller' => [
+                        'define' => '\Controller',
                     ],
-                    'Application' => [
-                        'define' => '/Application',
-                        'black' => ['Controller'],
+                    '@application' => [
+                        'define' => '\Application',
+                        'black' => ['@controller'],
                     ],
-                    'Domain' => [
-                        'define' => '/Domain',
+                    '@domain' => [
+                        'define' => '\Domain',
                     ]
                 ],
-                ['/Controller/Dir/Class2.php(Controller) must not depend on /Application/Class1.php(Application).']
+                ['\Controller\Dir\Class2.php(@controller) must not depend on \Application\Class1.php(@application).']
             ],
             'exclude analysis list(valid)' => [
                 [
-                    'Controller' => [
-                        'define' => '/Controller',
+                    '@controller' => [
+                        'define' => '\Controller',
                     ],
-                    'Application' => [
-                        'define' => '/Application',
-                        'black' => ['Controller', 'Domain'],
-                        'excludeAnalysis' => ['/Controller/Dir/Class2.php'],
+                    '@application' => [
+                        'define' => '\Application',
+                        'black' => ['@controller', '@domain'],
+                        'excludeAnalysis' => ['\Controller\Dir\Class2.php'],
                     ],
-                    'Domain' => [
-                        'define' => '/Domain',
+                    '@domain' => [
+                        'define' => '\Domain',
                     ]
                 ],
                 []
             ],
             'exclude analysis list(invalid)' => [
                 [
-                    'Controller' => [
-                        'define' => '/Controller',
+                    '@controller' => [
+                        'define' => '\Controller',
                     ],
-                    'Application' => [
-                        'define' => '/Application',
-                        'black' => ['Controller', 'Domain'],
-                        'excludeAnalysis' => ['/Controller/Dir/Class1.php'],
+                    '@application' => [
+                        'define' => '\Application',
+                        'black' => ['@controller', '@domain'],
+                        'excludeAnalysis' => ['\Controller\Dir\Class1.php'],
                     ],
-                    'Domain' => [
-                        'define' => '/Domain',
+                    '@domain' => [
+                        'define' => '\Domain',
                     ]
                 ],
-                ['/Controller/Dir/Class2.php(Controller) must not depend on /Application/Class1.php(Application).']
+                ['\Controller\Dir\Class2.php(@controller) must not depend on \Application\Class1.php(@application).']
             ],
         ];
     }
@@ -127,16 +127,16 @@ class DependencyRuleTest extends TestCase
         // TODO: remove dependency to Graph
         $graph = new Graph();
 
-        $controller1 = $graph->createVertex('/Controller/Class1.php');
-        $controller2 = $graph->createVertex('/Controller/Dir/Class2.php');
-        $controller3 = $graph->createVertex('/Controller/Dir/Dir/Class3.php');
-        $application1 = $graph->createVertex('/Application/Class1.php');
-        $application2 = $graph->createVertex('/Application/Dir/Class2.php');
-        $application3 = $graph->createVertex('/Application/Dir/Dir/Class3.php');
-        $domain1 = $graph->createVertex('/Domain/Class1.php');
-        $domain2 = $graph->createVertex('/Domain/Dir/Class2.php');
-        $domain3 = $graph->createVertex('/Domain/Dir/Dir/Class3.php');
-        $carbon = $graph->createVertex('/Carbon/Carbon.php');
+        $controller1 = $graph->createVertex('\Controller\Class1.php');
+        $controller2 = $graph->createVertex('\Controller\Dir\Class2.php');
+        $controller3 = $graph->createVertex('\Controller\Dir\Dir\Class3.php');
+        $application1 = $graph->createVertex('\Application\Class1.php');
+        $application2 = $graph->createVertex('\Application\Dir\Class2.php');
+        $application3 = $graph->createVertex('\Application\Dir\Dir\Class3.php');
+        $domain1 = $graph->createVertex('\Domain\Class1.php');
+        $domain2 = $graph->createVertex('\Domain\Dir\Class2.php');
+        $domain3 = $graph->createVertex('\Domain\Dir\Dir\Class3.php');
+        $carbon = $graph->createVertex('\Carbon\Carbon.php');
 
         $controller1->createEdgeTo($controller2);
         $controller1->createEdgeTo($controller3);
@@ -154,5 +154,24 @@ class DependencyRuleTest extends TestCase
         $domain3->createEdgeTo($carbon);
 
         return new DirectedGraph($graph);
+    }
+
+    public function testGetDefinition()
+    {
+        $definition = [
+            '@controller' => [
+                'define' => '\Controller',
+            ],
+            '@application' => [
+                'define' => '\Application',
+                'white' => ['@controller'],
+            ],
+            '@domain' => [
+                'define' => '\Domain',
+            ]
+        ];
+        $rule = new DependencyRule($definition);
+
+        $this->assertEquals($definition, $rule->getDefinition());
     }
 }
