@@ -110,7 +110,7 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
 
         $tmpDir = sys_get_temp_dir() . '/phpstan';
         if (!@mkdir($tmpDir, 0777, true) && !is_dir($tmpDir)) {
-            throw new UnexpectedException('creating a temp direcotry is failed: ' . $tmpDir);
+            throw new UnexpectedException('creating a temp directory is failed: ' . $tmpDir);
         }
 
         $containerConfigFiles = [__DIR__ . '/../conf/config.neon'];
