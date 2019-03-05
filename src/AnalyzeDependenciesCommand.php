@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\Detector\CycleDetector;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use Nette\DI\Container;
@@ -42,7 +41,7 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->paths = $this->getAbsolutePaths($input);
-        $this->container = $this->createContainer($this->paths);
+        $this->container = $this->createPHPStanContainer($this->paths);
 
         if ($memoryLimit = $input->getOption('memory-limit')) {
             $this->setMemoryLimit($memoryLimit);
@@ -104,7 +103,7 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
         return $fileFinderResult->getFiles();
     }
 
-    protected function createContainer(array $paths)
+    protected function createPHPStanContainer(array $paths): Container
     {
         $currentWorkingDirectory = $this->getCurrentDir();
 
@@ -113,9 +112,9 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
             throw new UnexpectedException('creating a temp directory is failed: ' . $tmpDir);
         }
 
-        $containerConfigFiles = [__DIR__ . '/../conf/config.neon'];
+        $additionalConfigFiles = [realpath(__DIR__ . '/../conf/config.neon')];
 
-        return (new ContainerFactory($currentWorkingDirectory))->create($tmpDir, $containerConfigFiles, $paths);
+        return (new ContainerFactory($currentWorkingDirectory))->create($tmpDir, $additionalConfigFiles, $paths);
     }
 
     /**
