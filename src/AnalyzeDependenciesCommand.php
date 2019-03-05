@@ -3,6 +3,9 @@ declare(strict_types = 1);
 
 namespace DependencyAnalyzer;
 
+use DependencyAnalyzer\Detector\CycleDetector;
+use DependencyAnalyzer\Detector\RuleViolationDetector;
+use DependencyAnalyzer\Detector\RuleViolationDetector\RuleFactory;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use Nette\DI\Container;
@@ -34,6 +37,7 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
             ->setDescription('Analyze dependency tree')
             ->setDefinition([
                 new InputArgument('paths', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Target directory of analyze'),
+                new InputOption('rule', null, InputOption::VALUE_REQUIRED, 'File of dependency rule'),
                 new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for the run (ex: 500k, 500M, 5G)'),
             ]);
     }
@@ -55,7 +59,22 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
 
         $dependencies = $dependencyDumper->dump($allFiles);
 
-        $verifier = $this->container->getByType(DirectedGraphVerifier::class);
+        // TODO: use container
+        if ($ruleFile = $input->getOption('rule')) {
+            if (!is_file($ruleFile)) {
+                throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $ruleFile));
+            }
+            $ruleDefinition = require_once $ruleFile;
+            if (!is_array($ruleDefinition)) {
+                throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $ruleFile));
+            }
+            $rules = (new RuleFactory($ruleDefinition))->create();
+            $detector = new RuleViolationDetector($rules);
+            $this->container->addService('DependencyAnalyzer\Detector\RuleViolationDetector', $detector);
+        } else {
+            $rules = [];
+        }
+        $verifier = new DirectedGraphVerifier(new CycleDetector(), new RuleViolationDetector($rules));
         $errors = $verifier->verify($dependencies);
 
 //        $output->writeln(Json::encode($dependencies, Json::PRETTY));
@@ -135,7 +154,7 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
     protected function setMemoryLimit(string $memoryLimit): void
     {
         if (preg_match('#^-?\d+[kMG]?$#i', $memoryLimit) !== 1) {
-            throw new InvalidCommandArgumentException('memory-limit is invalid format "%s".', $memoryLimit);
+            throw new InvalidCommandArgumentException(sprintf('memory-limit is invalid format "%s".', $memoryLimit));
         }
         if (ini_set('memory_limit', $memoryLimit) === false) {
             throw new UnexpectedException("setting memory_limit to {$memoryLimit} is failed.");

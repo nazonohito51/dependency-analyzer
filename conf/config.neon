@@ -3,9 +3,3 @@ services:
 		class: DependencyAnalyzer\DependencyDumper
 	-
 		class: DependencyAnalyzer\DependencyDumper\DependencyResolver
-	-
-		class: DependencyAnalyzer\DirectedGraphVerifier
-	-
-		class: DependencyAnalyzer\Detector\CycleDetector
-	-
-		class: DependencyAnalyzer\Detector\RuleViolationDetector
