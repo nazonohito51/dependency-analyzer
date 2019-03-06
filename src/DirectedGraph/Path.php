@@ -74,6 +74,9 @@ class Path implements \Countable
         return $this->getFirstEdge()->getVertexStart()->getId() === $this->getLastEdge()->getVertexEnd()->getId();
     }
 
+    /**
+     * @return string[]
+     */
     public function getIds(): array
     {
         if ($this->count() === 0) {

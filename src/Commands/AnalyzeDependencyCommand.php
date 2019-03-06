@@ -1,11 +1,10 @@
 <?php
 declare(strict_types = 1);
 
-namespace DependencyAnalyzer;
+namespace DependencyAnalyzer\Commands;
 
-use DependencyAnalyzer\Detector\CycleDetector;
-use DependencyAnalyzer\Detector\RuleViolationDetector;
-use DependencyAnalyzer\Detector\RuleViolationDetector\RuleFactory;
+use DependencyAnalyzer\DependencyDumper;
+use DependencyAnalyzer\DirectedGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use Nette\DI\Container;
@@ -17,9 +16,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Command
+abstract class AnalyzeDependencyCommand extends \Symfony\Component\Console\Command\Command
 {
-    protected const NAME = 'analyze-deps';
+    protected const NAME = '';
+    protected const DESCRIPTION = '';
+
+    protected abstract function inspectGraph(DirectedGraph $graph): int;
 
     /**
      * @var string[]
@@ -33,11 +35,10 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
 
     protected function configure(): void
     {
-        $this->setName(self::NAME)
-            ->setDescription('Analyze dependency tree')
+        $this->setName(static::NAME)
+            ->setDescription(static::DESCRIPTION)
             ->setDefinition([
                 new InputArgument('paths', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Target directory of analyze'),
-                new InputOption('rule', null, InputOption::VALUE_REQUIRED, 'File of dependency rule'),
                 new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for the run (ex: 500k, 500M, 5G)'),
             ]);
     }
@@ -59,36 +60,7 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
 
         $dependencies = $dependencyDumper->dump($allFiles);
 
-        // TODO: use container
-        if ($ruleFile = $input->getOption('rule')) {
-            if (!is_file($ruleFile)) {
-                throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $ruleFile));
-            }
-            $ruleDefinition = require_once $ruleFile;
-            if (!is_array($ruleDefinition)) {
-                throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $ruleFile));
-            }
-            $rules = (new RuleFactory($ruleDefinition))->create();
-            $detector = new RuleViolationDetector($rules);
-            $this->container->addService('DependencyAnalyzer\Detector\RuleViolationDetector', $detector);
-        } else {
-            $rules = [];
-        }
-        $verifier = new DirectedGraphVerifier(new CycleDetector(), new RuleViolationDetector($rules));
-        $errors = $verifier->verify($dependencies);
-
-//        $output->writeln(Json::encode($dependencies, Json::PRETTY));
-        var_dump($dependencies->toArray());
-        var_dump(count($dependencies));
-        $count = 0;
-        foreach ($dependencies->toArray() as $depender => $dependees) {
-            $count += count($dependees);
-        }
-        var_dump($count);
-
-        var_dump($errors);
-
-        return 0;
+        return $this->inspectGraph($dependencies);
     }
 
     /**
@@ -131,7 +103,7 @@ class AnalyzeDependenciesCommand extends \Symfony\Component\Console\Command\Comm
             throw new UnexpectedException('creating a temp directory is failed: ' . $tmpDir);
         }
 
-        $additionalConfigFiles = [realpath(__DIR__ . '/../conf/config.neon')];
+        $additionalConfigFiles = [realpath(__DIR__ . '/../../conf/config.neon')];
 
         return (new ContainerFactory($currentWorkingDirectory))->create($tmpDir, $additionalConfigFiles, $paths);
     }

@@ -2,9 +2,6 @@
 <?php declare(strict_types=1);
 
 use Composer\XdebugHandler\XdebugHandler;
-use DependencyAnalyzer\AnalyzeDependenciesCommand;
-use PHPStan\Command\AnalyseCommand;
-use PHPStan\Command\DumpDependenciesCommand;
 
 gc_disable(); // performance boost
 
@@ -42,7 +39,7 @@ $application = new \Symfony\Component\Console\Application(
 	'PHP Dependency Analyzer',
 	$version
 );
-$application->add(new AnalyzeDependenciesCommand());
-//$application->add(new AnalyseCommand());
-//$application->add(new DumpDependenciesCommand());
+$application->add(new \DependencyAnalyzer\Commands\CycleDetectCommand());
+$application->add(new \DependencyAnalyzer\Commands\VerifyDependencyCommand());
+$application->add(new \DependencyAnalyzer\Commands\GenerateGraphCommand());
 $application->run();
