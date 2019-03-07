@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
+use DependencyAnalyzer\DependencyDumper\FileDependencyResolver\NodeDependencyResolver;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;

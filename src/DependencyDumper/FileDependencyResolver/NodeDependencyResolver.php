@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace DependencyAnalyzer\DependencyDumper;
+namespace DependencyAnalyzer\DependencyDumper\FileDependencyResolver;
 
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
