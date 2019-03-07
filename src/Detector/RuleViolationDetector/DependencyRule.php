@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Detector\RuleViolationDetector;
 
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 use Fhaculty\Graph\Vertex;
 
 class DependencyRule
@@ -21,7 +21,7 @@ class DependencyRule
         $this->definition = $definition;
     }
 
-    public function isSatisfyBy(DirectedGraph $graph): array
+    public function isSatisfyBy(DependencyGraph $graph): array
     {
         $errors = [];
 

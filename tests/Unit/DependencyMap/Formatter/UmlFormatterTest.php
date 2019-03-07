@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Unit\DependencyAnalyzer\DirectedGraph\Formatter;
+namespace Tests\Unit\DependencyAnalyzer\DependencyGraph\Formatter;
 
-use DependencyAnalyzer\DirectedGraph;
-use DependencyAnalyzer\DirectedGraph\Formatter\UmlFormatter;
+use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\Formatter\UmlFormatter;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
@@ -21,7 +21,7 @@ class UmlFormatterTest extends TestCase
         $v1->createEdgeTo($v3);
         $v2->createEdgeTo($v3);
 
-        $formatter = new UmlFormatter(new DirectedGraph($graph));
+        $formatter = new UmlFormatter(new DependencyGraph($graph));
 
         $this->assertEquals(<<<EOT
 @startuml

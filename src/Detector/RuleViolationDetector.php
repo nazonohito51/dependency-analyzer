@@ -2,7 +2,7 @@
 namespace DependencyAnalyzer\Detector;
 
 use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRule;
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 
 class RuleViolationDetector
 {
@@ -19,7 +19,7 @@ class RuleViolationDetector
         $this->rules = $rules;
     }
 
-    public function inspect(DirectedGraph $graph)
+    public function inspect(DependencyGraph $graph)
     {
         $ruleViolations = [];
         foreach ($this->rules as $rule) {

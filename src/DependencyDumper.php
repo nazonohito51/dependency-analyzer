@@ -40,7 +40,7 @@ class DependencyDumper
         $this->scopeFactory = $scopeFactory;
     }
 
-    public function dump(array $files): DirectedGraph
+    public function dump(array $files): DependencyGraph
     {
         $dependencies = [];
         foreach ($files as $file) {
@@ -66,7 +66,7 @@ class DependencyDumper
             $dependencies = array_merge($dependencies, $fileDependencies);
         }
 
-        return new DirectedGraph($this->dependenciesToGraph($dependencies));
+        return new DependencyGraph($this->dependenciesToGraph($dependencies));
     }
 
     /**

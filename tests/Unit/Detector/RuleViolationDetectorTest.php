@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Detector;
 
 use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRule;
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 use Tests\TestCase;
 
 class RuleViolationDetectorTest extends TestCase
 {
     public function provideInspect()
     {
-        $graph = $this->createMock(DirectedGraph::class);
+        $graph = $this->createMock(DependencyGraph::class);
 
         $ruleNoError = $this->createMock(DependencyRule::class);
         $ruleNoError->method('isSatisfyBy')->with($graph)->willReturn([]);
@@ -34,11 +34,11 @@ class RuleViolationDetectorTest extends TestCase
 
     /**
      * @param array $rules
-     * @param DirectedGraph $graph
+     * @param DependencyGraph $graph
      * @param array $expected
      * @dataProvider provideInspect
      */
-    public function testInspect(array $rules, DirectedGraph $graph, array $expected)
+    public function testInspect(array $rules, DependencyGraph $graph, array $expected)
     {
         $detector = new RuleViolationDetector($rules);
 

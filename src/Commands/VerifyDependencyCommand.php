@@ -5,7 +5,7 @@ namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\Detector\RuleViolationDetector;
 use DependencyAnalyzer\Detector\RuleViolationDetector\RuleFactory;
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,7 +31,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         $this->ruleFile = $input->getOption('rule');
     }
 
-    protected function inspectGraph(DirectedGraph $graph): int
+    protected function inspectGraph(DependencyGraph $graph): int
     {
         if (!is_file($this->ruleFile)) {
             throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $this->ruleFile));

@@ -5,7 +5,7 @@ namespace DependencyAnalyzer\Exceptions;
 
 use Fhaculty\Graph\Edge\Directed;
 
-class InvalidEdgeOnDirectedGraphException extends RuntimeException
+class InvalidEdgeOnDependencyGraphException extends RuntimeException
 {
     /**
      * @var Directed

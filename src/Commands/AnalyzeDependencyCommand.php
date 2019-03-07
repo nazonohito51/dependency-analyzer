@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\DependencyDumper;
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use Nette\DI\Container;
@@ -21,7 +21,7 @@ abstract class AnalyzeDependencyCommand extends \Symfony\Component\Console\Comma
     protected const NAME = '';
     protected const DESCRIPTION = '';
 
-    protected abstract function inspectGraph(DirectedGraph $graph): int;
+    protected abstract function inspectGraph(DependencyGraph $graph): int;
 
     /**
      * @var string[]

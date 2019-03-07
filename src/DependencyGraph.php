@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DirectedGraph\Path;
-use DependencyAnalyzer\Exceptions\InvalidEdgeOnDirectedGraphException;
+use DependencyAnalyzer\DependencyGraph\Path;
+use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Vertices;
 use Fhaculty\Graph\Vertex;
 
-class DirectedGraph implements \Countable
+class DependencyGraph implements \Countable
 {
     /**
      * @var Graph
@@ -21,7 +21,7 @@ class DirectedGraph implements \Countable
     {
         foreach ($graph->getEdges() as $edge) {
             if (!$edge instanceof Directed) {
-                throw new InvalidEdgeOnDirectedGraphException($edge);
+                throw new InvalidEdgeOnDependencyGraphException($edge);
             }
         }
         $this->graph = $graph;

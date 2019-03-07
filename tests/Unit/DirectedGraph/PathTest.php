@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DirectedGraph;
+namespace Tests\Unit\DependencyAnalyzer\DependencyGraph;
 
+use DependencyAnalyzer\DependencyGraph\Path;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;

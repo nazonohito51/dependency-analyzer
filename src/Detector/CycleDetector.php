@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Detector;
 
-use DependencyAnalyzer\DirectedGraph;
-use DependencyAnalyzer\DirectedGraph\Path;
+use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\LogicException;
 
 class CycleDetector
@@ -14,7 +14,7 @@ class CycleDetector
      */
     protected $cycles = [];
 
-    public function inspect(DirectedGraph $graph)
+    public function inspect(DependencyGraph $graph)
     {
         $subGraphs = $this->collectConnectedSubGraphs($graph);
 
@@ -46,10 +46,10 @@ class CycleDetector
     }
 
     /**
-     * @param DirectedGraph $graph
-     * @return DirectedGraph[]
+     * @param DependencyGraph $graph
+     * @return DependencyGraph[]
      */
-    protected function collectConnectedSubGraphs(DirectedGraph $graph): array
+    protected function collectConnectedSubGraphs(DependencyGraph $graph): array
     {
         $subGraphs = [];
 

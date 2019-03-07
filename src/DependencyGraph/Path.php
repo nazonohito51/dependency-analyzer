@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DirectedGraph;
+namespace DependencyAnalyzer\DependencyGraph;
 
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnPathException;
 use Fhaculty\Graph\Edge\Directed;

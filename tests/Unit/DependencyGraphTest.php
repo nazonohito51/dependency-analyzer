@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DependencyAnalyzer;
 
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
-class DirectedGraphTest extends TestCase
+class DependencyGraphTest extends TestCase
 {
     public function testToArray()
     {
-        $sut = new DirectedGraph($this->getSingleDirectedGraph());
+        $sut = new DependencyGraph($this->getSingleDependencyGraph());
 
         $this->assertEquals([
             'v1' => ['v2', 'v3'],
@@ -22,12 +22,12 @@ class DirectedGraphTest extends TestCase
 
     public function testCount()
     {
-        $sut = new DirectedGraph($this->getSingleDirectedGraph());
+        $sut = new DependencyGraph($this->getSingleDependencyGraph());
 
         $this->assertCount(3, $sut);
     }
 
-    private function getSingleDirectedGraph()
+    private function getSingleDependencyGraph()
     {
         $graph = new Graph();
         $vertext1 = $graph->createVertex('v1');

@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer\Detector;
 
 use DependencyAnalyzer\Detector\CycleDetector;
-use DependencyAnalyzer\DirectedGraph;
-use DependencyAnalyzer\DirectedGraph\Path;
+use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\Path;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
@@ -19,10 +19,10 @@ class CycleDetectorTest extends TestCase
         $vertex3 = $graph->createVertex('v3');
         $vertex1->createEdgeTo($vertex2);
         $vertex2->createEdgeTo($vertex3);
-        $directedGraph = new DirectedGraph($graph);
+        $dependencyGraph = new DependencyGraph($graph);
         $detector = new CycleDetector();
 
-        $errors = $detector->inspect($directedGraph);
+        $errors = $detector->inspect($dependencyGraph);
 
         $this->assertCount(0, $errors);
     }
@@ -56,7 +56,7 @@ class CycleDetectorTest extends TestCase
         return [
             [$this->createSimpleCycleGraph(['v1', 'v2']), [['v1', 'v2']]],
             [$this->createSimpleCycleGraph(['v1', 'v2', 'v3']), [['v1', 'v2', 'v3']]],
-            [new DirectedGraph($graph), [
+            [new DependencyGraph($graph), [
                 ['v1', 'v2', 'v4', 'v6'],
                 ['v1', 'v2', 'v4', 'v6', 'v8', 'v9'],
                 ['v2', 'v4', 'v6', 'v7'],
@@ -66,11 +66,11 @@ class CycleDetectorTest extends TestCase
     }
 
     /**
-     * @param DirectedGraph $graph
+     * @param DependencyGraph $graph
      * @param array $expected
      * @dataProvider provideInspect_shouldDetectCycle
      */
-    public function testInspect_shouldDetectCycle(DirectedGraph $graph, array $expected)
+    public function testInspect_shouldDetectCycle(DependencyGraph $graph, array $expected)
     {
         $detector = new CycleDetector();
 
@@ -81,9 +81,9 @@ class CycleDetectorTest extends TestCase
 
     /**
      * @param array $ids
-     * @return DirectedGraph
+     * @return DependencyGraph
      */
-    protected function createSimpleCycleGraph(array $ids): DirectedGraph
+    protected function createSimpleCycleGraph(array $ids): DependencyGraph
     {
         $graph = new Graph();
         $vertices = [];
@@ -96,7 +96,7 @@ class CycleDetectorTest extends TestCase
             $vertices[$i]->createEdgeTo($vertices[($i + 1) % count($vertices)]);
         }
 
-        return new DirectedGraph($graph);
+        return new DependencyGraph($graph);
     }
 
     public function provideCheckCycle()

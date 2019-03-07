@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Detector\RuleViolationDetector;
 
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
@@ -115,7 +115,7 @@ class DependencyRuleTest extends TestCase
      */
     public function testIsSatisfiedBy(array $ruleDefinition, array $expected)
     {
-        $graph = $this->createDirectedGraph();
+        $graph = $this->createDependencyGraph();
         $rule = new DependencyRule($ruleDefinition);
 
         $errors = $rule->isSatisfyBy($graph);
@@ -123,7 +123,7 @@ class DependencyRuleTest extends TestCase
         $this->assertEquals($expected, $errors);
     }
 
-    protected function createDirectedGraph()
+    protected function createDependencyGraph()
     {
         // TODO: remove dependency to Graph
         $graph = new Graph();
@@ -154,7 +154,7 @@ class DependencyRuleTest extends TestCase
         $domain2->createEdgeTo($domain3);
         $domain3->createEdgeTo($carbon);
 
-        return new DirectedGraph($graph);
+        return new DependencyGraph($graph);
     }
 
     public function testGetDefinition()

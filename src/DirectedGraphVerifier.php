@@ -25,10 +25,10 @@ class DirectedGraphVerifier
     }
 
     /**
-     * @param DirectedGraph $graph
+     * @param DependencyGraph $graph
      * @return string[]
      */
-    public function verify(DirectedGraph $graph): array
+    public function verify(DependencyGraph $graph): array
     {
         $errors['cycle'] = $this->cycleDetector->inspect($graph);
         $errors['ruleViolation'] = $this->ruleViolationDetector->inspect($graph);

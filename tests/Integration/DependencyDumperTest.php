@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use DependencyAnalyzer\DependencyDumper;
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 use PHPStan\DependencyInjection\ContainerFactory;
 use Tests\TestCase;
 
@@ -232,7 +232,7 @@ class DependencyDumperTest extends TestCase
 
         $graph = $dependencyDumper->dump([$fixtureFile]);
 
-        $this->assertInstanceOf(DirectedGraph::class, $graph);
+        $this->assertInstanceOf(DependencyGraph::class, $graph);
         $this->assertEquals($expected, $graph->toArray());
     }
 

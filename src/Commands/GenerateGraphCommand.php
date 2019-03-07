@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Commands;
 
-use DependencyAnalyzer\DirectedGraph;
+use DependencyAnalyzer\DependencyGraph;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,9 +27,9 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
         $this->output = $input->getOption('output');
     }
 
-    protected function inspectGraph(DirectedGraph $graph): int
+    protected function inspectGraph(DependencyGraph $graph): int
     {
-        $formatter = new DirectedGraph\Formatter\UmlFormatter($graph);
+        $formatter = new DependencyAnalyzer\DependencyGraph\Formatter\UmlFormatter($graph);
 
         $outputFile = new \SplFileObject($this->output, 'w');
         $outputFile->fwrite($formatter->format());

@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DirectedGraph\Formatter;
+namespace DependencyAnalyzer\DependencyGraph\Formatter;
 
 class UmlFormatter
 {
     /**
-     * @var \DependencyAnalyzer\DirectedGraph
+     * @var \DependencyAnalyzer\DependencyGraph
      */
     private $graph;
 
-    public function __construct(\DependencyAnalyzer\DirectedGraph $graph)
+    public function __construct(\DependencyAnalyzer\DependencyGraph $graph)
     {
         $this->graph = $graph;
     }
