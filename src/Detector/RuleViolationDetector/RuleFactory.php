@@ -37,7 +37,7 @@ class RuleFactory
         foreach ($ruleDefinition as $groupName => $groupDefinition) {
             if (substr($groupName, 0, 1) !== '@') {
                 return false;
-            } elseif (!isset($groupDefinition['define']) || !is_string($groupDefinition['define']) || strlen($groupDefinition['define']) == 0) {
+            } elseif (!isset($groupDefinition['define']) || !is_array($groupDefinition['define'])) {
                 return false;
             }
         }

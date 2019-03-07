@@ -2,24 +2,24 @@
 return [
     [
         '@controller' => [
-            'define' => 'App',
+            'define' => ['App'],
         ],
         '@application' => [
-            'define' => 'Acme\Application',
+            'define' => ['Acme\Application'],
             'white' => ['@controller'],
         ],
         '@domain' => [
-            'define' => 'Acme\Domain',
+            'define' => ['Acme\Domain'],
             'white' => ['@application']
         ]
     ],
     [
         '@entities' => [
-            'define' => 'Acme\Domain\Entities',
+            'define' => ['Acme\Domain\Entities'],
             'white' => ['@repositories']
         ],
         '@repositories' => [
-            'define' => 'Acme\Domain\Repositories',
+            'define' => ['Acme\Domain\Repositories'],
         ]
     ],
 ];
