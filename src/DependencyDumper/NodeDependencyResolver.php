@@ -20,7 +20,7 @@ use PHPStan\Reflection\ReflectionWithFilename;
 use PHPStan\Type\ClosureType;
 use PHPStan\Type\TypeWithClassName;
 
-class DependencyResolver
+class NodeDependencyResolver
 {
     /** @var Broker */
     protected $broker;

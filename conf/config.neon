@@ -2,4 +2,6 @@ services:
 	-
 		class: DependencyAnalyzer\DependencyDumper
 	-
-		class: DependencyAnalyzer\DependencyDumper\DependencyResolver
+		class: DependencyAnalyzer\DependencyDumper\FileDependencyResolver
+	-
+		class: DependencyAnalyzer\DependencyDumper\NodeDependencyResolver
