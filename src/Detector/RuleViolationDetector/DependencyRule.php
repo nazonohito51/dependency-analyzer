@@ -38,14 +38,28 @@ class DependencyRule
 
     protected function getGroupName(Vertex $vertex): ?string
     {
+        // TODO: add exclude pattern
         foreach ($this->definition as $groupName => $groupDefinition) {
-            $pattern = '/^' . preg_quote($groupDefinition['define'], '/') . '/';
-            if (preg_match($pattern, $vertex->getId())) {
-                return $groupName;
+            if (!$this->matchDefine($vertex, $groupDefinition['define'])) {
+                continue;
             }
+
+            return $groupName;
         }
 
         return null;
+    }
+
+    protected function matchDefine(Vertex $vertex, array $defines)
+    {
+        foreach ($defines as $define) {
+            $pattern = '/^' . preg_quote($define, '/') . '/';
+            if (preg_match($pattern, $vertex->getId()) !== 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected function isValidVertex(Vertex $depender, Vertex $dependee): bool
