@@ -37,23 +37,23 @@ class RuleFactoryTest extends TestCase
         $ruleDefinitions = [
             [
                 '@controller' => [
-                    'define' => '\Controller',
+                    'define' => ['\Controller'],
                 ],
                 '@application' => [
-                    'define' => '\Application',
+                    'define' => ['\Application'],
                     'white' => ['@controller'],
                 ],
                 '@domain' => [
-                    'define' => '\Domain',
+                    'define' => ['\Domain'],
                 ]
             ],
             [
                 '@entities' => [
-                    'define' => '\Domain\Entities',
+                    'define' => ['\Domain\Entities'],
                     'white' => ['@repositoreis']
                 ],
                 '@repositories' => [
-                    'define' => '\Domain\Repositories',
+                    'define' => ['\Domain\Repositories'],
                     'white' => ['@controller'],
                 ]
             ],
