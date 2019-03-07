@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\Formatter\UmlFormatter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,7 +30,7 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
 
     protected function inspectGraph(DependencyGraph $graph): int
     {
-        $formatter = new DependencyAnalyzer\DependencyGraph\Formatter\UmlFormatter($graph);
+        $formatter = new UmlFormatter($graph);
 
         $outputFile = new \SplFileObject($this->output, 'w');
         $outputFile->fwrite($formatter->format());
