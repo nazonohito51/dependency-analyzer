@@ -5,7 +5,6 @@ namespace DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyDumper\FileDependencyResolver;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
-use Fhaculty\Graph\Graph;
 use PHPStan\DependencyInjection\ContainerFactory;
 use PHPStan\File\FileFinder;
 use PHPStan\File\FileHelper;
@@ -36,10 +35,11 @@ class DependencyDumper
         }, $paths);
 
         $phpStanContainer = (new ContainerFactory($currentDir))->create($tmpDir, $additionalConfigFiles, $paths);
-        $fileDependencyResolver = $phpStanContainer->getByType(FileDependencyResolver::class);
-        $fileFinder = $phpStanContainer->getByType(FileFinder::class);
 
-        return new self($fileDependencyResolver, $fileFinder);
+        return new self(
+            $phpStanContainer->getByType(FileDependencyResolver::class),
+            $phpStanContainer->getByType(FileFinder::class)
+        );
     }
 
     public function dump(array $paths): DependencyGraph
@@ -51,7 +51,7 @@ class DependencyDumper
             $dependencies = array_merge($dependencies, $fileDependencies);
         }
 
-        return new DependencyGraph($this->dependenciesToGraph($dependencies));
+        return DependencyGraph::createFromArray($dependencies);
     }
 
     protected function getAllFiles(array $paths): array
@@ -63,33 +63,5 @@ class DependencyDumper
         }
 
         return $fileFinderResult->getFiles();
-    }
-
-    protected function dependenciesToGraph(array $dependencies): Graph
-    {
-        $graph = new Graph();
-        $vertices = array();
-
-        foreach ($dependencies as $depender => $dependees) {
-            if (!isset($vertices[$depender])) {
-                $vertices[$depender] = $graph->createVertex($depender);
-            }
-
-            foreach ($dependees as $dependee) {
-                if (!isset($vertices[$dependee])) {
-                    $vertices[$dependee] = $graph->createVertex($dependee);
-                }
-            }
-        }
-
-        foreach ($vertices as $vertex) {
-            if (isset($dependencies[$vertex->getId()])) {
-                foreach ($dependencies[$vertex->getId()] as $dependency) {
-                    $vertex->createEdgeTo($vertices[$dependency]);
-                };
-            }
-        }
-
-        return $graph;
     }
 }

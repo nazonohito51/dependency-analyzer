@@ -27,6 +27,38 @@ class DependencyGraph implements \Countable
         $this->graph = $graph;
     }
 
+    /**
+     * @param array $dependencies  ex: [$depender => [$dependee1, $dependee2]]
+     * @return DependencyGraph
+     */
+    public static function createFromArray(array $dependencies): self
+    {
+        $graph = new Graph();
+        $vertices = [];
+
+        foreach ($dependencies as $depender => $dependees) {
+            if (!isset($vertices[$depender])) {
+                $vertices[$depender] = $graph->createVertex($depender);
+            }
+
+            foreach ($dependees as $dependee) {
+                if (!isset($vertices[$dependee])) {
+                    $vertices[$dependee] = $graph->createVertex($dependee);
+                }
+            }
+        }
+
+        foreach ($vertices as $vertex) {
+            if (isset($dependencies[$vertex->getId()])) {
+                foreach ($dependencies[$vertex->getId()] as $dependency) {
+                    $vertex->createEdgeTo($vertices[$dependency]);
+                };
+            }
+        }
+
+        return new self($graph);
+    }
+
     public function getVertices()
     {
         return $this->graph->getVertices();
