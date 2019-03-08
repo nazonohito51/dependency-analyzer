@@ -6,118 +6,74 @@ namespace DependencyAnalyzer\Commands;
 use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
+use DependencyAnalyzer\Exceptions\ShouldNotHappenException;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
-use Nette\DI\Container;
-use PHPStan\DependencyInjection\ContainerFactory;
-use PHPStan\File\FileFinder;
-use PHPStan\File\FileHelper;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class AnalyzeDependencyCommand extends \Symfony\Component\Console\Command\Command
+abstract class AnalyzeDependencyCommand extends Command
 {
-    protected const NAME = '';
-    protected const DESCRIPTION = '';
+    const DEFAULT_CONFIG_FILES = [__DIR__ . '/../../conf/config.neon'];
 
-    protected abstract function inspectGraph(DependencyGraph $graph): int;
-
-    /**
-     * @var string[]
-     */
-    protected $paths = [];
-
-    /**
-     * @var Container $container
-     */
-    protected $container;
+    protected abstract function inspectDependencyGraph(DependencyGraph $graph): int;
+    protected abstract function getCommandName(): string;
+    protected abstract function getCommandDescription(): string;
 
     protected function configure(): void
     {
-        $this->setName(static::NAME)
-            ->setDescription(static::DESCRIPTION)
+        $this->setName($this->getCommandName())
+            ->setDescription($this->getCommandDescription())
             ->setDefinition([
                 new InputArgument('paths', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Target directory of analyze'),
                 new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for the run (ex: 500k, 500M, 5G)'),
             ]);
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->paths = $this->getAbsolutePaths($input);
-        $this->container = $this->createPHPStanContainer($this->paths);
-
         if ($memoryLimit = $input->getOption('memory-limit')) {
             $this->setMemoryLimit($memoryLimit);
         }
-    }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $dependencyDumper = $this->container->getByType(DependencyDumper::class);
-        $allFiles = $this->getAllFilePaths();
+        $paths = array_map(function ($path) {
+            $realpath = realpath($path);
+            if (!is_file($realpath) && !is_dir($realpath)) {
+                throw new InvalidCommandArgumentException("path was not found: {$realpath}");
+            }
 
-        $dependencies = $dependencyDumper->dump($allFiles);
+            return $realpath;
+        }, $input->getArgument('paths'));
 
-        return $this->inspectGraph($dependencies);
-    }
+        $dependencyGraph = $this->createDependencyDumper($paths)->dump($paths);
 
-    /**
-     * @param InputInterface $input
-     * @return string[]
-     */
-    protected function getAbsolutePaths(InputInterface $input): array
-    {
-        $paths = $input->getArgument('paths');
-        $fileHelper = new FileHelper($this->getCurrentDir());
-        $paths = array_map(function (string $path) use ($fileHelper): string {
-            return $fileHelper->absolutizePath($path);
-        }, $paths);
-
-        return $paths;
+        return $this->inspectDependencyGraph($dependencyGraph);
     }
 
     /**
-     * @return string[]
+     * @param string[] $paths
+     * @return DependencyDumper
      */
-    protected function getAllFilePaths(): array
-    {
-        $fileFinder = $this->container->getByType(FileFinder::class);
-
-        try {
-            $fileFinderResult = $fileFinder->findFiles($this->paths);
-        } catch (\PHPStan\File\PathNotFoundException $e) {
-            throw new InvalidCommandArgumentException('path was not found: ' . $e->getPath());
-        }
-
-        return $fileFinderResult->getFiles();
-    }
-
-    protected function createPHPStanContainer(array $paths): Container
-    {
-        $currentWorkingDirectory = $this->getCurrentDir();
-
-        $tmpDir = sys_get_temp_dir() . '/phpstan';
-        if (!@mkdir($tmpDir, 0777, true) && !is_dir($tmpDir)) {
-            throw new UnexpectedException('creating a temp directory is failed: ' . $tmpDir);
-        }
-
-        $additionalConfigFiles = [realpath(__DIR__ . '/../../conf/config.neon')];
-
-        return (new ContainerFactory($currentWorkingDirectory))->create($tmpDir, $additionalConfigFiles, $paths);
-    }
-
-    /**
-     * @return string
-     */
-    protected function getCurrentDir(): string
+    protected function createDependencyDumper(array $paths): DependencyDumper
     {
         $currentWorkingDirectory = getcwd();
         if ($currentWorkingDirectory === false) {
-            throw new \PHPStan\ShouldNotHappenException();
+            throw new ShouldNotHappenException('getting current working dir is failed.');
         }
-        return $currentWorkingDirectory;
+
+        $tmpDir = sys_get_temp_dir() . '/phpstan';
+        if (!@mkdir($tmpDir, 0777, true) && !is_dir($tmpDir)) {
+            throw new ShouldNotHappenException('creating a temp directory is failed: ' . $tmpDir);
+        }
+
+        return DependencyDumper::createFromConfig(
+            $currentWorkingDirectory,
+            $tmpDir,
+            self::DEFAULT_CONFIG_FILES,
+            $paths
+        );
     }
 
     /**

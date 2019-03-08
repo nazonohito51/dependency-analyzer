@@ -7,17 +7,23 @@ use DependencyAnalyzer\Detector\RuleViolationDetector;
 use DependencyAnalyzer\Detector\RuleViolationDetector\RuleFactory;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class VerifyDependencyCommand extends AnalyzeDependencyCommand
 {
-    protected const NAME = 'verify';
-    protected const DESCRIPTION = 'verify dependency map by rule';
-
     protected $ruleFile;
+
+    protected function getCommandName(): string
+    {
+        return 'verify';
+    }
+
+    protected function getCommandDescription(): string
+    {
+        return 'verify dependency map by rule';
+    }
 
     protected function configure(): void
     {
@@ -31,7 +37,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         $this->ruleFile = $input->getOption('rule');
     }
 
-    protected function inspectGraph(DependencyGraph $graph): int
+    protected function inspectDependencyGraph(DependencyGraph $graph): int
     {
         if (!is_file($this->ruleFile)) {
             throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $this->ruleFile));

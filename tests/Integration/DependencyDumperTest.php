@@ -241,10 +241,6 @@ class DependencyDumperTest extends TestCase
      */
     protected function createDependencyDumper()
     {
-        $containerFactory = new ContainerFactory($this->getRootDir());
-        $container = $containerFactory->create($this->getTmpDir(), [$this->getRootDir() . '/conf/config.neon'], []);
-
-        $dependencyDumper = $container->getByType(DependencyDumper::class);
-        return $dependencyDumper;
+        return DependencyDumper::createFromConfig($this->getRootDir(), $this->getTmpDir(), [$this->getRootDir() . '/conf/config.neon'], []);
     }
 }

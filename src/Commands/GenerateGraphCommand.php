@@ -11,10 +11,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateGraphCommand extends AnalyzeDependencyCommand
 {
-    protected const NAME = 'graph';
-    protected const DESCRIPTION = 'generate dependency map graph';
-
     protected $output;
+
+    protected function getCommandName(): string
+    {
+        return 'graph';
+    }
+
+    protected function getCommandDescription(): string
+    {
+        return 'generate dependency map graph';
+    }
 
     protected function configure(): void
     {
@@ -28,7 +35,7 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
         $this->output = $input->getOption('output');
     }
 
-    protected function inspectGraph(DependencyGraph $graph): int
+    protected function inspectDependencyGraph(DependencyGraph $graph): int
     {
         $formatter = new UmlFormatter($graph);
 

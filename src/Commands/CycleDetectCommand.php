@@ -8,10 +8,17 @@ use DependencyAnalyzer\DependencyGraph;
 
 class CycleDetectCommand extends AnalyzeDependencyCommand
 {
-    protected const NAME = 'detect-cycle';
-    protected const DESCRIPTION = 'detect cycle dependency in dependency map';
+    protected function getCommandName(): string
+    {
+        return 'detect-cycle';
+    }
 
-    protected function inspectGraph(DependencyGraph $graph): int
+    protected function getCommandDescription(): string
+    {
+        return 'detect cycle dependency in dependency map';
+    }
+
+    protected function inspectDependencyGraph(DependencyGraph $graph): int
     {
         $result = (new CycleDetector())->inspect($graph);
         var_dump($result);
