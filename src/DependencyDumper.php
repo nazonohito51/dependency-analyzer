@@ -7,7 +7,6 @@ use DependencyAnalyzer\DependencyDumper\FileDependencyResolver;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PHPStan\DependencyInjection\ContainerFactory;
 use PHPStan\File\FileFinder;
-use PHPStan\File\FileHelper;
 
 class DependencyDumper
 {
@@ -40,7 +39,7 @@ class DependencyDumper
     public function dump(array $paths): DependencyGraph
     {
         $dependencies = [];
-        foreach ($this->getAllFiles($paths) as $file) {
+        foreach ($this->getFilesRecursive($paths) as $file) {
             $fileDependencies = $this->fileDependencyResolver->dump($file);
 
             $dependencies = array_merge($dependencies, $fileDependencies);
@@ -49,7 +48,7 @@ class DependencyDumper
         return DependencyGraph::createFromArray($dependencies);
     }
 
-    protected function getAllFiles(array $paths): array
+    protected function getFilesRecursive(array $paths): array
     {
         try {
             $fileFinderResult = $this->fileFinder->findFiles($paths);
