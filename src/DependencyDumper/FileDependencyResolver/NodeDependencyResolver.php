@@ -34,8 +34,8 @@ class NodeDependencyResolver
      * @param \PhpParser\Node $node
      * @param Scope $scope
      * @return ReflectionWithFilename[]
-     * @throws \PHPStan\Broker\FunctionNotFoundException
      * @throws \PHPStan\Reflection\MissingMethodFromReflectionException
+     * @throws \PHPStan\Reflection\MissingPropertyFromReflectionException
      */
     public function resolveDependencies(\PhpParser\Node $node, Scope $scope): array
     {
