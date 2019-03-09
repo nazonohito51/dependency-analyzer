@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
+use DependencyAnalyzer\DependencyGraph\ClassLike;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
 use Fhaculty\Graph\Edge\Directed;
@@ -28,31 +29,26 @@ class DependencyGraph implements \Countable
     }
 
     /**
-     * @param array $dependencies  ex: [$depender => [$dependee1, $dependee2]]
+     * @param array $dependencies  ex: [$dependerName => [$dependeeName1, $dependeeName2]]
      * @return DependencyGraph
      */
     public static function createFromArray(array $dependencies): self
     {
         $graph = new Graph();
-        $vertices = [];
 
-        foreach ($dependencies as $depender => $dependees) {
-            if (!isset($vertices[$depender])) {
-                $vertices[$depender] = $graph->createVertex($depender);
+        foreach ($dependencies as $dependerName => $dependeeNames) {
+            if (!$graph->hasVertex($dependerName)) {
+                new ClassLike($graph, $dependerName);
             }
+            $depender = $graph->getVertex($dependerName);
 
-            foreach ($dependees as $dependee) {
-                if (!isset($vertices[$dependee])) {
-                    $vertices[$dependee] = $graph->createVertex($dependee);
+            foreach ($dependeeNames as $dependeeName) {
+                if (!$graph->hasVertex($dependeeName)) {
+                    new ClassLike($graph, $dependeeName);
                 }
-            }
-        }
+                $dependee = $graph->getVertex($dependeeName);
 
-        foreach ($vertices as $vertex) {
-            if (isset($dependencies[$vertex->getId()])) {
-                foreach ($dependencies[$vertex->getId()] as $dependency) {
-                    $vertex->createEdgeTo($vertices[$dependency]);
-                };
+                $depender->createEdgeTo($dependee);
             }
         }
 
