@@ -38,6 +38,17 @@ abstract class AnalyzeDependencyCommand extends Command
             $this->setMemoryLimit($memoryLimit);
         }
 
+        $dependencyGraph = $this->createDependencyGraph($input->getArgument('paths'));
+
+        return $this->inspectDependencyGraph($dependencyGraph);
+    }
+
+    /**
+     * @param string[] $paths
+     * @return DependencyGraph
+     */
+    protected function createDependencyGraph(array $paths): DependencyGraph
+    {
         $paths = array_map(function ($path) {
             $realpath = realpath($path);
             if (!is_file($realpath) && !is_dir($realpath)) {
@@ -45,11 +56,9 @@ abstract class AnalyzeDependencyCommand extends Command
             }
 
             return $realpath;
-        }, $input->getArgument('paths'));
+        }, $paths);
 
-        $dependencyGraph = $this->createDependencyDumper()->dump($paths);
-
-        return $this->inspectDependencyGraph($dependencyGraph);
+        return $this->createDependencyDumper()->dump($paths);
     }
 
     /**
