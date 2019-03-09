@@ -1,15 +1,8 @@
-<?php declare(strict_types = 1);
+<?php
+declare(strict_types = 1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
-use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Expr\ArrayDimFetch;
-use PhpParser\Node\Expr\Closure;
-use PhpParser\Node\Name;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Foreach_;
-use PhpParser\Node\Stmt\Function_;
-use PhpParser\Node\Stmt\PropertyProperty;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -56,7 +49,7 @@ class NodeDependencyResolver
                     $this->addClassToDependencies($className->toString(), $dependenciesReflections);
                 }
             }
-        } elseif ($node instanceof ClassMethod) {
+        } elseif ($node instanceof \PhpParser\Node\Stmt\ClassMethod) {
             if (!$scope->isInClass()) {
                 throw new \PHPStan\ShouldNotHappenException();
             }
@@ -80,7 +73,7 @@ class NodeDependencyResolver
 //                $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
 //                $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
 //            }
-        } elseif ($node instanceof Closure) {
+        } elseif ($node instanceof \PhpParser\Node\Expr\Closure) {
             /** @var ClosureType $closureType */
             $closureType = $scope->getType($node);
             foreach ($closureType->getParameters() as $parameter) {
@@ -153,21 +146,21 @@ class NodeDependencyResolver
                 $this->addClassToDependencies($traitName->toString(), $dependenciesReflections);
             }
         } elseif ($node instanceof \PhpParser\Node\Expr\Instanceof_) {
-            if ($node->class instanceof Name) {
+            if ($node->class instanceof \PhpParser\Node\Name) {
                 $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
             }
         } elseif ($node instanceof \PhpParser\Node\Stmt\Catch_) {
             foreach ($node->types as $type) {
                 $this->addClassToDependencies($scope->resolveName($type), $dependenciesReflections);
             }
-        } elseif ($node instanceof ArrayDimFetch && $node->dim !== null) {
+        } elseif ($node instanceof \PhpParser\Node\Expr\ArrayDimFetch && $node->dim !== null) {
             $varType = $scope->getType($node->var);
             $dimType = $scope->getType($node->dim);
 
             foreach ($varType->getOffsetValueType($dimType)->getReferencedClasses() as $referencedClass) {
                 $this->addClassToDependencies($referencedClass, $dependenciesReflections);
             }
-        } elseif ($node instanceof Foreach_) {
+        } elseif ($node instanceof \PhpParser\Node\Stmt\Foreach_) {
             $exprType = $scope->getType($node->expr);
             if ($node->keyVar !== null) {
                 foreach ($exprType->getIterableKeyType()->getReferencedClasses() as $referencedClass) {
@@ -178,7 +171,7 @@ class NodeDependencyResolver
             foreach ($exprType->getIterableValueType()->getReferencedClasses() as $referencedClass) {
                 $this->addClassToDependencies($referencedClass, $dependenciesReflections);
             }
-        } elseif ($node instanceof Array_) {
+        } elseif ($node instanceof \PhpParser\Node\Expr\Array_) {
             $arrayType = $scope->getType($node);
             if (!$arrayType->isCallable()->no()) {
                 foreach ($arrayType->getCallableParametersAcceptors($scope) as $variant) {
@@ -190,7 +183,7 @@ class NodeDependencyResolver
             }
         }
         // TODO: Additional logic...
-        elseif ($node instanceof PropertyProperty) {
+        elseif ($node instanceof \PhpParser\Node\Stmt\PropertyProperty) {
             if (!$scope->isInClass()) {
                 throw new \PHPStan\ShouldNotHappenException();
             }
