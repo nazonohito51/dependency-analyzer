@@ -47,16 +47,15 @@ abstract class AnalyzeDependencyCommand extends Command
             return $realpath;
         }, $input->getArgument('paths'));
 
-        $dependencyGraph = $this->createDependencyDumper($paths)->dump($paths);
+        $dependencyGraph = $this->createDependencyDumper()->dump($paths);
 
         return $this->inspectDependencyGraph($dependencyGraph);
     }
 
     /**
-     * @param string[] $paths
      * @return DependencyDumper
      */
-    protected function createDependencyDumper(array $paths): DependencyDumper
+    protected function createDependencyDumper(): DependencyDumper
     {
         $currentWorkingDirectory = getcwd();
         if ($currentWorkingDirectory === false) {
@@ -68,12 +67,7 @@ abstract class AnalyzeDependencyCommand extends Command
             throw new ShouldNotHappenException('creating a temp directory is failed: ' . $tmpDir);
         }
 
-        return DependencyDumper::createFromConfig(
-            $currentWorkingDirectory,
-            $tmpDir,
-            self::DEFAULT_CONFIG_FILES,
-            $paths
-        );
+        return DependencyDumper::createFromConfig($currentWorkingDirectory, $tmpDir, self::DEFAULT_CONFIG_FILES);
     }
 
     /**

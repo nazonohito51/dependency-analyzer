@@ -27,14 +27,9 @@ class DependencyDumper
         $this->fileFinder = $fileFinder;
     }
 
-    public static function createFromConfig(string $currentDir, string $tmpDir, array $additionalConfigFiles, array $paths): self
+    public static function createFromConfig(string $currentDir, string $tmpDir, array $additionalConfigFiles): self
     {
-        $fileHelper = new FileHelper($currentDir);
-        $paths = array_map(function (string $path) use ($fileHelper): string {
-            return $fileHelper->absolutizePath($path);
-        }, $paths);
-
-        $phpStanContainer = (new ContainerFactory($currentDir))->create($tmpDir, $additionalConfigFiles, $paths);
+        $phpStanContainer = (new ContainerFactory($currentDir))->create($tmpDir, $additionalConfigFiles, []);
 
         return new self(
             $phpStanContainer->getByType(FileDependencyResolver::class),
