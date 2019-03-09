@@ -12,7 +12,9 @@ use PHPStan\Reflection\Php\PhpFunctionReflection;
 
 class DependencyResolveVisitor
 {
-    /** @var NodeDependencyResolver */
+    /**
+     * @var NodeDependencyResolver
+     */
     protected $nodeDependencyResolver;
 
     protected $dependencies = [];

@@ -87,7 +87,7 @@ class DependencyDumper
             $this->nodeScopeResolver->processNodes(
                 $this->parser->parseFile($file),
                 $this->scopeFactory->create(ScopeContext::create($file)),
-                \Closure::fromCallable($this->dependencyResolverVisitor)
+                \Closure::fromCallable($this->dependencyResolverVisitor)  // type hint of processNodes is \Closure...
             );
         } catch (AnalysedCodeException $e) {
             throw new UnexpectedException('parsing file is failed: ' . $file);
