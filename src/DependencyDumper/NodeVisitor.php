@@ -12,13 +12,13 @@ use PHPStan\Reflection\Php\PhpFunctionReflection;
 class NodeVisitor
 {
     /**
-     * @var NodeDependencyResolver
+     * @var DependencyResolver
      */
     protected $nodeDependencyResolver;
 
     protected $dependencies = [];
 
-    public function __construct(NodeDependencyResolver $nodeDependencyResolver)
+    public function __construct(DependencyResolver $nodeDependencyResolver)
     {
         $this->nodeDependencyResolver = $nodeDependencyResolver;
     }

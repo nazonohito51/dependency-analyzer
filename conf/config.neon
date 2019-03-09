@@ -2,4 +2,4 @@ services:
 	-
 		class: DependencyAnalyzer\DependencyDumper\NodeVisitor
 	-
-		class: DependencyAnalyzer\DependencyDumper\NodeDependencyResolver
+		class: DependencyAnalyzer\DependencyDumper\DependencyResolver

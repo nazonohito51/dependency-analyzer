@@ -13,7 +13,7 @@ use PHPStan\Reflection\ReflectionWithFilename;
 use PHPStan\Type\ClosureType;
 use PHPStan\Type\TypeWithClassName;
 
-class NodeDependencyResolver
+class DependencyResolver
 {
     /**
      * @var Broker
