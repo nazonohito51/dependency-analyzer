@@ -42,12 +42,11 @@ class FileDependencyResolver
     public function dump(string $file): array
     {
         $dependencies = [];
-        $parserNodes = $this->parser->parseFile($file);
 
         try {
             $fileDependencies = [];
             $this->nodeScopeResolver->processNodes(
-                $parserNodes,
+                $this->parser->parseFile($file),
                 $this->scopeFactory->create(ScopeContext::create($file)),
                 function (\PhpParser\Node $node, Scope $scope) use (&$fileDependencies): void {
                     foreach ($this->resolveDependencies($node, $scope) as $depender => $dependees) {
