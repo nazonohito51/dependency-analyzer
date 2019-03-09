@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace DependencyAnalyzer\DependencyDumper\FileDependencyResolver;
+namespace DependencyAnalyzer\DependencyDumper;
 
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
@@ -22,7 +22,9 @@ use PHPStan\Type\TypeWithClassName;
 
 class NodeDependencyResolver
 {
-    /** @var Broker */
+    /**
+     * @var Broker
+     */
     protected $broker;
 
     public function __construct(Broker $broker)

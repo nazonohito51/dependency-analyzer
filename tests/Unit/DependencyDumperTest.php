@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyDumper;
-use DependencyAnalyzer\DependencyDumper\FileDependencyResolver\DependencyResolveVisitor;
+use DependencyAnalyzer\DependencyDumper\DependencyResolveVisitor;
 use DependencyAnalyzer\DependencyGraph;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\ScopeFactory;

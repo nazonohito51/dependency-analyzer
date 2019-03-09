@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DependencyDumper\FileDependencyResolver;
+namespace DependencyAnalyzer\DependencyDumper;
 
+use DependencyAnalyzer\DependencyDumper\NodeDependencyResolver;
 use PhpParser\Node;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;

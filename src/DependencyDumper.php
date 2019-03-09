@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DependencyDumper\FileDependencyResolver\DependencyResolveVisitor;
-use DependencyAnalyzer\DependencyDumper\FileDependencyResolver\NodeDependencyResolver;
+use DependencyAnalyzer\DependencyDumper\DependencyResolveVisitor;
+use DependencyAnalyzer\DependencyDumper\NodeDependencyResolver;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\ScopeContext;
