@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
-use DependencyAnalyzer\DependencyDumper\NodeDependencyResolver;
 use PhpParser\Node;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
 
-class DependencyResolveVisitor
+class NodeVisitor
 {
     /**
      * @var NodeDependencyResolver

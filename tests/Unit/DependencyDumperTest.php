@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyDumper;
-use DependencyAnalyzer\DependencyDumper\DependencyResolveVisitor;
+use DependencyAnalyzer\DependencyDumper\NodeVisitor;
 use DependencyAnalyzer\DependencyGraph;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\ScopeFactory;
@@ -101,11 +101,11 @@ class DependencyDumperTest extends TestCase
 
     /**
      * @param array $dependencies
-     * @return DependencyResolveVisitor|\PHPUnit\Framework\MockObject\MockObject
+     * @return NodeVisitor|\PHPUnit\Framework\MockObject\MockObject
      */
     protected function createDependencyResolveVisitor(array $dependencies)
     {
-        $dependencyResolveVisitor = $this->createMock(DependencyResolveVisitor::class);
+        $dependencyResolveVisitor = $this->createMock(NodeVisitor::class);
         $dependencyResolveVisitor->method('getDependencies')->willReturn($dependencies);
 
         return $dependencyResolveVisitor;

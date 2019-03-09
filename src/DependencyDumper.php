@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DependencyDumper\DependencyResolveVisitor;
-use DependencyAnalyzer\DependencyDumper\NodeDependencyResolver;
+use DependencyAnalyzer\DependencyDumper\NodeVisitor;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\ScopeContext;
@@ -17,9 +16,9 @@ use PHPStan\File\FileFinder;
 class DependencyDumper
 {
     /**
-     * @var NodeDependencyResolver
+     * @var NodeVisitor
      */
-    protected $dependencyResolverVisitor;
+    protected $nodeVisitor;
 
     /**
      * @var NodeScopeResolver
@@ -46,14 +45,14 @@ class DependencyDumper
         Parser $parser,
         ScopeFactory $scopeFactory,
         FileFinder $fileFinder,
-        DependencyResolveVisitor $dependencyResolverVisitor
+        NodeVisitor $nodeVisitor
     )
     {
         $this->nodeScopeResolver = $nodeScopeResolver;
         $this->parser = $parser;
         $this->scopeFactory = $scopeFactory;
         $this->fileFinder = $fileFinder;
-        $this->dependencyResolverVisitor = $dependencyResolverVisitor;
+        $this->nodeVisitor = $nodeVisitor;
     }
 
     public static function createFromConfig(string $currentDir, string $tmpDir, array $additionalConfigFiles): self
@@ -65,7 +64,7 @@ class DependencyDumper
             $phpStanContainer->getByType(Parser::class),
             $phpStanContainer->getByType(ScopeFactory::class),
             $phpStanContainer->getByType(FileFinder::class),
-            $phpStanContainer->getByType(DependencyResolveVisitor::class)
+            $phpStanContainer->getByType(NodeVisitor::class)
         );
     }
 
@@ -87,13 +86,13 @@ class DependencyDumper
             $this->nodeScopeResolver->processNodes(
                 $this->parser->parseFile($file),
                 $this->scopeFactory->create(ScopeContext::create($file)),
-                \Closure::fromCallable($this->dependencyResolverVisitor)  // type hint of processNodes is \Closure...
+                \Closure::fromCallable($this->nodeVisitor)  // type hint of processNodes is \Closure...
             );
         } catch (AnalysedCodeException $e) {
             throw new UnexpectedException('parsing file is failed: ' . $file);
         }
 
-        return $this->dependencyResolverVisitor->getDependencies();
+        return $this->nodeVisitor->getDependencies();
     }
 
     protected function getAllFilesRecursive(array $paths): array
