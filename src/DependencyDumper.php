@@ -3,27 +3,57 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DependencyDumper\FileDependencyResolver;
+use DependencyAnalyzer\DependencyDumper\FileDependencyResolver\DependencyResolveVisitor;
+use DependencyAnalyzer\DependencyDumper\FileDependencyResolver\NodeDependencyResolver;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
+use PHPStan\AnalysedCodeException;
+use PHPStan\Analyser\ScopeContext;
+use PHPStan\Parser\Parser;
+use PHPStan\Analyser\NodeScopeResolver;
+use PHPStan\Analyser\ScopeFactory;
 use PHPStan\DependencyInjection\ContainerFactory;
 use PHPStan\File\FileFinder;
 
 class DependencyDumper
 {
     /**
-     * @var FileDependencyResolver
+     * @var NodeDependencyResolver
      */
-    protected $fileDependencyResolver;
+    protected $dependencyResolverVisitor;
+
+    /**
+     * @var NodeScopeResolver
+     */
+    protected $nodeScopeResolver;
+
+    /**
+     * @var Parser
+     */
+    protected $parser;
+
+    /**
+     * @var ScopeFactory
+     */
+    protected $scopeFactory;
 
     /**
      * @var FileFinder
      */
     protected $fileFinder;
 
-    public function __construct(FileDependencyResolver $fileDependencyResolver, FileFinder $fileFinder)
+    public function __construct(
+        NodeScopeResolver $nodeScopeResolver,
+        Parser $parser,
+        ScopeFactory $scopeFactory,
+        FileFinder $fileFinder,
+        DependencyResolveVisitor $dependencyResolverVisitor
+    )
     {
-        $this->fileDependencyResolver = $fileDependencyResolver;
+        $this->nodeScopeResolver = $nodeScopeResolver;
+        $this->parser = $parser;
+        $this->scopeFactory = $scopeFactory;
         $this->fileFinder = $fileFinder;
+        $this->dependencyResolverVisitor = $dependencyResolverVisitor;
     }
 
     public static function createFromConfig(string $currentDir, string $tmpDir, array $additionalConfigFiles): self
@@ -31,16 +61,19 @@ class DependencyDumper
         $phpStanContainer = (new ContainerFactory($currentDir))->create($tmpDir, $additionalConfigFiles, []);
 
         return new self(
-            $phpStanContainer->getByType(FileDependencyResolver::class),
-            $phpStanContainer->getByType(FileFinder::class)
+            $phpStanContainer->getByType(NodeScopeResolver::class),
+            $phpStanContainer->getByType(Parser::class),
+            $phpStanContainer->getByType(ScopeFactory::class),
+            $phpStanContainer->getByType(FileFinder::class),
+            $phpStanContainer->getByType(DependencyResolveVisitor::class)
         );
     }
 
     public function dump(array $paths): DependencyGraph
     {
         $dependencies = [];
-        foreach ($this->getFilesRecursive($paths) as $file) {
-            $fileDependencies = $this->fileDependencyResolver->dump($file);
+        foreach ($this->getAllFilesRecursive($paths) as $file) {
+            $fileDependencies = $this->dumpFile($file);
 
             $dependencies = array_merge($dependencies, $fileDependencies);
         }
@@ -48,7 +81,22 @@ class DependencyDumper
         return DependencyGraph::createFromArray($dependencies);
     }
 
-    protected function getFilesRecursive(array $paths): array
+    protected function dumpFile(string $file): array
+    {
+        try {
+            $this->nodeScopeResolver->processNodes(
+                $this->parser->parseFile($file),
+                $this->scopeFactory->create(ScopeContext::create($file)),
+                \Closure::fromCallable($this->dependencyResolverVisitor)
+            );
+        } catch (AnalysedCodeException $e) {
+            throw new UnexpectedException('parsing file is failed: ' . $file);
+        }
+
+        return $this->dependencyResolverVisitor->getDependencies();
+    }
+
+    protected function getAllFilesRecursive(array $paths): array
     {
         try {
             $fileFinderResult = $this->fileFinder->findFiles($paths);
