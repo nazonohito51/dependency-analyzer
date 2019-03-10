@@ -29,6 +29,7 @@ abstract class AnalyzeDependencyCommand extends Command
             ->setDefinition([
                 new InputArgument('paths', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Target directory of analyze'),
                 new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for the run (ex: 500k, 500M, 5G)'),
+                new InputOption('exclude', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Exclude directory of analyze'),
             ]);
     }
 

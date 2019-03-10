@@ -68,13 +68,17 @@ class DependencyDumper
         );
     }
 
-    public function dump(array $paths): DependencyGraph
+    public function dump(array $paths, array $excludePaths = []): DependencyGraph
     {
+        $excludeFiles = $this->getAllFilesRecursive($excludePaths);
+
         $dependencies = [];
         foreach ($this->getAllFilesRecursive($paths) as $file) {
-            $fileDependencies = $this->dumpFile($file);
+            if (!in_array($file, $excludeFiles)) {
+                $fileDependencies = $this->dumpFile($file);
 
-            $dependencies = array_merge($dependencies, $fileDependencies);
+                $dependencies = array_merge($dependencies, $fileDependencies);
+            }
         }
 
         return DependencyGraph::createFromArray($dependencies);
