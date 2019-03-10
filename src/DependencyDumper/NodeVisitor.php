@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
-use PhpParser\Node;
+use DependencyAnalyzer\Exceptions\ResolveDependencyException;
+use DependencyAnalyzer\Exceptions\ShouldNotHappenException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
@@ -14,19 +15,19 @@ class NodeVisitor
     /**
      * @var DependencyResolver
      */
-    protected $nodeDependencyResolver;
+    protected $dependencyResolver;
 
     protected $dependencies = [];
 
-    public function __construct(DependencyResolver $nodeDependencyResolver)
+    public function __construct(DependencyResolver $dependencyResolver)
     {
-        $this->nodeDependencyResolver = $nodeDependencyResolver;
+        $this->dependencyResolver = $dependencyResolver;
     }
 
-    public function __invoke(Node $node, Scope $scope): void
+    public function __invoke(\PhpParser\Node $node, Scope $scope): void
     {
         try {
-            foreach ($this->nodeDependencyResolver->resolveDependencies($node, $scope) as $dependencyReflection) {
+            foreach ($this->dependencyResolver->resolveDependencies($node, $scope) as $dependencyReflection) {
                 if ($dependencyReflection instanceof ClassReflection) {
                     if ($scope->isInClass()) {
                         if ($scope->getClassReflection()->getDisplayName() === $dependencyReflection->getDisplayName()) {
@@ -37,24 +38,30 @@ class NodeVisitor
                         }
                     } else {
                         // Maybe, class declare statement
-                        if ($node instanceof \PhpParser\Node\Stmt\Class_) {
-                            $this->addToDependencies($node->namespacedName->toString(), $dependencyReflection->getDisplayName());
-                        } elseif ($node instanceof \PhpParser\Node\Stmt\Interface_) {
+                        // ex:
+                        //   class Hoge {}
+                        //   abstract class Hoge {}
+                        //   interface Hoge {}
+                        if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
                             $this->addToDependencies($node->namespacedName->toString(), $dependencyReflection->getDisplayName());
                         }
                     }
                 } elseif ($dependencyReflection instanceof PhpFunctionReflection) {
                     // function call
+                    // ex:
+                    //   array_map(...);
+                    //   var_dump(...);
                 } else {
                     // error of DependencyResolver
+                    throw new ShouldNotHappenException('resolving node dependency is failed.');
                 }
             }
         } catch (AnalysedCodeException $e) {
-            // TODO: If there is file that can not is loaded.
+            throw new ResolveDependencyException($node);
         }
     }
 
-    protected function addToDependencies(string $depender, string $dependee)
+    protected function addToDependencies(string $depender, string $dependee): void
     {
         if (!isset($this->dependencies[$depender])) {
             $this->dependencies[$depender] = [];
