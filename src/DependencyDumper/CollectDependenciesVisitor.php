@@ -56,8 +56,8 @@ class CollectDependenciesVisitor
                     throw new ShouldNotHappenException('resolving node dependency is failed.');
                 }
             }
-        } catch (AnalysedCodeException $e) {
-            throw new ResolveDependencyException($node);
+        } catch (ResolveDependencyException $e) {
+            throw new ShouldNotHappenException('collecting dependencies is failed.', 0, $e);
         }
     }
 

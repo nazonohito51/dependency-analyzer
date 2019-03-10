@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
+use DependencyAnalyzer\Exceptions\ResolveDependencyException;
+use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -29,172 +31,173 @@ class DependencyResolver
      * @param \PhpParser\Node $node
      * @param Scope $scope
      * @return ReflectionWithFilename[]
-     * @throws \PHPStan\Broker\FunctionNotFoundException
-     * @throws \PHPStan\Reflection\MissingMethodFromReflectionException
-     * @throws \PHPStan\Reflection\MissingPropertyFromReflectionException
+     * @throws \PHPStan\AnalysedCodeException
      */
     public function resolveDependencies(\PhpParser\Node $node, Scope $scope): array
     {
         $dependenciesReflections = [];
 
-        if ($node instanceof \PhpParser\Node\Stmt\Class_) {
-            if ($node->extends !== null) {
-                $this->addClassToDependencies($node->extends->toString(), $dependenciesReflections);
-            }
-            foreach ($node->implements as $className) {
-                $this->addClassToDependencies($className->toString(), $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Stmt\Interface_) {
-            if ($node->extends !== null) {
-                foreach ($node->extends as $className) {
+        try {
+            if ($node instanceof \PhpParser\Node\Stmt\Class_) {
+                if ($node->extends !== null) {
+                    $this->addClassToDependencies($node->extends->toString(), $dependenciesReflections);
+                }
+                foreach ($node->implements as $className) {
                     $this->addClassToDependencies($className->toString(), $dependenciesReflections);
                 }
-            }
-        } elseif ($node instanceof \PhpParser\Node\Stmt\ClassMethod) {
-            if (!$scope->isInClass()) {
-                throw new \PHPStan\ShouldNotHappenException();
-            }
-            $nativeMethod = $scope->getClassReflection()->getNativeMethod($node->name->name);
-            if ($nativeMethod instanceof PhpMethodReflection) {
-                /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
-                $parametersAcceptor = ParametersAcceptorSelector::selectSingle($nativeMethod->getVariants());
-
-                $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Stmt\Function_) {
-            $functionName = $node->name->name;
-            if (isset($node->namespacedName)) {
-                $functionName = (string)$node->namespacedName;
-            }
-            $functionNameName = new \PhpParser\Node\Name($functionName);
-            if ($this->broker->hasCustomFunction($functionNameName, null)) {
-                $functionReflection = $this->broker->getCustomFunction($functionNameName, null);
-
-                /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
-                $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
-                $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Expr\Closure) {
-            /** @var ClosureType $closureType */
-            $closureType = $scope->getType($node);
-            foreach ($closureType->getParameters() as $parameter) {
-                $referencedClasses = $parameter->getType()->getReferencedClasses();
-                foreach ($referencedClasses as $referencedClass) {
-                    $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+            } elseif ($node instanceof \PhpParser\Node\Stmt\Interface_) {
+                if ($node->extends !== null) {
+                    foreach ($node->extends as $className) {
+                        $this->addClassToDependencies($className->toString(), $dependenciesReflections);
+                    }
                 }
-            }
-
-            $returnTypeReferencedClasses = $closureType->getReturnType()->getReferencedClasses();
-            foreach ($returnTypeReferencedClasses as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Expr\FuncCall) {
-            $functionName = $node->name;
-            if ($functionName instanceof \PhpParser\Node\Name) {
-                try {
-                    $dependenciesReflections[] = $this->getFunctionReflection($functionName, $scope);
-                } catch (\PHPStan\Broker\FunctionNotFoundException $e) {
-                    // pass
+            } elseif ($node instanceof \PhpParser\Node\Stmt\ClassMethod) {
+                if (!$scope->isInClass()) {
+                    throw new \PHPStan\ShouldNotHappenException();
                 }
-            } else {
-                $variants = $scope->getType($functionName)->getCallableParametersAcceptors($scope);
-                foreach ($variants as $variant) {
-                    $referencedClasses = $variant->getReturnType()->getReferencedClasses();
+                $nativeMethod = $scope->getClassReflection()->getNativeMethod($node->name->name);
+                if ($nativeMethod instanceof PhpMethodReflection) {
+                    /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
+                    $parametersAcceptor = ParametersAcceptorSelector::selectSingle($nativeMethod->getVariants());
+
+                    $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
+                }
+            } elseif ($node instanceof \PhpParser\Node\Stmt\Function_) {
+                $functionName = $node->name->name;
+                if (isset($node->namespacedName)) {
+                    $functionName = (string)$node->namespacedName;
+                }
+                $functionNameName = new \PhpParser\Node\Name($functionName);
+                if ($this->broker->hasCustomFunction($functionNameName, null)) {
+                    $functionReflection = $this->broker->getCustomFunction($functionNameName, null);
+
+                    /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
+                    $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
+                    $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
+                }
+            } elseif ($node instanceof \PhpParser\Node\Expr\Closure) {
+                /** @var ClosureType $closureType */
+                $closureType = $scope->getType($node);
+                foreach ($closureType->getParameters() as $parameter) {
+                    $referencedClasses = $parameter->getType()->getReferencedClasses();
                     foreach ($referencedClasses as $referencedClass) {
                         $this->addClassToDependencies($referencedClass, $dependenciesReflections);
                     }
                 }
-            }
 
-            $returnType = $scope->getType($node);
-            foreach ($returnType->getReferencedClasses() as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Expr\MethodCall || $node instanceof \PhpParser\Node\Expr\PropertyFetch) {
-            $classNames = $scope->getType($node->var)->getReferencedClasses();
-            foreach ($classNames as $className) {
-                $this->addClassToDependencies($className, $dependenciesReflections);
-            }
-
-            $returnType = $scope->getType($node);
-            foreach ($returnType->getReferencedClasses() as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
-            }
-        } elseif (
-            $node instanceof \PhpParser\Node\Expr\StaticCall
-            || $node instanceof \PhpParser\Node\Expr\ClassConstFetch
-            || $node instanceof \PhpParser\Node\Expr\StaticPropertyFetch
-        ) {
-            if ($node->class instanceof \PhpParser\Node\Name) {
-                $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
-            } else {
-                foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
+                $returnTypeReferencedClasses = $closureType->getReturnType()->getReferencedClasses();
+                foreach ($returnTypeReferencedClasses as $referencedClass) {
                     $this->addClassToDependencies($referencedClass, $dependenciesReflections);
                 }
-            }
+            } elseif ($node instanceof \PhpParser\Node\Expr\FuncCall) {
+                $functionName = $node->name;
+                if ($functionName instanceof \PhpParser\Node\Name) {
+                    try {
+                        $dependenciesReflections[] = $this->getFunctionReflection($functionName, $scope);
+                    } catch (\PHPStan\Broker\FunctionNotFoundException $e) {
+                        // pass
+                    }
+                } else {
+                    $variants = $scope->getType($functionName)->getCallableParametersAcceptors($scope);
+                    foreach ($variants as $variant) {
+                        $referencedClasses = $variant->getReturnType()->getReferencedClasses();
+                        foreach ($referencedClasses as $referencedClass) {
+                            $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                        }
+                    }
+                }
 
-            $returnType = $scope->getType($node);
-            foreach ($returnType->getReferencedClasses() as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
-            }
-        } elseif (
-            $node instanceof \PhpParser\Node\Expr\New_
-            && $node->class instanceof \PhpParser\Node\Name
-        ) {
-            $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
-        } elseif ($node instanceof \PhpParser\Node\Stmt\TraitUse) {
-            foreach ($node->traits as $traitName) {
-                $this->addClassToDependencies($traitName->toString(), $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Expr\Instanceof_) {
-            if ($node->class instanceof \PhpParser\Node\Name) {
-                $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Stmt\Catch_) {
-            foreach ($node->types as $type) {
-                $this->addClassToDependencies($scope->resolveName($type), $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Expr\ArrayDimFetch && $node->dim !== null) {
-            $varType = $scope->getType($node->var);
-            $dimType = $scope->getType($node->dim);
-
-            foreach ($varType->getOffsetValueType($dimType)->getReferencedClasses() as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Stmt\Foreach_) {
-            $exprType = $scope->getType($node->expr);
-            if ($node->keyVar !== null) {
-                foreach ($exprType->getIterableKeyType()->getReferencedClasses() as $referencedClass) {
+                $returnType = $scope->getType($node);
+                foreach ($returnType->getReferencedClasses() as $referencedClass) {
                     $this->addClassToDependencies($referencedClass, $dependenciesReflections);
                 }
-            }
+            } elseif ($node instanceof \PhpParser\Node\Expr\MethodCall || $node instanceof \PhpParser\Node\Expr\PropertyFetch) {
+                $classNames = $scope->getType($node->var)->getReferencedClasses();
+                foreach ($classNames as $className) {
+                    $this->addClassToDependencies($className, $dependenciesReflections);
+                }
 
-            foreach ($exprType->getIterableValueType()->getReferencedClasses() as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
-            }
-        } elseif ($node instanceof \PhpParser\Node\Expr\Array_) {
-            $arrayType = $scope->getType($node);
-            if (!$arrayType->isCallable()->no()) {
-                foreach ($arrayType->getCallableParametersAcceptors($scope) as $variant) {
-                    $referencedClasses = $variant->getReturnType()->getReferencedClasses();
-                    foreach ($referencedClasses as $referencedClass) {
+                $returnType = $scope->getType($node);
+                foreach ($returnType->getReferencedClasses() as $referencedClass) {
+                    $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                }
+            } elseif (
+                $node instanceof \PhpParser\Node\Expr\StaticCall
+                || $node instanceof \PhpParser\Node\Expr\ClassConstFetch
+                || $node instanceof \PhpParser\Node\Expr\StaticPropertyFetch
+            ) {
+                if ($node->class instanceof \PhpParser\Node\Name) {
+                    $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
+                } else {
+                    foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
                         $this->addClassToDependencies($referencedClass, $dependenciesReflections);
                     }
                 }
-            }
-        }
-        // TODO: Additional logic...
-        elseif ($node instanceof \PhpParser\Node\Stmt\PropertyProperty) {
-            if (!$scope->isInClass()) {
-                throw new \PHPStan\ShouldNotHappenException();
-            }
-            $nativeProperty = $scope->getClassReflection()->getNativeProperty($node->name->name);
-            if ($nativeProperty instanceof PhpPropertyReflection) {
-                $type = $nativeProperty->getType();
-                if ($type instanceof TypeWithClassName) {
-                    $this->addClassToDependencies($type->getClassName(), $dependenciesReflections);
+
+                $returnType = $scope->getType($node);
+                foreach ($returnType->getReferencedClasses() as $referencedClass) {
+                    $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                }
+            } elseif (
+                $node instanceof \PhpParser\Node\Expr\New_
+                && $node->class instanceof \PhpParser\Node\Name
+            ) {
+                $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
+            } elseif ($node instanceof \PhpParser\Node\Stmt\TraitUse) {
+                foreach ($node->traits as $traitName) {
+                    $this->addClassToDependencies($traitName->toString(), $dependenciesReflections);
+                }
+            } elseif ($node instanceof \PhpParser\Node\Expr\Instanceof_) {
+                if ($node->class instanceof \PhpParser\Node\Name) {
+                    $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
+                }
+            } elseif ($node instanceof \PhpParser\Node\Stmt\Catch_) {
+                foreach ($node->types as $type) {
+                    $this->addClassToDependencies($scope->resolveName($type), $dependenciesReflections);
+                }
+            } elseif ($node instanceof \PhpParser\Node\Expr\ArrayDimFetch && $node->dim !== null) {
+                $varType = $scope->getType($node->var);
+                $dimType = $scope->getType($node->dim);
+
+                foreach ($varType->getOffsetValueType($dimType)->getReferencedClasses() as $referencedClass) {
+                    $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                }
+            } elseif ($node instanceof \PhpParser\Node\Stmt\Foreach_) {
+                $exprType = $scope->getType($node->expr);
+                if ($node->keyVar !== null) {
+                    foreach ($exprType->getIterableKeyType()->getReferencedClasses() as $referencedClass) {
+                        $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                    }
+                }
+
+                foreach ($exprType->getIterableValueType()->getReferencedClasses() as $referencedClass) {
+                    $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                }
+            } elseif ($node instanceof \PhpParser\Node\Expr\Array_) {
+                $arrayType = $scope->getType($node);
+                if (!$arrayType->isCallable()->no()) {
+                    foreach ($arrayType->getCallableParametersAcceptors($scope) as $variant) {
+                        $referencedClasses = $variant->getReturnType()->getReferencedClasses();
+                        foreach ($referencedClasses as $referencedClass) {
+                            $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                        }
+                    }
+                }
+            } // TODO: Additional logic...
+            elseif ($node instanceof \PhpParser\Node\Stmt\PropertyProperty) {
+                if (!$scope->isInClass()) {
+                    throw new \PHPStan\ShouldNotHappenException();
+                }
+                $nativeProperty = $scope->getClassReflection()->getNativeProperty($node->name->name);
+                if ($nativeProperty instanceof PhpPropertyReflection) {
+                    $type = $nativeProperty->getType();
+                    if ($type instanceof TypeWithClassName) {
+                        $this->addClassToDependencies($type->getClassName(), $dependenciesReflections);
+                    }
                 }
             }
+        } catch (AnalysedCodeException $e) {
+            throw new ResolveDependencyException($node, 'resolving node dependency is failed.', 0, $e);
         }
 
         return $dependenciesReflections;

@@ -5,8 +5,8 @@ namespace Tests\Unit\DependencyAnalyzer\DependencyDumper;
 
 use DependencyAnalyzer\DependencyDumper\DependencyResolver;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
+use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PhpParser\Node;
-use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
@@ -78,15 +78,14 @@ class CollectDependenciesVisitorTest extends TestCase
     }
 
     /**
-     * @expectedException \DependencyAnalyzer\Exceptions\ResolveDependencyException
+     * @expectedException \DependencyAnalyzer\Exceptions\UnexpectedException
      */
     public function testInvoke_WhenSameClassReflection()
     {
         $node = $this->createSomeNode();
         $scope = $this->createScope();
-        $exception = $this->createMock(AnalysedCodeException::class);
         $dependencyResolver = $this->createMock(DependencyResolver::class);
-        $dependencyResolver->method('resolveDependencies')->willThrowException($exception);
+        $dependencyResolver->method('resolveDependencies')->willThrowException(new UnexpectedException());
         $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver);
 
         $nodeVisitor($node, $scope);
