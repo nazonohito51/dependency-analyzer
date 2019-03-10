@@ -12,12 +12,14 @@ class DependencyDumperTest extends TestCase
 {
     public function setUp()
     {
+        parent::setUp();
         require_once $this->getFixturePath('/individual_theme/Foundations/some_functions.php');
         spl_autoload_register([$this, 'autoload']);
     }
 
     public function tearDown()
     {
+        parent::tearDown();
         spl_autoload_unregister([$this, 'autoload']);
     }
 

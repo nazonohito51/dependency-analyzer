@@ -5,6 +5,33 @@ namespace Tests;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+        $this->cleanDirectory($this->getTmpDir(), [$this->getTmpDir() . '.gitkeep']);
+    }
+
+    protected function cleanDirectory($directory, array $excludeFiles = [])
+    {
+        foreach(new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        ) as $file) {
+            if (!in_array($file->getPathname(), $excludeFiles)) {
+                if ($file->isDir()) {
+                    @rmdir($file->getPathname());
+                } else {
+                    @unlink($file->getPathname());
+                }
+            }
+        }
+    }
+
     /**
      * @return string
      */
