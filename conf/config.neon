@@ -1,5 +1,5 @@
 services:
 	-
-		class: DependencyAnalyzer\DependencyDumper\NodeVisitor
+		class: DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor
 	-
 		class: DependencyAnalyzer\DependencyDumper\DependencyResolver

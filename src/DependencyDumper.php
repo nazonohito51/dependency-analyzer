@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DependencyDumper\NodeVisitor;
+use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\ScopeContext;
@@ -16,7 +16,7 @@ use PHPStan\File\FileFinder;
 class DependencyDumper
 {
     /**
-     * @var NodeVisitor
+     * @var CollectDependenciesVisitor
      */
     protected $nodeVisitor;
 
@@ -45,7 +45,7 @@ class DependencyDumper
         Parser $parser,
         ScopeFactory $scopeFactory,
         FileFinder $fileFinder,
-        NodeVisitor $nodeVisitor
+        CollectDependenciesVisitor $nodeVisitor
     )
     {
         $this->nodeScopeResolver = $nodeScopeResolver;
@@ -64,7 +64,7 @@ class DependencyDumper
             $phpStanContainer->getByType(Parser::class),
             $phpStanContainer->getByType(ScopeFactory::class),
             $phpStanContainer->getByType(FileFinder::class),
-            $phpStanContainer->getByType(NodeVisitor::class)
+            $phpStanContainer->getByType(CollectDependenciesVisitor::class)
         );
     }
 

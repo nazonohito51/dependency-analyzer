@@ -10,7 +10,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
 
-class NodeVisitor
+class CollectDependenciesVisitor
 {
     /**
      * @var DependencyResolver

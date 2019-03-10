@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer\DependencyDumper;
 
 use DependencyAnalyzer\DependencyDumper\DependencyResolver;
-use DependencyAnalyzer\DependencyDumper\NodeVisitor;
+use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use PhpParser\Node;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
@@ -13,7 +13,7 @@ use PHPStan\Reflection\Php\PhpFunctionReflection;
 use PHPStan\Reflection\ReflectionWithFilename;
 use Tests\TestCase;
 
-class NodeVisitorTest extends TestCase
+class CollectDependenciesVisitorTest extends TestCase
 {
     public function provideInvoke()
     {
@@ -70,7 +70,7 @@ class NodeVisitorTest extends TestCase
     {
         $dependencyResolver = $this->createMock(DependencyResolver::class);
         $dependencyResolver->method('resolveDependencies')->with($node, $scope)->willReturn([$resolvedDependency]);
-        $nodeVisitor = new NodeVisitor($dependencyResolver);
+        $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver);
 
         $nodeVisitor($node, $scope);
 
@@ -87,7 +87,7 @@ class NodeVisitorTest extends TestCase
         $exception = $this->createMock(AnalysedCodeException::class);
         $dependencyResolver = $this->createMock(DependencyResolver::class);
         $dependencyResolver->method('resolveDependencies')->willThrowException($exception);
-        $nodeVisitor = new NodeVisitor($dependencyResolver);
+        $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver);
 
         $nodeVisitor($node, $scope);
     }

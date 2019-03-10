@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyDumper;
-use DependencyAnalyzer\DependencyDumper\NodeVisitor;
+use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\DependencyGraph;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\ScopeFactory;
@@ -38,7 +38,7 @@ class DependencyDumperTest extends TestCase
         $nodeScopeResolver = $this->createNodeScopeResolver();
         $parser = $this->createParser();
         $scopeFactory = $this->createScopeFactory();
-        $dependencyResolveVisitor = $this->createDependencyResolveVisitor($expectedDependencies);
+        $dependencyResolveVisitor = $this->createCollectDependenciesVisitor($expectedDependencies);
         $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $dependencyResolveVisitor);
 
         $dependencyGraph = $dependencyDumper->dump([$analyzePath]);
@@ -101,13 +101,13 @@ class DependencyDumperTest extends TestCase
 
     /**
      * @param array $dependencies
-     * @return NodeVisitor|\PHPUnit\Framework\MockObject\MockObject
+     * @return CollectDependenciesVisitor|\PHPUnit\Framework\MockObject\MockObject
      */
-    protected function createDependencyResolveVisitor(array $dependencies)
+    protected function createCollectDependenciesVisitor(array $dependencies)
     {
-        $dependencyResolveVisitor = $this->createMock(NodeVisitor::class);
-        $dependencyResolveVisitor->method('getDependencies')->willReturn($dependencies);
+        $collectDependenciesVisitor = $this->createMock(CollectDependenciesVisitor::class);
+        $collectDependenciesVisitor->method('getDependencies')->willReturn($dependencies);
 
-        return $dependencyResolveVisitor;
+        return $collectDependenciesVisitor;
     }
 }
