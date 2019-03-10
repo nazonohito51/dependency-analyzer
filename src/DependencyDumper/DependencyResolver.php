@@ -83,19 +83,13 @@ class DependencyResolver
         return [];
     }
 
-    /**
-     * @param string $className
-     * @param ReflectionWithFilename[] $dependenciesReflections
-     */
-    protected function addClassToDependencies(string $className, array &$dependenciesReflections): void
+    protected function resolveClassReflection(string $className): ?ReflectionWithFilename
     {
         try {
-            $classReflection = $this->broker->getClass($className);
+            return $this->broker->getClass($className);
         } catch (\PHPStan\Broker\ClassNotFoundException $e) {
-            return;
+            return null;
         }
-
-        $dependenciesReflections[] = $classReflection;
     }
 
     protected function getFunctionReflection(\PhpParser\Node\Name $nameNode, ?Scope $scope): ReflectionWithFilename
@@ -110,13 +104,12 @@ class DependencyResolver
 
     /**
      * @param ParametersAcceptorWithPhpDocs $parametersAcceptor
-     * @param ReflectionWithFilename[] $dependenciesReflections
+     * @return ReflectionWithFilename[]
      */
-    protected function extractFromParametersAcceptor(
-        ParametersAcceptorWithPhpDocs $parametersAcceptor,
-        array &$dependenciesReflections
-    ): void
+    protected function extractFromParametersAcceptor(ParametersAcceptorWithPhpDocs $parametersAcceptor): array
     {
+        $dependenciesReflections = [];
+
         foreach ($parametersAcceptor->getParameters() as $parameter) {
             $referencedClasses = array_merge(
                 $parameter->getNativeType()->getReferencedClasses(),
@@ -124,7 +117,7 @@ class DependencyResolver
             );
 
             foreach ($referencedClasses as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
             }
         }
 
@@ -133,23 +126,25 @@ class DependencyResolver
             $parametersAcceptor->getPhpDocReturnType()->getReferencedClasses()
         );
         foreach ($returnTypeReferencedClasses as $referencedClass) {
-            $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
         }
+
+        return $dependenciesReflections;
     }
 
     /**
      * @param \PhpParser\Node\Stmt\Class_ $node
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveClassNode(\PhpParser\Node\Stmt\Class_ $node)
+    protected function resolveClassNode(\PhpParser\Node\Stmt\Class_ $node): array
     {
         $dependenciesReflections = [];
 
         if ($node->extends !== null) {
-            $this->addClassToDependencies($node->extends->toString(), $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($node->extends->toString());
         }
         foreach ($node->implements as $className) {
-            $this->addClassToDependencies($className->toString(), $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($className->toString());
         }
 
         return $dependenciesReflections;
@@ -157,15 +152,15 @@ class DependencyResolver
 
     /**
      * @param \PhpParser\Node\Stmt\Interface_ $node
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveInterfaceNode(\PhpParser\Node\Stmt\Interface_ $node)
+    protected function resolveInterfaceNode(\PhpParser\Node\Stmt\Interface_ $node): array
     {
         $dependenciesReflections = [];
 
         if ($node->extends !== null) {
             foreach ($node->extends as $className) {
-                $this->addClassToDependencies($className->toString(), $dependenciesReflections);
+                $dependenciesReflections[] = $this->resolveClassReflection($className->toString());
             }
         }
 
@@ -175,35 +170,32 @@ class DependencyResolver
     /**
      * @param \PhpParser\Node\Stmt\ClassMethod $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      * @throws \PHPStan\Reflection\MissingMethodFromReflectionException
      */
-    protected function resolveClassMethod(\PhpParser\Node\Stmt\ClassMethod $node, Scope $scope)
+    protected function resolveClassMethod(\PhpParser\Node\Stmt\ClassMethod $node, Scope $scope): array
     {
-        $dependenciesReflections = [];
-
         if (!$scope->isInClass()) {
             throw new \PHPStan\ShouldNotHappenException();
         }
+
         $nativeMethod = $scope->getClassReflection()->getNativeMethod($node->name->name);
         if ($nativeMethod instanceof PhpMethodReflection) {
             /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
             $parametersAcceptor = ParametersAcceptorSelector::selectSingle($nativeMethod->getVariants());
 
-            $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
+            return $this->extractFromParametersAcceptor($parametersAcceptor);
         }
-        return $dependenciesReflections;
+        return [];
     }
 
     /**
      * @param \PhpParser\Node\Stmt\Function_ $node
-     * @return mixed
+     * @return ReflectionWithFilename[]
      * @throws \PHPStan\Broker\FunctionNotFoundException
      */
-    protected function resolveFunction(\PhpParser\Node\Stmt\Function_ $node)
+    protected function resolveFunction(\PhpParser\Node\Stmt\Function_ $node): array
     {
-        $dependenciesReflections = [];
-
         $functionName = $node->name->name;
         if (isset($node->namespacedName)) {
             $functionName = (string)$node->namespacedName;
@@ -214,17 +206,18 @@ class DependencyResolver
 
             /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
             $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
-            $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
+            return $this->extractFromParametersAcceptor($parametersAcceptor);
         }
-        return $dependenciesReflections;
+
+        return [];
     }
 
     /**
      * @param \PhpParser\Node\Expr\Closure $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveClosure(\PhpParser\Node\Expr\Closure $node, Scope $scope)
+    protected function resolveClosure(\PhpParser\Node\Expr\Closure $node, Scope $scope): array
     {
         $dependenciesReflections = [];
 
@@ -233,13 +226,13 @@ class DependencyResolver
         foreach ($closureType->getParameters() as $parameter) {
             $referencedClasses = $parameter->getType()->getReferencedClasses();
             foreach ($referencedClasses as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
             }
         }
 
         $returnTypeReferencedClasses = $closureType->getReturnType()->getReferencedClasses();
         foreach ($returnTypeReferencedClasses as $referencedClass) {
-            $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
         }
         return $dependenciesReflections;
     }
@@ -247,7 +240,7 @@ class DependencyResolver
     /**
      * @param \PhpParser\Node\Expr\FuncCall $node
      * @param Scope $scope
-     * @return array
+     * @return ReflectionWithFilename[]
      */
     protected function resolveFuncCall(\PhpParser\Node\Expr\FuncCall $node, Scope $scope): array
     {
@@ -265,14 +258,14 @@ class DependencyResolver
             foreach ($variants as $variant) {
                 $referencedClasses = $variant->getReturnType()->getReferencedClasses();
                 foreach ($referencedClasses as $referencedClass) {
-                    $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                    $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
                 }
             }
         }
 
         $returnType = $scope->getType($node);
         foreach ($returnType->getReferencedClasses() as $referencedClass) {
-            $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
         }
         return $dependenciesReflections;
     }
@@ -280,19 +273,19 @@ class DependencyResolver
     /**
      * @param \PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\PropertyFetch $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveAccessClassElement($node, Scope $scope)
+    protected function resolveAccessClassElement($node, Scope $scope): array
     {
         $dependenciesReflections = [];
         $classNames = $scope->getType($node->var)->getReferencedClasses();
         foreach ($classNames as $className) {
-            $this->addClassToDependencies($className, $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($className);
         }
 
         $returnType = $scope->getType($node);
         foreach ($returnType->getReferencedClasses() as $referencedClass) {
-            $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
         }
         return $dependenciesReflections;
     }
@@ -300,87 +293,84 @@ class DependencyResolver
     /**
      * @param \PhpParser\Node\Expr\StaticCall|\PhpParser\Node\Expr\ClassConstFetch|\PhpParser\Node\Expr\StaticPropertyFetch $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveAccessStaticClassElement($node, Scope $scope)
+    protected function resolveAccessStaticClassElement($node, Scope $scope): array
     {
         $dependenciesReflections = [];
         if ($node->class instanceof \PhpParser\Node\Name) {
-            $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($scope->resolveName($node->class));
         } else {
             foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
             }
         }
 
         $returnType = $scope->getType($node);
         foreach ($returnType->getReferencedClasses() as $referencedClass) {
-            $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
         }
+
         return $dependenciesReflections;
     }
 
     /**
      * @param \PhpParser\Node\Expr\New_ $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveNew(\PhpParser\Node\Expr\New_ $node, Scope $scope)
+    protected function resolveNew(\PhpParser\Node\Expr\New_ $node, Scope $scope): array
     {
-        $dependenciesReflections = [];
         if ($node->class instanceof \PhpParser\Node\Name) {
-            $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
+            return [$this->resolveClassReflection($scope->resolveName($node->class))];
         }
-        return $dependenciesReflections;
+        return [];
     }
 
     /**
      * @param \PhpParser\Node\Stmt\TraitUse $node
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveTraitUse(\PhpParser\Node\Stmt\TraitUse $node)
+    protected function resolveTraitUse(\PhpParser\Node\Stmt\TraitUse $node): array
     {
-        $dependenciesReflections = [];
         foreach ($node->traits as $traitName) {
-            $this->addClassToDependencies($traitName->toString(), $dependenciesReflections);
+            return [$this->resolveClassReflection($traitName->toString())];
         }
-        return $dependenciesReflections;
+        return [];
     }
 
     /**
      * @param \PhpParser\Node\Expr\Instanceof_ $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveInstanceOf(\PhpParser\Node\Expr\Instanceof_ $node, Scope $scope)
+    protected function resolveInstanceOf(\PhpParser\Node\Expr\Instanceof_ $node, Scope $scope): array
     {
-        $dependenciesReflections = [];
         if ($node->class instanceof \PhpParser\Node\Name) {
-            $this->addClassToDependencies($scope->resolveName($node->class), $dependenciesReflections);
+            return [$this->resolveClassReflection($scope->resolveName($node->class))];
         }
-        return $dependenciesReflections;
+        return [];
     }
 
     /**
      * @param \PhpParser\Node\Stmt\Catch_ $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveCatch(\PhpParser\Node\Stmt\Catch_ $node, Scope $scope)
+    protected function resolveCatch(\PhpParser\Node\Stmt\Catch_ $node, Scope $scope): array
     {
-        $dependenciesReflections = [];
         foreach ($node->types as $type) {
-            $this->addClassToDependencies($scope->resolveName($type), $dependenciesReflections);
+            return [$this->resolveClassReflection($scope->resolveName($type))];
         }
-        return $dependenciesReflections;
+        return [];
     }
 
     /**
      * @param \PhpParser\Node\Expr\ArrayDimFetch $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveArrayDimFetch(\PhpParser\Node\Expr\ArrayDimFetch $node, Scope $scope)
+    protected function resolveArrayDimFetch(\PhpParser\Node\Expr\ArrayDimFetch $node, Scope $scope): array
     {
         $dependenciesReflections = [];
         if ($node->dim !== null) {
@@ -388,29 +378,30 @@ class DependencyResolver
             $dimType = $scope->getType($node->dim);
 
             foreach ($varType->getOffsetValueType($dimType)->getReferencedClasses() as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
             }
         }
+
         return $dependenciesReflections;
     }
 
     /**
      * @param \PhpParser\Node\Stmt\Foreach_ $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveForeach(\PhpParser\Node\Stmt\Foreach_ $node, Scope $scope)
+    protected function resolveForeach(\PhpParser\Node\Stmt\Foreach_ $node, Scope $scope): array
     {
         $dependenciesReflections = [];
         $exprType = $scope->getType($node->expr);
         if ($node->keyVar !== null) {
             foreach ($exprType->getIterableKeyType()->getReferencedClasses() as $referencedClass) {
-                $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
             }
         }
 
         foreach ($exprType->getIterableValueType()->getReferencedClasses() as $referencedClass) {
-            $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
         }
         return $dependenciesReflections;
     }
@@ -418,9 +409,9 @@ class DependencyResolver
     /**
      * @param \PhpParser\Node\Expr\Array_ $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      */
-    protected function resolveArray(\PhpParser\Node\Expr\Array_ $node, Scope $scope)
+    protected function resolveArray(\PhpParser\Node\Expr\Array_ $node, Scope $scope): array
     {
         $dependenciesReflections = [];
         $arrayType = $scope->getType($node);
@@ -428,7 +419,7 @@ class DependencyResolver
             foreach ($arrayType->getCallableParametersAcceptors($scope) as $variant) {
                 $referencedClasses = $variant->getReturnType()->getReferencedClasses();
                 foreach ($referencedClasses as $referencedClass) {
-                    $this->addClassToDependencies($referencedClass, $dependenciesReflections);
+                    $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
                 }
             }
         }
@@ -438,12 +429,11 @@ class DependencyResolver
     /**
      * @param \PhpParser\Node\Stmt\PropertyProperty $node
      * @param Scope $scope
-     * @return mixed
+     * @return ReflectionWithFilename[]
      * @throws \PHPStan\Reflection\MissingPropertyFromReflectionException
      */
-    protected function resolvePropertyProperty(\PhpParser\Node\Stmt\PropertyProperty $node, Scope $scope)
+    protected function resolvePropertyProperty(\PhpParser\Node\Stmt\PropertyProperty $node, Scope $scope): array
     {
-        $dependenciesReflections = [];
         if (!$scope->isInClass()) {
             throw new \PHPStan\ShouldNotHappenException();
         }
@@ -451,10 +441,9 @@ class DependencyResolver
         if ($nativeProperty instanceof PhpPropertyReflection) {
             $type = $nativeProperty->getType();
             if ($type instanceof TypeWithClassName) {
-                $this->addClassToDependencies($type->getClassName(), $dependenciesReflections);
+                return [$this->resolveClassReflection($type->getClassName())];
             }
         }
-        return $dependenciesReflections;
+        return [];
     }
-
 }
