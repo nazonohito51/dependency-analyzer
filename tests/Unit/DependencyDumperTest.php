@@ -61,7 +61,10 @@ class DependencyDumperTest extends TestCase
         );
 
         $fileFinder = $this->createMock(FileFinder::class);
-        $fileFinder->method('findFiles')->with([$analyzePath])->willReturn($fileFinderResult);
+        $fileFinder->method('findFiles')->willReturnMap([
+            [[$analyzePath], $fileFinderResult],
+            [[], $this->createMock(FileFinderResult::class)]
+        ]);
 
         return $fileFinder;
     }
