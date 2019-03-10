@@ -54,11 +54,11 @@ class CycleDetector
         $subGraphs = [];
 
         $visited = [];
-        foreach ($graph->getVertices()->getMap() as $id => $vertex) {
+        foreach ($graph->getClasses()->getMap() as $id => $vertex) {
             if (!isset($visited[$id])) {
                 $subGraphs[] = $subGraph = $graph->getConnectedSubGraphsStartFrom($vertex);
 
-                foreach ($subGraph->getVertices() as $subGraphVertex) {
+                foreach ($subGraph->getClasses() as $subGraphVertex) {
                     $visited[$subGraphVertex->getId()] = true;
                 }
             }

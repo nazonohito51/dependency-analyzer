@@ -19,7 +19,7 @@ class UmlFormatter
     {
         $output = '@startuml' . PHP_EOL;
 
-        foreach ($this->graph->getEdges() as $edge) {
+        foreach ($this->graph->getDependencyArrows() as $edge) {
             $depender = $edge->getVertexStart();
             $dependee = $edge->getVertexEnd();
             $output .= "{$depender->getId()} --> {$dependee->getId()}" . PHP_EOL;

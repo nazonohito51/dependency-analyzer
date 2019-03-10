@@ -25,7 +25,7 @@ class DependencyRule
     {
         $errors = [];
 
-        foreach ($graph->getEdges() as $edge) {
+        foreach ($graph->getDependencyArrows() as $edge) {
             $depender = $edge->getVertexStart();
             $dependee = $edge->getVertexEnd();
             if (!$this->isValidVertex($depender, $dependee)) {

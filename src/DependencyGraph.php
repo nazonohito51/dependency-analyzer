@@ -55,12 +55,12 @@ class DependencyGraph implements \Countable
         return new self($graph);
     }
 
-    public function getVertices()
+    public function getClasses()
     {
         return $this->graph->getVertices();
     }
 
-    public function getEdges()
+    public function getDependencyArrows()
     {
         return $this->graph->getEdges();
     }
