@@ -29,6 +29,7 @@ class DependencyResolver
      * @param \PhpParser\Node $node
      * @param Scope $scope
      * @return ReflectionWithFilename[]
+     * @throws \PHPStan\Broker\FunctionNotFoundException
      * @throws \PHPStan\Reflection\MissingMethodFromReflectionException
      * @throws \PHPStan\Reflection\MissingPropertyFromReflectionException
      */
@@ -60,19 +61,19 @@ class DependencyResolver
 
                 $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
             }
-//        } elseif ($node instanceof Function_) {
-//            $functionName = $node->name->name;
-//            if (isset($node->namespacedName)) {
-//                $functionName = (string) $node->namespacedName;
-//            }
-//            $functionNameName = new Name($functionName);
-//            if ($this->broker->hasCustomFunction($functionNameName, null)) {
-//                $functionReflection = $this->broker->getCustomFunction($functionNameName, null);
-//
-//                /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
-//                $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
-//                $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
-//            }
+        } elseif ($node instanceof \PhpParser\Node\Stmt\Function_) {
+            $functionName = $node->name->name;
+            if (isset($node->namespacedName)) {
+                $functionName = (string)$node->namespacedName;
+            }
+            $functionNameName = new \PhpParser\Node\Name($functionName);
+            if ($this->broker->hasCustomFunction($functionNameName, null)) {
+                $functionReflection = $this->broker->getCustomFunction($functionNameName, null);
+
+                /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
+                $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
+                $this->extractFromParametersAcceptor($parametersAcceptor, $dependenciesReflections);
+            }
         } elseif ($node instanceof \PhpParser\Node\Expr\Closure) {
             /** @var ClosureType $closureType */
             $closureType = $scope->getType($node);
