@@ -219,6 +219,13 @@ class DependencyDumperTest extends TestCase
                     'Tests\Fixtures\Foundations\SomeInterface' => [],
                     'Tests\Fixtures\AbstractImplement' => ['Tests\Fixtures\Foundations\SomeInterface']
                 ]
+            ],
+            'depend_on_comment' => [
+                $this->getFixturePath('/individual_theme/DependOnComment.php'),
+                [
+                    'Tests\Fixtures\DependOnComment' => ['Tests\Fixtures\Foundations\SomeClass1'],
+                    'Tests\Fixtures\Foundations\SomeClass1' => [],
+                ]
             ]
         ];
     }

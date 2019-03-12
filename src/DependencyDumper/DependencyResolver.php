@@ -7,6 +7,10 @@ use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
+use PHPStan\PhpDocParser\Parser\TokenIterator;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ParametersAcceptorWithPhpDocs;
 use PHPStan\Reflection\Php\PhpMethodReflection;
@@ -21,10 +25,20 @@ class DependencyResolver
      * @var Broker
      */
     protected $broker;
+    /**
+     * @var Lexer
+     */
+    private $phpDocLexer;
+    /**
+     * @var PhpDocParser
+     */
+    private $phpDocParser;
 
-    public function __construct(Broker $broker)
+    public function __construct(Broker $broker, Lexer $phpDocLexer, PhpDocParser $phpDocParser)
     {
         $this->broker = $broker;
+        $this->phpDocLexer = $phpDocLexer;
+        $this->phpDocParser = $phpDocParser;
     }
 
     /**
@@ -145,6 +159,15 @@ class DependencyResolver
         }
         foreach ($node->implements as $className) {
             $dependenciesReflections[] = $this->resolveClassReflection($className->toString());
+        }
+        if ($node->getDocComment() !== null) {
+            $tokens = new TokenIterator($this->phpDocLexer->tokenize($node->getDocComment()->getText()));
+            $phpDocNode = $this->phpDocParser->parse($tokens);
+            foreach ($phpDocNode->getTagsByName('@dependOn') as $phpDocTagNode) {
+                /** @var PhpDocTagNode $phpDocTagNode */
+                preg_match('/^@dependOn\s+(.+)$/', $phpDocTagNode->__toString(), $matches);
+                $dependenciesReflections[] = $this->resolveClassReflection($matches[1]);
+            };
         }
 
         return $dependenciesReflections;
