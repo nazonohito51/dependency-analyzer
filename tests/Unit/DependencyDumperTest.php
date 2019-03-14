@@ -34,12 +34,18 @@ class DependencyDumperTest extends TestCase
             'C' => ['B'],
         ];
         $analyzePath = $this->getFixturePath('single_directed');
-        $fileFinder = $this->createFileFinder($analyzePath);
+        $analyzeFiles = ["{$analyzePath}/A.php", "{$analyzePath}/B.php", "{$analyzePath}/C.php"];
+        $fileFinder = $this->createFileFinder([$analyzePath], $analyzeFiles, [], []);
         $nodeScopeResolver = $this->createNodeScopeResolver();
         $parser = $this->createParser();
         $scopeFactory = $this->createScopeFactory();
-        $dependencyResolveVisitor = $this->createCollectDependenciesVisitor($expectedDependencies);
-        $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $dependencyResolveVisitor);
+        $collectDependenciesVisitor = $this->createMock(CollectDependenciesVisitor::class);
+        $collectDependenciesVisitor->method('getDependencies')->will($this->onConsecutiveCalls(
+            ['A' => []],
+            ['B' => ['A']],
+            ['C' => ['B']]
+        ));
+        $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $collectDependenciesVisitor);
 
         $dependencyGraph = $dependencyDumper->dump([$analyzePath]);
 
@@ -47,23 +53,51 @@ class DependencyDumperTest extends TestCase
         $this->assertEquals($expectedDependencies, $dependencyGraph->toArray());
     }
 
+    public function testDumpSpecifyExcludePath()
+    {
+        $expectedDependencies = [
+            'A' => [],
+            'B' => ['A']
+        ];
+        $analyzePath = $this->getFixturePath('single_directed');
+        $analyzeFiles = ["{$analyzePath}/A.php", "{$analyzePath}/B.php", "{$analyzePath}/C.php"];
+        $excludePath = $this->getFixturePath('single_directed/C.php');
+        $excludeFiles = ["{$analyzePath}/C.php"];
+        $fileFinder = $this->createFileFinder([$analyzePath], $analyzeFiles, [$excludePath], $excludeFiles);
+        $nodeScopeResolver = $this->createNodeScopeResolver();
+        $parser = $this->createParser();
+        $scopeFactory = $this->createScopeFactory();
+        $collectDependenciesVisitor = $this->createMock(CollectDependenciesVisitor::class);
+        $collectDependenciesVisitor->method('getDependencies')->will($this->onConsecutiveCalls(
+            ['A' => []],
+            ['B' => ['A']]
+        ));
+        $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $collectDependenciesVisitor);
+
+        $dependencyGraph = $dependencyDumper->dump([$analyzePath], [$excludePath]);
+
+        $this->assertInstanceOf(DependencyGraph::class, $dependencyGraph);
+        $this->assertEquals($expectedDependencies, $dependencyGraph->toArray());
+    }
+
     /**
-     * @param string $analyzePath
+     * @param array $analyzePaths
+     * @param array $analyzeFiles
+     * @param array $excludePaths
+     * @param array $excludeFiles
      * @return FileFinder|\PHPUnit\Framework\MockObject\MockObject
      */
-    protected function createFileFinder(string $analyzePath)
+    protected function createFileFinder(array $analyzePaths, array $analyzeFiles, array $excludePaths, array $excludeFiles)
     {
-        $fileFinderResult = $this->createMock(FileFinderResult::class);
-        $fileFinderResult->method('getFiles')->willReturn([
-            "{$analyzePath}/A.php",
-            "{$analyzePath}/B.php",
-            "{$analyzePath}/C.php"]
-        );
+        $analyzeFileFinderResult = $this->createMock(FileFinderResult::class);
+        $analyzeFileFinderResult->method('getFiles')->willReturn($analyzeFiles);
+        $excludeFileFinderResult = $this->createMock(FileFinderResult::class);
+        $excludeFileFinderResult->method('getFiles')->willReturn($excludeFiles);
 
         $fileFinder = $this->createMock(FileFinder::class);
         $fileFinder->method('findFiles')->willReturnMap([
-            [[$analyzePath], $fileFinderResult],
-            [[], $this->createMock(FileFinderResult::class)]
+            [$analyzePaths, $analyzeFileFinderResult],
+            [$excludePaths, $excludeFileFinderResult]
         ]);
 
         return $fileFinder;
@@ -100,17 +134,5 @@ class DependencyDumperTest extends TestCase
         $scopeFactory->method('create');
 
         return $scopeFactory;
-    }
-
-    /**
-     * @param array $dependencies
-     * @return CollectDependenciesVisitor|\PHPUnit\Framework\MockObject\MockObject
-     */
-    protected function createCollectDependenciesVisitor(array $dependencies)
-    {
-        $collectDependenciesVisitor = $this->createMock(CollectDependenciesVisitor::class);
-        $collectDependenciesVisitor->method('getDependencies')->willReturn($dependencies);
-
-        return $collectDependenciesVisitor;
     }
 }

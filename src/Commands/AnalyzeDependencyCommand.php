@@ -29,7 +29,7 @@ abstract class AnalyzeDependencyCommand extends Command
             ->setDefinition([
                 new InputArgument('paths', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Target directory of analyze'),
                 new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for the run (ex: 500k, 500M, 5G)'),
-                new InputOption('exclude', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Exclude directory of analyze'),
+                new InputOption('exclude', null, InputOption::VALUE_REQUIRED | InputArgument::IS_ARRAY, 'Exclude directory of analyze'),
             ]);
     }
 
@@ -39,27 +39,33 @@ abstract class AnalyzeDependencyCommand extends Command
             $this->setMemoryLimit($memoryLimit);
         }
 
-        $dependencyGraph = $this->createDependencyGraph($input->getArgument('paths'));
+        $dependencyGraph = $this->createDependencyGraph(
+            $input->getArgument('paths'),
+            !is_null($input->getOption('exclude')) ? [$input->getOption('exclude')] : []
+        );
 
         return $this->inspectDependencyGraph($dependencyGraph);
     }
 
     /**
      * @param string[] $paths
+     * @param string[] $excludePaths
      * @return DependencyGraph
      */
-    protected function createDependencyGraph(array $paths): DependencyGraph
+    protected function createDependencyGraph(array $paths, array $excludePaths = []): DependencyGraph
     {
-        $paths = array_map(function ($path) {
+        $convertRealpathClosure = function ($path) {
             $realpath = realpath($path);
             if (!is_file($realpath) && !is_dir($realpath)) {
                 throw new InvalidCommandArgumentException("path was not found: {$realpath}");
             }
 
             return $realpath;
-        }, $paths);
+        };
+        $paths = array_map($convertRealpathClosure, $paths);
+        $excludePaths = array_map($convertRealpathClosure, $excludePaths);
 
-        return $this->createDependencyDumper()->dump($paths);
+        return $this->createDependencyDumper()->dump($paths, $excludePaths);
     }
 
     /**
