@@ -18,7 +18,7 @@ class DependencyDumper
     /**
      * @var CollectDependenciesVisitor
      */
-    protected $nodeVisitor;
+    protected $collectNodeVisitor;
 
     /**
      * @var NodeScopeResolver
@@ -45,14 +45,14 @@ class DependencyDumper
         Parser $parser,
         ScopeFactory $scopeFactory,
         FileFinder $fileFinder,
-        CollectDependenciesVisitor $nodeVisitor
+        CollectDependenciesVisitor $collectNodeVisitor
     )
     {
         $this->nodeScopeResolver = $nodeScopeResolver;
         $this->parser = $parser;
         $this->scopeFactory = $scopeFactory;
         $this->fileFinder = $fileFinder;
-        $this->nodeVisitor = $nodeVisitor;
+        $this->collectNodeVisitor = $collectNodeVisitor;
     }
 
     public static function createFromConfig(string $currentDir, string $tmpDir, array $additionalConfigFiles): self
@@ -90,13 +90,13 @@ class DependencyDumper
             $this->nodeScopeResolver->processNodes(
                 $this->parser->parseFile($file),
                 $this->scopeFactory->create(ScopeContext::create($file)),
-                \Closure::fromCallable($this->nodeVisitor)  // type hint of processNodes is \Closure...
+                \Closure::fromCallable($this->collectNodeVisitor)  // type hint of processNodes is \Closure...
             );
         } catch (AnalysedCodeException $e) {
             throw new UnexpectedException('parsing file is failed: ' . $file);
         }
 
-        return $this->nodeVisitor->getDependencies();
+        return $this->collectNodeVisitor->getDependencies();
     }
 
     protected function getAllFilesRecursive(array $paths): array
