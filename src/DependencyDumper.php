@@ -85,6 +85,7 @@ class DependencyDumper
     protected function dumpFile(string $file): void
     {
         try {
+            // collect dependencies in $this->collectNodeVisitor
             $this->nodeScopeResolver->processNodes(
                 $this->parser->parseFile($file),
                 $this->scopeFactory->create(ScopeContext::create($file)),
