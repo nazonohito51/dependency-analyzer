@@ -78,45 +78,6 @@ class CollectDependenciesVisitor
         }
     }
 
-//    protected function addToDependencies(string $depender, string $dependee): void
-//    {
-//        if (!isset($this->dependencies[$depender])) {
-//            $this->dependencies[$depender] = [];
-//        }
-//
-//        if (!in_array($dependee, $this->dependencies[$depender])) {
-//            $this->dependencies[$depender][] = $dependee;
-//        }
-//    }
-//
-//    protected function addTest(ClassReflection $dependerReflection, ClassReflection $dependeeReflection)
-//    {
-//        if (is_null($classLike = $this->getTest($dependerReflection->getDisplayName()))) {
-//            $this->test[] = $classLike = new ClassLike($dependerReflection);
-//        }
-//
-//        $classLike->addDependee($dependeeReflection);
-//    }
-//
-//    protected function getTest(string $dependerName)
-//    {
-//        foreach ($this->test as $item) {
-//            if ($item->getName() === $dependerName) {
-//                return $item;
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    /**
-//     * @return ClassLike[]
-//     */
-//    public function getDependencies(): array
-//    {
-//        return $this->test;
-//    }
-
     public function createDependencyGraph(): DependencyGraph
     {
         return $this->dependencyGraphFactory->build();
