@@ -35,34 +35,7 @@ class CollectDependenciesVisitor
         try {
             foreach ($this->dependencyResolver->resolveDependencies($node, $scope) as $dependeeReflection) {
                 if ($dependeeReflection instanceof ClassReflection) {
-                    if ($scope->isInClass()) {
-                        if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {
-                            // call same class method/property
-                        } else {
-                            $this->dependencyGraphFactory->addDependency($scope->getClassReflection(), $dependeeReflection);
-//                            $this->addTest($scope->getClassReflection(), $dependeeReflection);
-//
-//                            $className = $scope->getClassReflection()->getDisplayName();
-//                            $this->addToDependencies($className, $dependeeReflection->getDisplayName());
-                        }
-                    } else {
-                        // Maybe, class declare statement
-                        // ex:
-                        //   class Hoge {}
-                        //   abstract class Hoge {}
-                        //   interface Hoge {}
-                        if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
-                            $dependerReflection = $this->dependencyResolver->resolveClassReflection($node->namespacedName->toString());
-                            if ($dependerReflection instanceof ClassReflection) {
-                                $this->dependencyGraphFactory->addDependency($dependerReflection, $dependeeReflection);
-//                                $this->addTest($dependerReflection, $dependeeReflection);
-                            } else {
-                                throw new ShouldNotHappenException('resolving node dependency is failed.');
-                            }
-//
-//                            $this->addToDependencies($node->namespacedName->toString(), $dependeeReflection->getDisplayName());
-                        }
-                    }
+                    $this->addDependency($node, $scope, $dependeeReflection);
                 } elseif ($dependeeReflection instanceof PhpFunctionReflection) {
                     // function call
                     // ex:
@@ -75,6 +48,36 @@ class CollectDependenciesVisitor
             }
         } catch (ResolveDependencyException $e) {
             throw new ShouldNotHappenException('collecting dependencies is failed.', 0, $e);
+        }
+    }
+
+    /**
+     * @param \PhpParser\Node $node
+     * @param Scope $scope
+     * @param ClassReflection $dependeeReflection
+     */
+    protected function addDependency(\PhpParser\Node $node, Scope $scope, ClassReflection $dependeeReflection): void
+    {
+        if ($scope->isInClass()) {
+            if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {
+                // call same class method/property
+            } else {
+                $this->dependencyGraphFactory->addDependency($scope->getClassReflection(), $dependeeReflection);
+            }
+        } else {
+            // Maybe, class declare statement
+            // ex:
+            //   class Hoge {}
+            //   abstract class Hoge {}
+            //   interface Hoge {}
+            if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
+                $dependerReflection = $this->dependencyResolver->resolveClassReflection($node->namespacedName->toString());
+                if ($dependerReflection instanceof ClassReflection) {
+                    $this->dependencyGraphFactory->addDependency($dependerReflection, $dependeeReflection);
+                } else {
+                    throw new ShouldNotHappenException('resolving node dependency is failed.');
+                }
+            }
         }
     }
 
