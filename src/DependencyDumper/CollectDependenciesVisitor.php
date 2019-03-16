@@ -5,7 +5,7 @@ namespace DependencyAnalyzer\DependencyDumper;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\ClassLike;
-use DependencyAnalyzer\DependencyGraph\DependencyGraphFactory;
+use DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use DependencyAnalyzer\Exceptions\ShouldNotHappenException;
 use PHPStan\Analyser\Scope;
@@ -20,14 +20,14 @@ class CollectDependenciesVisitor
     protected $dependencyResolver;
 
     /**
-     * @var DependencyGraphFactory
+     * @var DependencyGraphBuilder
      */
     protected $dependencyGraphFactory;
 
-    public function __construct(DependencyResolver $dependencyResolver, DependencyGraphFactory $dependencyGraphFactory)
+    public function __construct(DependencyResolver $dependencyResolver, DependencyGraphBuilder $dependencyGraphBuilder)
     {
         $this->dependencyResolver = $dependencyResolver;
-        $this->dependencyGraphFactory = $dependencyGraphFactory;
+        $this->dependencyGraphFactory = $dependencyGraphBuilder;
     }
 
     public function __invoke(\PhpParser\Node $node, Scope $scope): void
@@ -119,6 +119,6 @@ class CollectDependenciesVisitor
 
     public function createDependencyGraph(): DependencyGraph
     {
-        return $this->dependencyGraphFactory->create();
+        return $this->dependencyGraphFactory->build();
     }
 }

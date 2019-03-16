@@ -4,4 +4,4 @@ services:
 	-
 		class: DependencyAnalyzer\DependencyDumper\DependencyResolver
 	-
-		class: DependencyAnalyzer\DependencyGraph\DependencyGraphFactory
+		class: DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder

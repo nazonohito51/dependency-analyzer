@@ -6,7 +6,7 @@ namespace Tests\Unit\DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyDumper\DependencyResolver;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\DependencyGraph\ClassLike;
-use DependencyAnalyzer\DependencyGraph\DependencyGraphFactory;
+use DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -71,7 +71,7 @@ class CollectDependenciesVisitorTest extends TestCase
      */
     public function testInvoke(Node $node, Scope $scope, DependencyResolver $dependencyResolver, array $expected)
     {
-        $factory = $this->createMock(DependencyGraphFactory::class);
+        $factory = $this->createMock(DependencyGraphBuilder::class);
         if (count($expected) > 0) {
             foreach ($expected as $classes) {
                 $factory->expects($this->once())->method('addDependency')->with($classes[0], $classes[1]);
@@ -97,7 +97,7 @@ class CollectDependenciesVisitorTest extends TestCase
         $dependencyResolver = $this->createMock(DependencyResolver::class);
         $dependencyResolver->method('resolveDependencies')->willThrowException(new UnexpectedException());
         $dependencyResolver->method('resolveClassReflection')->willReturn($this->createMock(ClassReflection::class));
-        $factory = $this->createMock(DependencyGraphFactory::class);
+        $factory = $this->createMock(DependencyGraphBuilder::class);
         $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver, $factory);
 
         $nodeVisitor($node, $scope);

@@ -7,7 +7,7 @@ use DependencyAnalyzer\DependencyGraph;
 use Fhaculty\Graph\Graph;
 use PHPStan\Reflection\ClassReflection;
 
-class DependencyGraphFactory
+class DependencyGraphBuilder
 {
     /**
      * @var ClassReflection[] $classReflections
@@ -44,7 +44,7 @@ class DependencyGraphFactory
         return count($this->classes) - 1;
     }
 
-    public function create(): DependencyGraph
+    public function build(): DependencyGraph
     {
         $graph = new Graph();
 
