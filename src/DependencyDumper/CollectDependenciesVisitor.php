@@ -27,14 +27,14 @@ class CollectDependenciesVisitor
     public function __invoke(\PhpParser\Node $node, Scope $scope): void
     {
         try {
-            foreach ($this->dependencyResolver->resolveDependencies($node, $scope) as $dependencyReflection) {
-                if ($dependencyReflection instanceof ClassReflection) {
+            foreach ($this->dependencyResolver->resolveDependencies($node, $scope) as $dependeeReflection) {
+                if ($dependeeReflection instanceof ClassReflection) {
                     if ($scope->isInClass()) {
-                        if ($scope->getClassReflection()->getDisplayName() === $dependencyReflection->getDisplayName()) {
+                        if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {
                             // call same class method/property
                         } else {
                             $className = $scope->getClassReflection()->getDisplayName();
-                            $this->addToDependencies($className, $dependencyReflection->getDisplayName());
+                            $this->addToDependencies($className, $dependeeReflection->getDisplayName());
                         }
                     } else {
                         // Maybe, class declare statement
@@ -43,10 +43,10 @@ class CollectDependenciesVisitor
                         //   abstract class Hoge {}
                         //   interface Hoge {}
                         if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
-                            $this->addToDependencies($node->namespacedName->toString(), $dependencyReflection->getDisplayName());
+                            $this->addToDependencies($node->namespacedName->toString(), $dependeeReflection->getDisplayName());
                         }
                     }
-                } elseif ($dependencyReflection instanceof PhpFunctionReflection) {
+                } elseif ($dependeeReflection instanceof PhpFunctionReflection) {
                     // function call
                     // ex:
                     //   array_map(...);
