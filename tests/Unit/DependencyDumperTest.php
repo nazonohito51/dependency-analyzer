@@ -6,6 +6,7 @@ namespace Tests\Unit\DependencyAnalyzer;
 use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\Formatter\DependencyGraphFactory;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\File\FileFinder;
@@ -45,12 +46,15 @@ class DependencyDumperTest extends TestCase
             ['B' => ['A']],
             ['C' => ['B']]
         ));
-        $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $collectDependenciesVisitor);
+        $dependencyGraph = $this->createMock(DependencyGraph::class);
+        $dependencyGraphFactory = $this->createMock(DependencyGraphFactory::class);
+        $dependencyGraphFactory->method('createFromClassLikeAggregate')->willReturn($dependencyGraph);
+        $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $collectDependenciesVisitor, $dependencyGraphFactory);
 
-        $dependencyGraph = $dependencyDumper->dump([$analyzePath]);
+        $result = $dependencyDumper->dump([$analyzePath]);
 
-        $this->assertInstanceOf(DependencyGraph::class, $dependencyGraph);
-        $this->assertEquals($expectedDependencies, $dependencyGraph->toArray());
+        $this->assertEquals($dependencyGraph, $result);
+//        $this->assertEquals($expectedDependencies, $result->toArray());
     }
 
     public function testDumpSpecifyExcludePath()
@@ -134,5 +138,10 @@ class DependencyDumperTest extends TestCase
         $scopeFactory->method('create');
 
         return $scopeFactory;
+    }
+
+    protected function createClassLike()
+    {
+
     }
 }

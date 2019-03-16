@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph;
 
-class ClassLikeAggregate implements \Countable, \IteratorAggregate
+class ClassLikeAggregate implements \Countable
 {
     /**
      * @var ClassLike[]
@@ -13,6 +13,14 @@ class ClassLikeAggregate implements \Countable, \IteratorAggregate
     public function __construct(array $classLikes = [])
     {
         $this->classLikes = $classLikes;
+    }
+
+    /**
+     * @return ClassLike[]
+     */
+    public function getClassLikes(): array
+    {
+        return $this->classLikes;
     }
 
     public function haveClassLike(string $name): bool
@@ -39,7 +47,7 @@ class ClassLikeAggregate implements \Countable, \IteratorAggregate
 
     public function merge(ClassLikeAggregate $aggregate): void
     {
-        foreach ($aggregate as $classLike) {
+        foreach ($aggregate->getClassLikes() as $classLike) {
             if ($this->haveClassLike($classLike->getName())) {
                 foreach ($classLike->getDependees() as $dependee) {
                     $this->getClassLike($classLike->getName())->addDependee($dependee);
@@ -50,13 +58,20 @@ class ClassLikeAggregate implements \Countable, \IteratorAggregate
         }
     }
 
+    public function toArray()
+    {
+        $array = [];
+        foreach ($this->classLikes as $classLike) {
+            foreach ($classLike->getDependees() as $dependee) {
+                $array[$classLike->getName()][] = $dependee->getDisplayName();
+            }
+        }
+
+        return $array;
+    }
+
     public function count(): int
     {
         return count($this->classLikes);
-    }
-
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->classLikes);
     }
 }

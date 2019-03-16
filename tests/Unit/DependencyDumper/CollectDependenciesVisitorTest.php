@@ -5,6 +5,7 @@ namespace Tests\Unit\DependencyAnalyzer\DependencyDumper;
 
 use DependencyAnalyzer\DependencyDumper\DependencyResolver;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
+use DependencyAnalyzer\DependencyGraph\ClassLike;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -30,31 +31,31 @@ class CollectDependenciesVisitorTest extends TestCase
             'return different class from scope_owner' => [
                 $this->createSomeNode(),
                 $this->createScope($scopeOwner),
-                $someClass,
+                $this->createDependencyResolver($someClass, $this->createClassReflection($scopeOwnerName)),
                 [$scopeOwnerName => [$someClassName]]
             ],
             'return same class as scope_owner' => [
                 $this->createSomeNode(),
                 $this->createScope($scopeOwner),
-                $classSameScopeOwner,
+                $this->createDependencyResolver($classSameScopeOwner, $this->createClassReflection($scopeOwnerName)),
                 []
             ],
             'is not in scope, and node is declare class node' => [
                 $this->createDeclareClassNode($scopeOwnerName),
                 $this->createScope(),
-                $someClass,
+                $this->createDependencyResolver($someClass, $this->createClassReflection($scopeOwnerName)),
                 [$scopeOwnerName => [$someClassName]]
             ],
             'is not in scope, and node is not declare class node' => [
                 $this->createSomeNode(),
                 $this->createScope(),
-                $someClass,
+                $this->createDependencyResolver($someClass, $this->createClassReflection($scopeOwnerName)),
                 []
             ],
             'return function' => [
                 $this->createSomeNode(),
                 $this->createScope($scopeOwner),
-                $someFunction,
+                $this->createDependencyResolver($someFunction, $this->createClassReflection($scopeOwnerName)),
                 []
             ]
         ];
@@ -63,20 +64,18 @@ class CollectDependenciesVisitorTest extends TestCase
     /**
      * @param Node $node
      * @param Scope $scope
-     * @param ReflectionWithFilename $resolvedDependency
+     * @param DependencyResolver $dependencyResolver
      * @param array $expected
      * @dataProvider provideInvoke
      */
-    public function testInvoke(Node $node, Scope $scope, ReflectionWithFilename $resolvedDependency, array $expected)
+    public function testInvoke(Node $node, Scope $scope, DependencyResolver $dependencyResolver, array $expected)
     {
-        $dependencyResolver = $this->createMock(DependencyResolver::class);
-        $dependencyResolver->method('resolveDependencies')->with($node, $scope)->willReturn([$resolvedDependency]);
-        $dependencyResolver->method('resolveClassReflection')->willReturn($this->createMock(ClassReflection::class));
+//        $dependencyResolver = $this->createDependencyResolver($resolvedDependency);
         $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver);
 
         $nodeVisitor($node, $scope);
 
-        $this->assertEquals($expected, $nodeVisitor->getDependencies());
+        $this->assertSameClassLike($expected, $nodeVisitor->getDependencies());
     }
 
     /**
@@ -130,5 +129,31 @@ class CollectDependenciesVisitorTest extends TestCase
         $node->namespacedName = $name;
 
         return $node;
+    }
+
+    /**
+     * @param array $expected
+     * @param ClassLike[] $actual
+     */
+    protected function assertSameClassLike(array $expected, array $actual)
+    {
+        $this->assertCount(count($expected), $actual);
+        $actual = array_reduce($actual, function (array $carry, ClassLike $classLike) {
+            return array_merge($carry, $classLike->toArray());
+        }, []);
+        $this->assertSame($expected, $actual);
+    }
+
+    /**
+     * @param ReflectionWithFilename $resolvedDependency
+     * @param ClassReflection $classReflection
+     * @return DependencyResolver|\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected function createDependencyResolver(ReflectionWithFilename $resolvedDependency, ClassReflection $classReflection)
+    {
+        $dependencyResolver = $this->createMock(DependencyResolver::class);
+        $dependencyResolver->method('resolveDependencies')->willReturn([$resolvedDependency]);
+        $dependencyResolver->method('resolveClassReflection')->willReturn($classReflection);
+        return $dependencyResolver;
     }
 }

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph;
 
-use Fhaculty\Graph\Vertex;
 use PHPStan\Reflection\ClassReflection;
 
 /**
@@ -19,7 +18,7 @@ class ClassLike
     /**
      * @var ClassReflection[]
      */
-    protected $dependeeReflection;
+    protected $dependeeReflections = [];
 
     public function __construct(ClassReflection $classReflection)
     {
@@ -31,8 +30,36 @@ class ClassLike
         return $this->classReflection->getDisplayName();
     }
 
-    public function addDependOn(ClassReflection $classReflection): void
+    public function getReflection(): ClassReflection
     {
-        $this->dependeeReflection[] = $classReflection;
+        return $this->classReflection;
+    }
+
+    /**
+     * @return ClassReflection[]
+     */
+    public function getDependees(): array
+    {
+        return $this->dependeeReflections;
+    }
+
+    public function addDependee(ClassReflection $classReflection): void
+    {
+        foreach ($this->dependeeReflections as $dependeeReflection) {
+            if ($dependeeReflection->getDisplayName() === $classReflection->getDisplayName()) {
+                return;
+            }
+        }
+        $this->dependeeReflections[] = $classReflection;
+    }
+
+    public function toArray(): array
+    {
+        $ret = [];
+        foreach ($this->getDependees() as $dependee) {
+            $ret[$this->getName()][] = $dependee->getDisplayName();
+        }
+
+        return $ret;
     }
 }

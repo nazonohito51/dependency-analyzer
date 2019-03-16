@@ -38,6 +38,8 @@ class CollectDependenciesVisitor
                         if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {
                             // call same class method/property
                         } else {
+                            $this->addTest($scope->getClassReflection(), $dependeeReflection);
+
                             $className = $scope->getClassReflection()->getDisplayName();
                             $this->addToDependencies($className, $dependeeReflection->getDisplayName());
                         }
@@ -90,7 +92,7 @@ class CollectDependenciesVisitor
             $this->test[] = $classLike = new ClassLike($dependerReflection);
         }
 
-        $classLike->addDependOn($dependeeReflection);
+        $classLike->addDependee($dependeeReflection);
     }
 
     protected function getTest(string $dependerName)
@@ -104,8 +106,11 @@ class CollectDependenciesVisitor
         return null;
     }
 
+    /**
+     * @return ClassLike[]
+     */
     public function getDependencies(): array
     {
-        return $this->dependencies;
+        return $this->test;
     }
 }
