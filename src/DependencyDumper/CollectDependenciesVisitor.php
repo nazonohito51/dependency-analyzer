@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
+use DependencyAnalyzer\DependencyGraph\ClassLike;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use DependencyAnalyzer\Exceptions\ShouldNotHappenException;
-use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
@@ -18,6 +18,11 @@ class CollectDependenciesVisitor
     protected $dependencyResolver;
 
     protected $dependencies = [];
+
+    /**
+     * @var ClassLike[] $test
+     */
+    protected $test = [];
 
     public function __construct(DependencyResolver $dependencyResolver)
     {
@@ -43,6 +48,13 @@ class CollectDependenciesVisitor
                         //   abstract class Hoge {}
                         //   interface Hoge {}
                         if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
+                            $dependerReflection = $this->dependencyResolver->resolveClassReflection($node->namespacedName->toString());
+                            if ($dependerReflection instanceof ClassReflection) {
+                                $this->addTest($dependerReflection, $dependeeReflection);
+                            } else {
+                                throw new ShouldNotHappenException('resolving node dependency is failed.');
+                            }
+
                             $this->addToDependencies($node->namespacedName->toString(), $dependeeReflection->getDisplayName());
                         }
                     }
@@ -70,6 +82,26 @@ class CollectDependenciesVisitor
         if (!in_array($dependee, $this->dependencies[$depender])) {
             $this->dependencies[$depender][] = $dependee;
         }
+    }
+
+    protected function addTest(ClassReflection $dependerReflection, ClassReflection $dependeeReflection)
+    {
+        if (is_null($classLike = $this->getTest($dependerReflection->getDisplayName()))) {
+            $this->test[] = $classLike = new ClassLike($dependerReflection);
+        }
+
+        $classLike->addDependOn($dependeeReflection);
+    }
+
+    protected function getTest(string $dependerName)
+    {
+        foreach ($this->test as $item) {
+            if ($item->getName() === $dependerName) {
+                return $item;
+            }
+        }
+
+        return null;
     }
 
     public function getDependencies(): array

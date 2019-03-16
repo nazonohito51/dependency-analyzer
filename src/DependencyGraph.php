@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DependencyGraph\ClassLike;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
 use Fhaculty\Graph\Edge\Directed;
@@ -38,13 +37,13 @@ class DependencyGraph implements \Countable
 
         foreach ($dependencies as $dependerName => $dependeeNames) {
             if (!$graph->hasVertex($dependerName)) {
-                new ClassLike($graph, $dependerName);
+                $graph->createVertex($dependerName);
             }
             $depender = $graph->getVertex($dependerName);
 
             foreach ($dependeeNames as $dependeeName) {
                 if (!$graph->hasVertex($dependeeName)) {
-                    new ClassLike($graph, $dependeeName);
+                    $graph->createVertex($dependeeName);
                 }
                 $dependee = $graph->getVertex($dependeeName);
 

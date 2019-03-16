@@ -8,6 +8,7 @@ use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Broker\Broker;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
 use PHPStan\Reflection\ReflectionWithFilename;
@@ -70,6 +71,7 @@ class CollectDependenciesVisitorTest extends TestCase
     {
         $dependencyResolver = $this->createMock(DependencyResolver::class);
         $dependencyResolver->method('resolveDependencies')->with($node, $scope)->willReturn([$resolvedDependency]);
+        $dependencyResolver->method('resolveClassReflection')->willReturn($this->createMock(ClassReflection::class));
         $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver);
 
         $nodeVisitor($node, $scope);
@@ -86,6 +88,7 @@ class CollectDependenciesVisitorTest extends TestCase
         $scope = $this->createScope();
         $dependencyResolver = $this->createMock(DependencyResolver::class);
         $dependencyResolver->method('resolveDependencies')->willThrowException(new UnexpectedException());
+        $dependencyResolver->method('resolveClassReflection')->willReturn($this->createMock(ClassReflection::class));
         $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver);
 
         $nodeVisitor($node, $scope);

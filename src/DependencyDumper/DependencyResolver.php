@@ -97,7 +97,7 @@ class DependencyResolver
         return [];
     }
 
-    protected function resolveClassReflection(string $className): ?ReflectionWithFilename
+    public function resolveClassReflection(string $className): ?ReflectionWithFilename
     {
         try {
             return $this->broker->getClass($className);
