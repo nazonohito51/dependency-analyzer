@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\DependencyDumper;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\DependencyGraph\ClassLike;
 use DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use DependencyAnalyzer\Exceptions\ShouldNotHappenException;
@@ -22,12 +21,12 @@ class CollectDependenciesVisitor
     /**
      * @var DependencyGraphBuilder
      */
-    protected $dependencyGraphFactory;
+    protected $dependencyGraphBuilder;
 
     public function __construct(DependencyResolver $dependencyResolver, DependencyGraphBuilder $dependencyGraphBuilder)
     {
         $this->dependencyResolver = $dependencyResolver;
-        $this->dependencyGraphFactory = $dependencyGraphBuilder;
+        $this->dependencyGraphBuilder = $dependencyGraphBuilder;
     }
 
     public function __invoke(\PhpParser\Node $node, Scope $scope): void
@@ -62,7 +61,7 @@ class CollectDependenciesVisitor
             if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {
                 // call same class method/property
             } else {
-                $this->dependencyGraphFactory->addDependency($scope->getClassReflection(), $dependeeReflection);
+                $this->dependencyGraphBuilder->addDependency($scope->getClassReflection(), $dependeeReflection);
             }
         } else {
             // Maybe, class declare statement
@@ -73,7 +72,7 @@ class CollectDependenciesVisitor
             if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
                 $dependerReflection = $this->dependencyResolver->resolveClassReflection($node->namespacedName->toString());
                 if ($dependerReflection instanceof ClassReflection) {
-                    $this->dependencyGraphFactory->addDependency($dependerReflection, $dependeeReflection);
+                    $this->dependencyGraphBuilder->addDependency($dependerReflection, $dependeeReflection);
                 } else {
                     throw new ShouldNotHappenException('resolving node dependency is failed.');
                 }
@@ -83,6 +82,6 @@ class CollectDependenciesVisitor
 
     public function createDependencyGraph(): DependencyGraph
     {
-        return $this->dependencyGraphFactory->build();
+        return $this->dependencyGraphBuilder->build();
     }
 }
