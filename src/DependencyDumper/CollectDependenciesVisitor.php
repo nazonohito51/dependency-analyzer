@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
+use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\ClassLike;
+use DependencyAnalyzer\DependencyGraph\DependencyGraphFactory;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use DependencyAnalyzer\Exceptions\ShouldNotHappenException;
 use PHPStan\Analyser\Scope;
@@ -17,16 +19,15 @@ class CollectDependenciesVisitor
      */
     protected $dependencyResolver;
 
-    protected $dependencies = [];
-
     /**
-     * @var ClassLike[] $test
+     * @var DependencyGraphFactory
      */
-    protected $test = [];
+    protected $dependencyGraphFactory;
 
-    public function __construct(DependencyResolver $dependencyResolver)
+    public function __construct(DependencyResolver $dependencyResolver, DependencyGraphFactory $dependencyGraphFactory)
     {
         $this->dependencyResolver = $dependencyResolver;
+        $this->dependencyGraphFactory = $dependencyGraphFactory;
     }
 
     public function __invoke(\PhpParser\Node $node, Scope $scope): void
@@ -38,10 +39,11 @@ class CollectDependenciesVisitor
                         if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {
                             // call same class method/property
                         } else {
-                            $this->addTest($scope->getClassReflection(), $dependeeReflection);
-
-                            $className = $scope->getClassReflection()->getDisplayName();
-                            $this->addToDependencies($className, $dependeeReflection->getDisplayName());
+                            $this->dependencyGraphFactory->addDependency($scope->getClassReflection(), $dependeeReflection);
+//                            $this->addTest($scope->getClassReflection(), $dependeeReflection);
+//
+//                            $className = $scope->getClassReflection()->getDisplayName();
+//                            $this->addToDependencies($className, $dependeeReflection->getDisplayName());
                         }
                     } else {
                         // Maybe, class declare statement
@@ -52,12 +54,13 @@ class CollectDependenciesVisitor
                         if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
                             $dependerReflection = $this->dependencyResolver->resolveClassReflection($node->namespacedName->toString());
                             if ($dependerReflection instanceof ClassReflection) {
-                                $this->addTest($dependerReflection, $dependeeReflection);
+                                $this->dependencyGraphFactory->addDependency($dependerReflection, $dependeeReflection);
+//                                $this->addTest($dependerReflection, $dependeeReflection);
                             } else {
                                 throw new ShouldNotHappenException('resolving node dependency is failed.');
                             }
-
-                            $this->addToDependencies($node->namespacedName->toString(), $dependeeReflection->getDisplayName());
+//
+//                            $this->addToDependencies($node->namespacedName->toString(), $dependeeReflection->getDisplayName());
                         }
                     }
                 } elseif ($dependeeReflection instanceof PhpFunctionReflection) {
@@ -75,42 +78,47 @@ class CollectDependenciesVisitor
         }
     }
 
-    protected function addToDependencies(string $depender, string $dependee): void
+//    protected function addToDependencies(string $depender, string $dependee): void
+//    {
+//        if (!isset($this->dependencies[$depender])) {
+//            $this->dependencies[$depender] = [];
+//        }
+//
+//        if (!in_array($dependee, $this->dependencies[$depender])) {
+//            $this->dependencies[$depender][] = $dependee;
+//        }
+//    }
+//
+//    protected function addTest(ClassReflection $dependerReflection, ClassReflection $dependeeReflection)
+//    {
+//        if (is_null($classLike = $this->getTest($dependerReflection->getDisplayName()))) {
+//            $this->test[] = $classLike = new ClassLike($dependerReflection);
+//        }
+//
+//        $classLike->addDependee($dependeeReflection);
+//    }
+//
+//    protected function getTest(string $dependerName)
+//    {
+//        foreach ($this->test as $item) {
+//            if ($item->getName() === $dependerName) {
+//                return $item;
+//            }
+//        }
+//
+//        return null;
+//    }
+//
+//    /**
+//     * @return ClassLike[]
+//     */
+//    public function getDependencies(): array
+//    {
+//        return $this->test;
+//    }
+
+    public function createDependencyGraph(): DependencyGraph
     {
-        if (!isset($this->dependencies[$depender])) {
-            $this->dependencies[$depender] = [];
-        }
-
-        if (!in_array($dependee, $this->dependencies[$depender])) {
-            $this->dependencies[$depender][] = $dependee;
-        }
-    }
-
-    protected function addTest(ClassReflection $dependerReflection, ClassReflection $dependeeReflection)
-    {
-        if (is_null($classLike = $this->getTest($dependerReflection->getDisplayName()))) {
-            $this->test[] = $classLike = new ClassLike($dependerReflection);
-        }
-
-        $classLike->addDependee($dependeeReflection);
-    }
-
-    protected function getTest(string $dependerName)
-    {
-        foreach ($this->test as $item) {
-            if ($item->getName() === $dependerName) {
-                return $item;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return ClassLike[]
-     */
-    public function getDependencies(): array
-    {
-        return $this->test;
+        return $this->dependencyGraphFactory->create();
     }
 }

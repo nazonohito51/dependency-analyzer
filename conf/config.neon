@@ -3,3 +3,5 @@ services:
 		class: DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor
 	-
 		class: DependencyAnalyzer\DependencyDumper\DependencyResolver
+	-
+		class: DependencyAnalyzer\DependencyGraph\DependencyGraphFactory

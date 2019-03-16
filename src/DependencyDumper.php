@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
-use DependencyAnalyzer\DependencyGraph\ClassLike;
 use DependencyAnalyzer\DependencyGraph\ClassLikeAggregate;
-use DependencyAnalyzer\DependencyGraph\Formatter\DependencyGraphFactory;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\ScopeContext;
@@ -43,18 +41,12 @@ class DependencyDumper
      */
     protected $fileFinder;
 
-    /**
-     * @var DependencyGraphFactory
-     */
-    protected $dependencyGraphFactory;
-
     public function __construct(
         NodeScopeResolver $nodeScopeResolver,
         Parser $parser,
         ScopeFactory $scopeFactory,
         FileFinder $fileFinder,
-        CollectDependenciesVisitor $collectNodeVisitor,
-        DependencyGraphFactory $dependencyGraphFactory
+        CollectDependenciesVisitor $collectNodeVisitor
     )
     {
         $this->nodeScopeResolver = $nodeScopeResolver;
@@ -62,7 +54,6 @@ class DependencyDumper
         $this->scopeFactory = $scopeFactory;
         $this->fileFinder = $fileFinder;
         $this->collectNodeVisitor = $collectNodeVisitor;
-        $this->dependencyGraphFactory = $dependencyGraphFactory;
     }
 
     public static function createFromConfig(string $currentDir, string $tmpDir, array $additionalConfigFiles): self
@@ -74,8 +65,7 @@ class DependencyDumper
             $phpStanContainer->getByType(Parser::class),
             $phpStanContainer->getByType(ScopeFactory::class),
             $phpStanContainer->getByType(FileFinder::class),
-            $phpStanContainer->getByType(CollectDependenciesVisitor::class),
-            new DependencyGraphFactory()
+            $phpStanContainer->getByType(CollectDependenciesVisitor::class)
         );
     }
 
@@ -83,23 +73,16 @@ class DependencyDumper
     {
         $excludeFiles = $this->getAllFilesRecursive($excludePaths);
 
-        $dependencies = new ClassLikeAggregate();
         foreach ($this->getAllFilesRecursive($paths) as $file) {
             if (!in_array($file, $excludeFiles)) {
-                $fileDependencies = $this->dumpFile($file);
-
-                $dependencies->merge(new ClassLikeAggregate($fileDependencies));
+                $this->dumpFile($file);
             }
         }
 
-        return $this->dependencyGraphFactory->createFromClassLikeAggregate($dependencies);
+        return $this->collectNodeVisitor->createDependencyGraph();
     }
 
-    /**
-     * @param string $file
-     * @return ClassLike[]
-     */
-    protected function dumpFile(string $file): array
+    protected function dumpFile(string $file): void
     {
         try {
             $this->nodeScopeResolver->processNodes(
@@ -110,8 +93,6 @@ class DependencyDumper
         } catch (AnalysedCodeException $e) {
             throw new UnexpectedException('parsing file is failed: ' . $file);
         }
-
-        return $this->collectNodeVisitor->getDependencies();
     }
 
     protected function getAllFilesRecursive(array $paths): array

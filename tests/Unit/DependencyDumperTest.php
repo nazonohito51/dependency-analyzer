@@ -7,7 +7,9 @@ use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\Formatter\DependencyGraphFactory;
+use PhpParser\Node;
 use PHPStan\Analyser\NodeScopeResolver;
+use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\File\FileFinder;
 use PHPStan\File\FileFinderResult;
@@ -29,59 +31,35 @@ class DependencyDumperTest extends TestCase
 
     public function testDump()
     {
-        $expectedDependencies = [
-            'A' => [],
-            'B' => ['A'],
-            'C' => ['B'],
-        ];
         $analyzePath = $this->getFixturePath('single_directed');
         $analyzeFiles = ["{$analyzePath}/A.php", "{$analyzePath}/B.php", "{$analyzePath}/C.php"];
         $fileFinder = $this->createFileFinder([$analyzePath], $analyzeFiles, [], []);
-        $nodeScopeResolver = $this->createNodeScopeResolver();
-        $parser = $this->createParser();
-        $scopeFactory = $this->createScopeFactory();
+        $parser = $this->createParser(3);
+        $scopeFactory = $this->createScopeFactory(3);
         $collectDependenciesVisitor = $this->createMock(CollectDependenciesVisitor::class);
-        $collectDependenciesVisitor->method('getDependencies')->will($this->onConsecutiveCalls(
-            ['A' => []],
-            ['B' => ['A']],
-            ['C' => ['B']]
-        ));
-        $dependencyGraph = $this->createMock(DependencyGraph::class);
-        $dependencyGraphFactory = $this->createMock(DependencyGraphFactory::class);
-        $dependencyGraphFactory->method('createFromClassLikeAggregate')->willReturn($dependencyGraph);
-        $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $collectDependenciesVisitor, $dependencyGraphFactory);
+        $collectDependenciesVisitor->method('__invoke');
+        $nodeScopeResolver = $this->createNodeScopeResolver(3);
+        $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $collectDependenciesVisitor);
 
-        $result = $dependencyDumper->dump([$analyzePath]);
-
-        $this->assertEquals($dependencyGraph, $result);
-//        $this->assertEquals($expectedDependencies, $result->toArray());
+        $dependencyDumper->dump([$analyzePath]);
     }
 
     public function testDumpSpecifyExcludePath()
     {
-        $expectedDependencies = [
-            'A' => [],
-            'B' => ['A']
-        ];
         $analyzePath = $this->getFixturePath('single_directed');
         $analyzeFiles = ["{$analyzePath}/A.php", "{$analyzePath}/B.php", "{$analyzePath}/C.php"];
         $excludePath = $this->getFixturePath('single_directed/C.php');
         $excludeFiles = ["{$analyzePath}/C.php"];
         $fileFinder = $this->createFileFinder([$analyzePath], $analyzeFiles, [$excludePath], $excludeFiles);
-        $nodeScopeResolver = $this->createNodeScopeResolver();
-        $parser = $this->createParser();
-        $scopeFactory = $this->createScopeFactory();
+
+        $parser = $this->createParser(2);
+        $scopeFactory = $this->createScopeFactory(2);
         $collectDependenciesVisitor = $this->createMock(CollectDependenciesVisitor::class);
-        $collectDependenciesVisitor->method('getDependencies')->will($this->onConsecutiveCalls(
-            ['A' => []],
-            ['B' => ['A']]
-        ));
+        $collectDependenciesVisitor->method('__invoke');
+        $nodeScopeResolver = $this->createNodeScopeResolver(2);
         $dependencyDumper = new DependencyDumper($nodeScopeResolver, $parser, $scopeFactory, $fileFinder, $collectDependenciesVisitor);
 
-        $dependencyGraph = $dependencyDumper->dump([$analyzePath], [$excludePath]);
-
-        $this->assertInstanceOf(DependencyGraph::class, $dependencyGraph);
-        $this->assertEquals($expectedDependencies, $dependencyGraph->toArray());
+        $dependencyDumper->dump([$analyzePath], [$excludePath]);
     }
 
     /**
@@ -107,41 +85,39 @@ class DependencyDumperTest extends TestCase
         return $fileFinder;
     }
 
-    /**
-     * @return NodeScopeResolver|\PHPUnit\Framework\MockObject\MockObject
-     */
-    protected function createNodeScopeResolver()
+    protected function createNodeScopeResolver(int $callCount)
     {
         $nodeScopeResolver = $this->createMock(NodeScopeResolver::class);
-        $nodeScopeResolver->method('processNodes');
+        $nodeScopeResolver->expects($this->exactly($callCount))->method('processNodes')->willReturnCallback(function ($nodes, $scope, callable $visitor) {
+            $node = $this->createMock(Node::class);
+            $scope = $this->createMock(Scope::class);
+            $visitor($node, $scope);   // Call CollectDependencyVisitor->__invoke()
+        });
 
         return $nodeScopeResolver;
     }
 
     /**
+     * @param int $callCount
      * @return Parser|\PHPUnit\Framework\MockObject\MockObject
      */
-    protected function createParser()
+    protected function createParser(int $callCount)
     {
         $parser = $this->createMock(Parser::class);
-        $parser->method('parseFile');
+        $parser->expects($this->exactly($callCount))->method('parseFile')->willReturn([]);
 
         return $parser;
     }
 
     /**
+     * @param int $callCount
      * @return ScopeFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    protected function createScopeFactory()
+    protected function createScopeFactory(int $callCount)
     {
         $scopeFactory = $this->createMock(ScopeFactory::class);
-        $scopeFactory->method('create');
+        $scopeFactory->expects($this->exactly($callCount))->method('create');
 
         return $scopeFactory;
-    }
-
-    protected function createClassLike()
-    {
-
     }
 }

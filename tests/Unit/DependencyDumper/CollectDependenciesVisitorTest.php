@@ -6,6 +6,7 @@ namespace Tests\Unit\DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyDumper\DependencyResolver;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\DependencyGraph\ClassLike;
+use DependencyAnalyzer\DependencyGraph\DependencyGraphFactory;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -32,7 +33,7 @@ class CollectDependenciesVisitorTest extends TestCase
                 $this->createSomeNode(),
                 $this->createScope($scopeOwner),
                 $this->createDependencyResolver($someClass, $this->createClassReflection($scopeOwnerName)),
-                [$scopeOwnerName => [$someClassName]]
+                [[$scopeOwner, $someClass]]
             ],
             'return same class as scope_owner' => [
                 $this->createSomeNode(),
@@ -44,7 +45,7 @@ class CollectDependenciesVisitorTest extends TestCase
                 $this->createDeclareClassNode($scopeOwnerName),
                 $this->createScope(),
                 $this->createDependencyResolver($someClass, $this->createClassReflection($scopeOwnerName)),
-                [$scopeOwnerName => [$someClassName]]
+                [[$scopeOwner, $someClass]]
             ],
             'is not in scope, and node is not declare class node' => [
                 $this->createSomeNode(),
@@ -70,12 +71,20 @@ class CollectDependenciesVisitorTest extends TestCase
      */
     public function testInvoke(Node $node, Scope $scope, DependencyResolver $dependencyResolver, array $expected)
     {
+        $factory = $this->createMock(DependencyGraphFactory::class);
+        if (count($expected) > 0) {
+            foreach ($expected as $classes) {
+                $factory->expects($this->once())->method('addDependency')->with($classes[0], $classes[1]);
+            }
+        } else {
+            $factory->expects($this->never())->method('addDependency');
+        }
 //        $dependencyResolver = $this->createDependencyResolver($resolvedDependency);
-        $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver);
+        $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver, $factory);
 
         $nodeVisitor($node, $scope);
 
-        $this->assertSameClassLike($expected, $nodeVisitor->getDependencies());
+//        $this->assertSameClassLike($expected, $nodeVisitor->getDependencies());
     }
 
     /**
@@ -88,7 +97,8 @@ class CollectDependenciesVisitorTest extends TestCase
         $dependencyResolver = $this->createMock(DependencyResolver::class);
         $dependencyResolver->method('resolveDependencies')->willThrowException(new UnexpectedException());
         $dependencyResolver->method('resolveClassReflection')->willReturn($this->createMock(ClassReflection::class));
-        $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver);
+        $factory = $this->createMock(DependencyGraphFactory::class);
+        $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver, $factory);
 
         $nodeVisitor($node, $scope);
     }
