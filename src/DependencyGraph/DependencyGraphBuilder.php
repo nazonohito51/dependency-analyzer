@@ -19,6 +19,16 @@ class DependencyGraphBuilder
      */
     protected $dependencyMap = [];
 
+    /**
+     * @var ExtraPhpDocTagResolver
+     */
+    protected $extraPhpDocTagResolver;
+
+    public function __construct(ExtraPhpDocTagResolver $extraPhpDocTagResolver)
+    {
+        $this->extraPhpDocTagResolver = $extraPhpDocTagResolver;
+    }
+
     public function addDependency(ClassReflection $depender, ClassReflection $dependee)
     {
         $dependerId = $this->getClassReflectionId($depender);
@@ -51,6 +61,7 @@ class DependencyGraphBuilder
         foreach ($this->classes as $class) {
             $vertex = $graph->createVertex($class->getDisplayName());
             $vertex->setAttribute('reflection', $class);
+            $vertex->setAttribute('canOnlyUsedBy', $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class));
         }
 
         foreach ($this->dependencyMap as $dependerId => $dependeeIds) {
