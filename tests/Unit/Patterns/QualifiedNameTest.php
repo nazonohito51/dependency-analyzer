@@ -15,6 +15,7 @@ class QualifiedNameTest extends TestCase
             [['\\Tests\\Fixtures']],
             [['!\\Tests']],
             [['!\\Tests\\Fixtures']],
+            [['\\']],
         ];
     }
 
@@ -35,7 +36,6 @@ class QualifiedNameTest extends TestCase
             [['Tests']],
             [['Tests\\Fixtures']],
             [['!!\\Tests']],
-            [['\\']],
             [['?\\Tests']]
         ];
     }
@@ -57,7 +57,8 @@ class QualifiedNameTest extends TestCase
         return [
             'pattern and className is same 1' => [['\\Tests'], 'Tests', true],
             'pattern and className is same 2' => [['\\Tests\\Fixtures\\SomeClass'], 'Tests\\Fixtures\\SomeClass', true],
-            'pattern include className' => [['\\Tests\\Fixtures'], 'Tests\\Fixtures\\SomeClass', true],
+            'pattern include className 1' => [['\\Tests\\Fixtures'], 'Tests\\Fixtures\\SomeClass', true],
+            'pattern include className 2' => [['\\'], 'Tests\\Fixtures\\SomeClass', true],
             'multi patterns 1' => [['\\Tests\\Fixtures', '\\Tests\\Integration'], 'Tests\\Fixtures\\SomeClass', true],
             'multi patterns 2' => [['\\Tests\\Fixtures', '\\Tests\\Integration'], 'Tests\\Integration\\SomeClass', true],
             'multi patterns 3' => [['\\Tests\\Fixtures', '\\Tests\\Integration'], 'Tests\\Unit\\SomeClass', false],

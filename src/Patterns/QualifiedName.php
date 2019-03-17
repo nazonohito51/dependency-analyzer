@@ -24,8 +24,7 @@ class QualifiedName
 
     protected function verifyPattern(string $pattern)
     {
-        return preg_match('/^!?' . preg_quote('\\', '/') . '(.*)$/', $pattern, $matches) === 1 &&
-            strlen($matches[1]) > 0;
+        return preg_match('/^!?' . preg_quote('\\', '/') . '(.*)$/', $pattern, $matches) === 1;
     }
 
     protected function addPattern(string $pattern)
@@ -64,6 +63,10 @@ class QualifiedName
         $separatedClassName = $this->explodeName($className);
         $separatedPattern = $this->explodeName($pattern);
 
+        if (count($separatedPattern) === 1 && $separatedPattern[0] === '') {
+            // Pattern likely '\\' will match with all className.
+            return true;
+        }
         if (count($separatedClassName) < count($separatedPattern)) {
             return false;
         }
@@ -79,12 +82,6 @@ class QualifiedName
 
     protected function explodeName(string $qualifiedName)
     {
-        $separatedNames = explode('\\', $qualifiedName);
-
-        if ($separatedNames === false || empty($separatedNames[0])) {
-            throw new InvalidQualifiedNameException($qualifiedName);
-        }
-
-        return $separatedNames;
+        return explode('\\', $qualifiedName);
     }
 }
