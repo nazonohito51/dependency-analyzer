@@ -5,7 +5,7 @@ namespace DependencyAnalyzer\Detector\RuleViolationDetector;
 
 use DependencyAnalyzer\Exceptions\InvalidRuleDefinition;
 
-class RuleFactory
+class DependencyRuleFactory
 {
     public function create(array $ruleDefinitions): array
     {

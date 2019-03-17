@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\Detector\RuleViolationDetector;
-use DependencyAnalyzer\Detector\RuleViolationDetector\RuleFactory;
+use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRuleFactory;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,7 +47,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
             throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $this->ruleFile));
         }
 
-        $detector = new RuleViolationDetector((new RuleFactory())->create($ruleDefinition));
+        $detector = new RuleViolationDetector((new DependencyRuleFactory())->create($ruleDefinition));
         $result = $detector->inspect($graph);
         var_dump($result);
 

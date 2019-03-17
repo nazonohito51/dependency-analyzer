@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer\Detector\RuleViolationDetector;
 
 use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRule;
-use DependencyAnalyzer\Detector\RuleViolationDetector\RuleFactory;
+use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRuleFactory;
 use DependencyAnalyzer\Exceptions\InvalidRuleDefinition;
 use Tests\TestCase;
 
-class RuleFactoryTest extends TestCase
+class DependencyRuleFactoryTest extends TestCase
 {
     public function provideCreate()
     {
@@ -57,7 +57,7 @@ class RuleFactoryTest extends TestCase
                 ]
             ],
         ];
-        $factory = new RuleFactory();
+        $factory = new DependencyRuleFactory();
 
         $rules = $factory->create($ruleDefinitions);
 
@@ -99,7 +99,7 @@ class RuleFactoryTest extends TestCase
      */
     public function testCreate_WhenInvalidRuleDefinition(array $ruleDefinitions)
     {
-        $factory = new RuleFactory();
+        $factory = new DependencyRuleFactory();
 
         $factory->create($ruleDefinitions);
     }
