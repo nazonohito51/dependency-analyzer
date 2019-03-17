@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DependencyAnalyzer\Patterns;
 
-use DependencyAnalyzer\Patterns\QualifiedName;
+use DependencyAnalyzer\Patterns\QualifiedNamePattern;
 use Tests\TestCase;
 
-class QualifiedNameTest extends TestCase
+class QualifiedNamePatternTest extends TestCase
 {
     public function provideVerifyPattern_WhenValidPattern()
     {
@@ -27,9 +27,9 @@ class QualifiedNameTest extends TestCase
      */
     public function testVerifyPattern_WhenValidPattern(array $patterns)
     {
-        $qualifiedName = new QualifiedName($patterns);
+        $qualifiedName = new QualifiedNamePattern($patterns);
 
-        $this->assertInstanceOf(QualifiedName::class, $qualifiedName);
+        $this->assertInstanceOf(QualifiedNamePattern::class, $qualifiedName);
     }
 
     public function provideVerifyPattern_WhenInvalidPattern()
@@ -49,9 +49,9 @@ class QualifiedNameTest extends TestCase
      */
     public function testVerifyPattern_WhenInvalidPattern(array $patterns)
     {
-        $qualifiedName = new QualifiedName($patterns);
+        $qualifiedName = new QualifiedNamePattern($patterns);
 
-        $this->assertInstanceOf(QualifiedName::class, $qualifiedName);
+        $this->assertInstanceOf(QualifiedNamePattern::class, $qualifiedName);
     }
 
     public function provideIsMatch()
@@ -79,7 +79,7 @@ class QualifiedNameTest extends TestCase
      */
     public function testIsMatch(array $patterns, string $className, bool $expected)
     {
-        $qualifiedName = new QualifiedName($patterns);
+        $qualifiedName = new QualifiedNamePattern($patterns);
 
         $actual = $qualifiedName->isMatch($className);
 

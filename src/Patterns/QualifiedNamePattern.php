@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Patterns;
 
-use DependencyAnalyzer\Exceptions\InvalidQualifiedNameException;
 use DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException;
 
-class QualifiedName
+class QualifiedNamePattern
 {
     protected $patterns = [];
     protected $excludePatterns = [];
