@@ -61,7 +61,7 @@ class DependencyGraphBuilder
         foreach ($this->classes as $class) {
             $vertex = $graph->createVertex($class->getDisplayName());
             $vertex->setAttribute('reflection', $class);
-            $vertex->setAttribute('canOnlyUsedBy', $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class));
+            $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class));
         }
 
         foreach ($this->dependencyMap as $dependerId => $dependeeIds) {
