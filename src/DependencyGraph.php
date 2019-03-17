@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DependencyGraph\ClassLikeAggregate;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
 use Fhaculty\Graph\Edge\Directed;
@@ -26,35 +25,6 @@ class DependencyGraph implements \Countable
             }
         }
         $this->graph = $graph;
-    }
-
-    /**
-     * @param ClassLikeAggregate $dependencies
-     * @return DependencyGraph
-     */
-    public static function createFromClassLikeAggregate(ClassLikeAggregate $dependencies): self
-    {
-        $graph = new Graph();
-
-        foreach ($dependencies->getClassLikes() as $classLike) {
-            if (!$graph->hasVertex($classLike->getName())) {
-                $vertex = $graph->createVertex($classLike->getName());
-                $vertex->setAttribute('reflection', $classLike->getReflection());
-            }
-            $depender = $graph->getVertex($classLike->getName());
-
-            foreach ($classLike->getDependees() as $dependee) {
-                if (!$graph->hasVertex($dependee->getName())) {
-                    $vertex = $graph->createVertex($dependee->getName());
-                    $vertex->setAttribute('reflection', $dependee);
-                }
-                $dependee = $graph->getVertex($dependee->getName());
-
-                $depender->createEdgeTo($dependee);
-            }
-        }
-
-        return new self($graph);
     }
 
     public function getClasses()
