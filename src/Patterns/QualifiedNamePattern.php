@@ -48,9 +48,13 @@ class QualifiedNamePattern
             }
         }
 
-        foreach ($this->patterns as $pattern) {
-            if ($this->classNameBelongToPattern($className, $pattern)) {
-                return true;
+        if (count($this->patterns) === 0) {
+            return true;
+        } else {
+            foreach ($this->patterns as $pattern) {
+                if ($this->classNameBelongToPattern($className, $pattern)) {
+                    return true;
+                }
             }
         }
 

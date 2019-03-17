@@ -43,26 +43,26 @@ class ComponentTest extends TestCase
     public function provideVerifyDepender()
     {
         return [
-            [true, true],
-            [false, false],
+            [true, false, true],
+            [false, true, true],
+            [false, false, false],
         ];
     }
 
     /**
-     * @param bool $return
+     * @param bool $matchSameComponent
+     * @param bool $matchDependerPattern
      * @param bool $expected
      * @dataProvider provideVerifyDepender
      */
-    public function testVerifyDepender(bool $return, bool $expected)
+    public function testVerifyDepender(bool $matchSameComponent, bool $matchDependerPattern, bool $expected)
     {
         $className = 'className';
-        $qualifiedNamePattern = $this->createMock(QualifiedNamePattern::class);
-        $qualifiedNamePattern->method('isMatch')->with($className)->willReturn($return);
-        $component = new Component(
-            'componentName',
-            $this->createMock(QualifiedNamePattern::class),
-            [$qualifiedNamePattern]
-        );
+        $componentPattern = $this->createMock(QualifiedNamePattern::class);
+        $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
+        $dependerPatterns = $this->createMock(QualifiedNamePattern::class);
+        $dependerPatterns->method('isMatch')->with($className)->willReturn($matchDependerPattern);
+        $component = new Component('componentName', $componentPattern, [$dependerPatterns]);
 
         $this->assertSame($expected, $component->verifyDepender($className));
     }
@@ -70,27 +70,26 @@ class ComponentTest extends TestCase
     public function provideVerifyDependee()
     {
         return [
-            [true, true],
-            [false, false],
+            [true, false, true],
+            [false, true, true],
+            [false, false, false],
         ];
     }
 
     /**
-     * @param bool $return
+     * @param bool $matchSameComponent
+     * @param bool $matchDependeePattern
      * @param bool $expected
      * @dataProvider provideVerifyDependee
      */
-    public function testVerifyDependee(bool $return, bool $expected)
+    public function testVerifyDependee(bool $matchSameComponent, bool $matchDependeePattern, bool $expected)
     {
         $className = 'className';
-        $qualifiedNamePattern = $this->createMock(QualifiedNamePattern::class);
-        $qualifiedNamePattern->method('isMatch')->with($className)->willReturn($return);
-        $component = new Component(
-            'componentName',
-            $this->createMock(QualifiedNamePattern::class),
-            [],
-            [$qualifiedNamePattern]
-        );
+        $componentPattern = $this->createMock(QualifiedNamePattern::class);
+        $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
+        $dependeePattern = $this->createMock(QualifiedNamePattern::class);
+        $dependeePattern->method('isMatch')->with($className)->willReturn($matchDependeePattern);
+        $component = new Component('componentName', $componentPattern, [], [$dependeePattern]);
 
         $this->assertSame($expected, $component->verifyDependee($className));
     }

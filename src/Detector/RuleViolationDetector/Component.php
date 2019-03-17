@@ -54,11 +54,23 @@ class Component
 
     public function verifyDepender(string $className): bool
     {
+        if ($this->isBelongedTo($className)) {
+            return true;
+        } elseif (count($this->dependerPatterns) === 0) {
+            return true;
+        }
+
         return $this->checkPatterns($className, $this->dependerPatterns);
     }
 
     public function verifyDependee(string $className): bool
     {
+        if ($this->isBelongedTo($className)) {
+            return true;
+        } elseif (count($this->dependeePatterns) === 0) {
+            return true;
+        }
+
         return $this->checkPatterns($className, $this->dependeePatterns);
     }
 

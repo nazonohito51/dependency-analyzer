@@ -50,11 +50,10 @@ class RuleFactoryTest extends TestCase
             [
                 '@entities' => [
                     'define' => ['\Domain\Entities'],
-                    'white' => ['@repositoreis']
+                    'white' => ['@repositories']
                 ],
                 '@repositories' => [
-                    'define' => ['\Domain\Repositories'],
-                    'white' => ['@controller'],
+                    'define' => ['\Domain\Repositories']
                 ]
             ],
         ];
