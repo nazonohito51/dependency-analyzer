@@ -30,9 +30,9 @@ class QualifiedName
     protected function addPattern(string $pattern)
     {
         if ($this->isExcludePattern($pattern)) {
-            $this->excludePatterns[] = substr($pattern, 2);
+            $this->excludePatterns[] = rtrim(substr($pattern, 2), '\\');
         } else {
-            $this->patterns[] = substr($pattern, 1);
+            $this->patterns[] = rtrim(substr($pattern, 1), '\\');
         }
     }
 
