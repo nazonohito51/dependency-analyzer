@@ -7,21 +7,11 @@ use DependencyAnalyzer\Exceptions\InvalidRuleDefinition;
 
 class RuleFactory
 {
-    /**
-     * @var array
-     */
-    private $ruleDefinitions;
-
-    public function __construct(array $ruleDefinitions)
-    {
-        $this->ruleDefinitions = $ruleDefinitions;
-    }
-
-    public function create(): array
+    public function create(array $ruleDefinitions): array
     {
         $rules = [];
 
-        foreach ($this->ruleDefinitions as $ruleDefinition) {
+        foreach ($ruleDefinitions as $ruleDefinition) {
             if (!$this->verifyDefinition($ruleDefinition)) {
                 throw new InvalidRuleDefinition($ruleDefinition);
             }

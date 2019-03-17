@@ -58,9 +58,9 @@ class RuleFactoryTest extends TestCase
                 ]
             ],
         ];
-        $factory = new RuleFactory($ruleDefinitions);
+        $factory = new RuleFactory();
 
-        $rules = $factory->create();
+        $rules = $factory->create($ruleDefinitions);
 
         $this->assertCount(2, $rules);
         $this->assertEquals($ruleDefinitions, array_map(function (DependencyRule $rule) {
@@ -100,8 +100,8 @@ class RuleFactoryTest extends TestCase
      */
     public function testCreate_WhenInvalidRuleDefinition(array $ruleDefinitions)
     {
-        $factory = new RuleFactory($ruleDefinitions);
+        $factory = new RuleFactory();
 
-        $factory->create();
+        $factory->create($ruleDefinitions);
     }
 }

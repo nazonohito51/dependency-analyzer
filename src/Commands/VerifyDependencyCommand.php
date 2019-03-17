@@ -47,7 +47,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
             throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $this->ruleFile));
         }
 
-        $detector = new RuleViolationDetector((new RuleFactory($ruleDefinition))->create());
+        $detector = new RuleViolationDetector((new RuleFactory())->create($ruleDefinition));
         $result = $detector->inspect($graph);
         var_dump($result);
 
