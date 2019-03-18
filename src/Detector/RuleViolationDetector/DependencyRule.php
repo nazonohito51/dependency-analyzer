@@ -22,24 +22,9 @@ class DependencyRule
      */
     protected $components = [];
 
-    public function __construct(array $definition)
+    public function __construct(array $components)
     {
-        $this->definition = $definition;
-
-        foreach ($definition as $componentName => $componentDefinition) {
-            $definePattern = new QualifiedNamePattern($componentDefinition['define']);
-
-            $dependerPattern = [];
-            foreach ($componentDefinition['white'] ?? [] as $item) {
-                $dependerPattern[] = new QualifiedNamePattern($definition[$item]['define']);
-            }
-            foreach ($componentDefinition['black'] ?? [] as $item) {
-                $dependerPattern[] = new QualifiedNamePattern(array_map(function (string $pattern) {
-                    return '!' . $pattern;
-                }, $definition[$item]['define']));
-            }
-            $this->components[] = new Component($componentName, $definePattern, $dependerPattern);
-        }
+        $this->components = $components;
     }
 
     public function isSatisfyBy(DependencyGraph $graph): array

@@ -5,7 +5,6 @@ namespace Tests\Integration;
 
 use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyGraph;
-use PHPStan\DependencyInjection\ContainerFactory;
 use Tests\TestCase;
 
 class DependencyDumperTest extends TestCase

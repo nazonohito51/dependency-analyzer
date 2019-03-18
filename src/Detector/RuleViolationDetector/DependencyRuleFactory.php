@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Detector\RuleViolationDetector;
 
 use DependencyAnalyzer\Exceptions\InvalidRuleDefinition;
+use DependencyAnalyzer\Patterns\QualifiedNamePattern;
 
 class DependencyRuleFactory
 {
@@ -13,18 +14,60 @@ class DependencyRuleFactory
      */
     public function create(array $ruleDefinitions): array
     {
-        $rules = [];
-
         foreach ($ruleDefinitions as $ruleDefinition) {
             $this->verifyDefinition($ruleDefinition);
+        }
 
-            $rules[] = new DependencyRule($ruleDefinition);
+        $rules = [];
+        foreach ($ruleDefinitions as $ruleDefinition) {
+            $rules[] = $this->createDependencyRule($ruleDefinition);
         }
 
         return $rules;
     }
 
-    protected function verifyDefinition(array $ruleDefinition): bool
+    protected function createDependencyRule(array $ruleDefinition)
+    {
+        $componentDefines = [];
+        foreach ($ruleDefinition as $componentName => $componentDefinition) {
+            $componentDefines[$componentName] = $componentDefinition['define'];
+        }
+
+        $components = [];
+        foreach ($ruleDefinition as $componentName => $componentDefinition) {
+            $components[] = $this->createComponent($componentName, $componentDefinition, $componentDefines);
+        }
+        return new DependencyRule($components);
+    }
+
+    /**
+     * @param string $name
+     * @param array $definition
+     *   ex: [
+     *     'define' => [...]      // required
+     *     'white' => [...]       // option
+     *     'black' => [...]       // option
+     *   ]
+     * @param array $componentDefines
+     * @return Component
+     */
+    protected function createComponent(string $name, array $definition, array $componentDefines)
+    {
+        // TODO: change white/black to depender/dependee
+        $dependerPattern = [];
+        foreach ($definition['white'] ?? [] as $item) {
+            $dependerPattern[] = new QualifiedNamePattern($componentDefines[$item]);
+        }
+        foreach ($definition['black'] ?? [] as $item) {
+            $dependerPattern[] = new QualifiedNamePattern(array_map(function (string $pattern) {
+                return '!' . $pattern;
+            }, $componentDefines[$item]));
+        }
+
+        return new Component($name, new QualifiedNamePattern($definition['define']), $dependerPattern);
+    }
+
+    protected function verifyDefinition(array $ruleDefinition): void
     {
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
             if (substr($componentName, 0, 1) !== '@') {
@@ -39,16 +82,5 @@ class DependencyRuleFactory
                 );
             }
         }
-
-        return true;
-    }
-
-    /**
-     * @param string $path
-     * @return DependencyRule[]
-     */
-    public function createFromPhpFile(string $path): array
-    {
-        return [];
     }
 }

@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class DependencyRuleTest extends TestCase
 {
-    public function provideIsSatisfiedBy()
+    public function provideCreate()
     {
         return [
             'white list(valid)' => [
@@ -73,15 +73,48 @@ class DependencyRuleTest extends TestCase
                 ],
                 ['Controller\Dir\Class2(@controller) must not depend on Application\Class1(@application).']
             ],
+//            'exclude analysis list(valid)' => [
+//                [
+//                    '@controller' => [
+//                        'define' => ['\Controller'],
+//                    ],
+//                    '@application' => [
+//                        'define' => ['\Application'],
+//                        'black' => ['@controller', '@domain'],
+//                        'excludeAnalysis' => ['\Controller\Dir\Class2.php'],
+//                    ],
+//                    '@domain' => [
+//                        'define' => ['\Domain'],
+//                    ]
+//                ],
+//                []
+//            ],
+//            'exclude analysis list(invalid)' => [
+//                [
+//                    '@controller' => [
+//                        'define' => ['\Controller'],
+//                        'exclude' => '\Controller\Providers'
+//                    ],
+//                    '@application' => [
+//                        'define' => ['\Application'],
+//                        'black' => ['@controller', '@domain'],
+//                        'excludeAnalysis' => ['\Controller\Dir\Class1.php'],
+//                    ],
+//                    '@domain' => [
+//                        'define' => ['\Domain'],
+//                    ]
+//                ],
+//                ['\Controller\Dir\Class2.php(@controller) must not depend on \Application\Class1.php(@application).']
+//            ],
         ];
     }
 
     /**
      * @param array $ruleDefinition
      * @param array $expected
-     * @dataProvider provideIsSatisfiedBy
+     * @dataProvider provideCreate
      */
-    public function testIsSatisfiedBy(array $ruleDefinition, array $expected)
+    public function testCreate(array $ruleDefinition, array $expected)
     {
         $graph = $this->createDependencyGraph();
         $factory = new DependencyRuleFactory();
@@ -123,5 +156,41 @@ class DependencyRuleTest extends TestCase
         $domain3->createEdgeTo($carbon);
 
         return new DependencyGraph($graph);
+    }
+
+    public function provideCreate_WhenInvalidRuleDefinition()
+    {
+        return [
+            'invalid_group_name' => [
+                [
+                    'controller' => [
+                        'define' => '\Controller',
+                    ],
+                    '@application' => [
+                        'define' => '\Application',
+                    ],
+                ]
+            ],
+            'no_define' => [
+                [
+                    '@controller' => [
+                        'define' => '\Controller',
+                    ],
+                    '@application' => [
+                    ],
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @param array $ruleDefinitions
+     * @dataProvider provideCreate_WhenInvalidRuleDefinition
+     * @expectedException \DependencyAnalyzer\Exceptions\InvalidRuleDefinition
+     */
+    public function testCreate_WhenInvalidRuleDefinition(array $ruleDefinitions)
+    {
+        $factory = new DependencyRuleFactory();
+        $factory->create($ruleDefinitions);
     }
 }
