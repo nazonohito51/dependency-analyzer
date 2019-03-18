@@ -1,6 +1,6 @@
 <?php
 return [
-    [
+    'layer dependency rule' => [
         '@controller' => [
             'define' => ['\App'],
         ],
@@ -13,7 +13,7 @@ return [
             'white' => ['@application']
         ]
     ],
-    [
+    'create entity rule' => [
         '@entities' => [
             'define' => ['\Acme\Domain\Entities'],
             'white' => ['@repositories']
