@@ -7,14 +7,16 @@ use DependencyAnalyzer\Exceptions\InvalidRuleDefinition;
 
 class DependencyRuleFactory
 {
+    /**
+     * @param array $ruleDefinitions
+     * @return DependencyRule[]
+     */
     public function create(array $ruleDefinitions): array
     {
         $rules = [];
 
         foreach ($ruleDefinitions as $ruleDefinition) {
-            if (!$this->verifyDefinition($ruleDefinition)) {
-                throw new InvalidRuleDefinition($ruleDefinition);
-            }
+            $this->verifyDefinition($ruleDefinition);
 
             $rules[] = new DependencyRule($ruleDefinition);
         }
@@ -24,11 +26,17 @@ class DependencyRuleFactory
 
     protected function verifyDefinition(array $ruleDefinition): bool
     {
-        foreach ($ruleDefinition as $groupName => $groupDefinition) {
-            if (substr($groupName, 0, 1) !== '@') {
-                return false;
-            } elseif (!isset($groupDefinition['define']) || !is_array($groupDefinition['define'])) {
-                return false;
+        foreach ($ruleDefinition as $componentName => $componentDefinition) {
+            if (substr($componentName, 0, 1) !== '@') {
+                throw new InvalidRuleDefinition(
+                    $ruleDefinition,
+                    "component name must start with '@'(ex: @application, @domain). Your component name: {$componentName}"
+                );
+            } elseif (!isset($componentDefinition['define']) || !is_array($componentDefinition['define'])) {
+                throw new InvalidRuleDefinition(
+                    $ruleDefinition,
+                    "component must have 'define'. Invalid your component: {$componentName}"
+                );
             }
         }
 
