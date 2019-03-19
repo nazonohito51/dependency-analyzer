@@ -13,14 +13,14 @@ class DependencyRuleTest extends TestCase
     public function provideCreate()
     {
         return [
-            'white list(valid)' => [
+            'depender(valid)' => [
                 [
                     'ControllerLayer' => [
                         'define' => ['\Controller'],
                     ],
                     'ApplicationLayer' => [
                         'define' => ['\Application'],
-                        'white' => ['\Controller'],
+                        'depender' => ['\Controller'],
                     ],
                     'DomainLayer' => [
                         'define' => ['\Domain'],
@@ -28,14 +28,14 @@ class DependencyRuleTest extends TestCase
                 ],
                 []
             ],
-            'white list(invalid)' => [
+            'depender(invalid)' => [
                 [
                     'ControllerLayer' => [
                         'define' => ['\Controller'],
                     ],
                     'ApplicationLayer' => [
                         'define' => ['\Application'],
-                        'white' => ['\Domain'],
+                        'depender' => ['\Domain'],
                     ],
                     'DomainLayer' => [
                         'define' => ['\Domain'],
@@ -43,14 +43,14 @@ class DependencyRuleTest extends TestCase
                 ],
                 ['Controller\Dir\Class2(ControllerLayer) must not depend on Application\Class1(ApplicationLayer).']
             ],
-            'black list(valid)' => [
+            'dependee(valid)' => [
                 [
                     'ControllerLayer' => [
                         'define' => ['\Controller'],
                     ],
                     'ApplicationLayer' => [
                         'define' => ['\Application'],
-                        'black' => ['\Domain'],
+                        'dependee' => ['\Domain'],
                     ],
                     'DomainLayer' => [
                         'define' => ['\Domain'],
@@ -58,26 +58,26 @@ class DependencyRuleTest extends TestCase
                 ],
                 []
             ],
-            'black list(invalid)' => [
+            'dependee(invalid)' => [
                 [
                     'ControllerLayer' => [
                         'define' => ['\Controller'],
                     ],
                     'ApplicationLayer' => [
                         'define' => ['\Application'],
-                        'black' => ['\Controller'],
+                        'dependee' => ['\Controller'],
                     ],
                     'DomainLayer' => [
                         'define' => ['\Domain'],
                     ]
                 ],
-                ['Controller\Dir\Class2(ControllerLayer) must not depend on Application\Class1(ApplicationLayer).']
+                ['Application\Dir\Class2(ApplicationLayer) must not depend on Domain\Class1(DomainLayer).']
             ],
             'have other component(valid)' => [
                 [
                     'Target' => [
                         'define' => ['\Application\Dir\Dir\Class3'],
-                        'white' => ['\Application\Class1', '\Application\Dir\Class2']
+                        'depender' => ['\Application\Class1', '\Application\Dir\Class2']
                     ],
                     'other' => [
                         'define' => ['\\', '!\Application\Dir\Dir\Class3'],
@@ -89,7 +89,7 @@ class DependencyRuleTest extends TestCase
                 [
                     'Target' => [
                         'define' => ['\Application\Dir\Dir\Class3'],
-                        'white' => ['\Application\Dir\Class2']
+                        'depender' => ['\Application\Dir\Class2']
                     ],
                     'other' => [
                         'define' => ['\\', '!\Application\Dir\Dir\Class3'],

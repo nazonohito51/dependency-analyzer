@@ -60,9 +60,9 @@ class ComponentTest extends TestCase
         $className = 'className';
         $componentPattern = $this->createMock(QualifiedNamePattern::class);
         $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
-        $dependerPatterns = $this->createMock(QualifiedNamePattern::class);
-        $dependerPatterns->method('isMatch')->with($className)->willReturn($matchDependerPattern);
-        $component = new Component('componentName', $componentPattern, [$dependerPatterns]);
+        $dependerPattern = $this->createMock(QualifiedNamePattern::class);
+        $dependerPattern->method('isMatch')->with($className)->willReturn($matchDependerPattern);
+        $component = new Component('componentName', $componentPattern, $dependerPattern);
 
         $this->assertSame($expected, $component->verifyDepender($className));
     }
@@ -89,7 +89,7 @@ class ComponentTest extends TestCase
         $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
         $dependeePattern = $this->createMock(QualifiedNamePattern::class);
         $dependeePattern->method('isMatch')->with($className)->willReturn($matchDependeePattern);
-        $component = new Component('componentName', $componentPattern, [], [$dependeePattern]);
+        $component = new Component('componentName', $componentPattern, null, $dependeePattern);
 
         $this->assertSame($expected, $component->verifyDependee($className));
     }

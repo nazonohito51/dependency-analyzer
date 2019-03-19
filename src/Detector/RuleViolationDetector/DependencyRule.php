@@ -46,6 +46,12 @@ class DependencyRule
                         $errors[] = "{$depender->getId()}({$this->getGroupName($depender)}) must not depend on {$dependee->getId()}({$this->getGroupName($dependee)}).";
                     }
                 }
+
+                if ($component->isBelongedTo($depender->getId())) {
+                    if (!$component->verifyDependee($dependee->getId())) {
+                        $errors[] = "{$depender->getId()}({$this->getGroupName($depender)}) must not depend on {$dependee->getId()}({$this->getGroupName($dependee)}).";
+                    }
+                }
             }
         }
 

@@ -44,26 +44,20 @@ class DependencyRuleFactory
      * @param string $name
      * @param array $definition
      *   ex: [
-     *     'define' => [...]      // required
-     *     'white' => [...]       // option
-     *     'black' => [...]       // option
+     *     'define'   => [...]      // required
+     *     'depender' => [...]      // option
+     *     'dependee' => [...]      // option
      *   ]
      * @return Component
      */
     protected function createComponent(string $name, array $definition)
     {
-        // TODO: change white/black to depender/dependee
-        $dependerPattern = [];
-        if (isset($definition['white'])) {
-            $dependerPattern[] = new QualifiedNamePattern($definition['white']);
-        }
-        if (isset($definition['black'])) {
-            $dependerPattern[] = new QualifiedNamePattern(array_map(function (string $pattern) {
-                return '!' . $pattern;
-            }, $definition['black'] ?? []));
-        }
-
-        return new Component($name, new QualifiedNamePattern($definition['define']), $dependerPattern);
+        return new Component(
+            $name,
+            new QualifiedNamePattern($definition['define']),
+            isset($definition['depender']) ? new QualifiedNamePattern($definition['depender']) : null,
+            isset($definition['dependee']) ? new QualifiedNamePattern($definition['dependee']) : null
+        );
     }
 
     protected function verifyDefinition(array $ruleDefinition): void

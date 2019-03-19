@@ -11,17 +11,17 @@ return [
         ],
         'ApplicationLayer' => [
             'define' => $applicationDefine,
-            'white' => $controllerDefine,
+            'depender' => $controllerDefine,
         ],
         'DomainLayer' => [
             'define' => $domainDefine,
-            'white' => $applicationDefine
+            'depender' => $applicationDefine
         ]
     ],
     'create entity rule' => [
         'Entities' => [
             'define' => ['\Acme\Domain\Entities'],
-            'white' => $repositoryDefine
+            'depender' => $repositoryDefine
         ],
         'Repositories' => [
             'define' => $repositoryDefine,

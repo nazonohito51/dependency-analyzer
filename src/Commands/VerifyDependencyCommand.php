@@ -63,7 +63,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         foreach ($graph->getClassesHaveOnlyUsedTag() as $class => $classesInPhpDoc) {
             $targetComponent = [
                 'define' => ['\\' . $class],
-                'white' => $classesInPhpDoc
+                'depender' => $classesInPhpDoc
             ];
 
             $otherComponent = [

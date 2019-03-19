@@ -31,10 +31,10 @@ class Component
      * Component constructor.
      * @param string $name
      * @param QualifiedNamePattern $pattern
-     * @param QualifiedNamePattern[] $dependerPatterns
-     * @param QualifiedNamePattern[] $dependeePatterns
+     * @param QualifiedNamePattern $dependerPatterns
+     * @param QualifiedNamePattern $dependeePatterns
      */
-    public function __construct(string $name, QualifiedNamePattern $pattern, array $dependerPatterns = [], array $dependeePatterns = [])
+    public function __construct(string $name, QualifiedNamePattern $pattern, QualifiedNamePattern $dependerPatterns = null, QualifiedNamePattern $dependeePatterns = null)
     {
         $this->name = $name;
         $this->pattern = $pattern;
@@ -56,22 +56,24 @@ class Component
     {
         if ($this->isBelongedTo($className)) {
             return true;
-        } elseif (count($this->dependerPatterns) === 0) {
+        } elseif (is_null($this->dependerPatterns)) {
             return true;
         }
 
-        return $this->checkPatterns($className, $this->dependerPatterns);
+        return $this->dependerPatterns->isMatch($className);
+//        return $this->checkPatterns($className, $this->dependerPatterns);
     }
 
     public function verifyDependee(string $className): bool
     {
         if ($this->isBelongedTo($className)) {
             return true;
-        } elseif (count($this->dependeePatterns) === 0) {
+        } elseif (is_null($this->dependeePatterns)) {
             return true;
         }
 
-        return $this->checkPatterns($className, $this->dependeePatterns);
+        return $this->dependeePatterns->isMatch($className);
+//        return $this->checkPatterns($className, $this->dependeePatterns);
     }
 
     /**
