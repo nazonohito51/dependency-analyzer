@@ -1,25 +1,30 @@
 <?php
+$controllerDefine = ['\App'];
+$applicationDefine = ['\Acme\Application'];
+$domainDefine = ['\Acme\Domain'];
+$repositoryDefine = ['\Acme\Domain\Repositories'];
+
 return [
     'layer dependency rule' => [
         '@controller' => [
-            'define' => ['\App'],
+            'define' => $controllerDefine,
         ],
         '@application' => [
-            'define' => ['\Acme\Application'],
-            'white' => ['@controller'],
+            'define' => $applicationDefine,
+            'white' => $controllerDefine,
         ],
         '@domain' => [
-            'define' => ['\Acme\Domain'],
-            'white' => ['@application']
+            'define' => $domainDefine,
+            'white' => $applicationDefine
         ]
     ],
     'create entity rule' => [
         '@entities' => [
             'define' => ['\Acme\Domain\Entities'],
-            'white' => ['@repositories']
+            'white' => $repositoryDefine
         ],
         '@repositories' => [
-            'define' => ['\Acme\Domain\Repositories'],
+            'define' => $repositoryDefine,
         ]
     ],
 ];
