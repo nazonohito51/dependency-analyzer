@@ -69,12 +69,7 @@ class DependencyRuleFactory
     protected function verifyDefinition(array $ruleDefinition): void
     {
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
-            if (substr($componentName, 0, 1) !== '@') {
-                throw new InvalidRuleDefinition(
-                    $ruleDefinition,
-                    "component name must start with '@'(ex: @application, @domain). Your component name: {$componentName}"
-                );
-            } elseif (!isset($componentDefinition['define']) || !is_array($componentDefinition['define'])) {
+            if (!isset($componentDefinition['define']) || !is_array($componentDefinition['define'])) {
                 throw new InvalidRuleDefinition(
                     $ruleDefinition,
                     "component must have 'define'. Invalid your component: {$componentName}"

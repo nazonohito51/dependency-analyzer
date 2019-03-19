@@ -6,24 +6,24 @@ $repositoryDefine = ['\Acme\Domain\Repositories'];
 
 return [
     'layer dependency rule' => [
-        '@controller' => [
+        'ControllerLayer' => [
             'define' => $controllerDefine,
         ],
-        '@application' => [
+        'ApplicationLayer' => [
             'define' => $applicationDefine,
             'white' => $controllerDefine,
         ],
-        '@domain' => [
+        'DomainLayer' => [
             'define' => $domainDefine,
             'white' => $applicationDefine
         ]
     ],
     'create entity rule' => [
-        '@entities' => [
+        'Entities' => [
             'define' => ['\Acme\Domain\Entities'],
             'white' => $repositoryDefine
         ],
-        '@repositories' => [
+        'Repositories' => [
             'define' => $repositoryDefine,
         ]
     ],

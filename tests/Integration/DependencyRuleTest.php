@@ -15,14 +15,14 @@ class DependencyRuleTest extends TestCase
         return [
             'white list(valid)' => [
                 [
-                    '@controller' => [
+                    'ControllerLayer' => [
                         'define' => ['\Controller'],
                     ],
-                    '@application' => [
+                    'ApplicationLayer' => [
                         'define' => ['\Application'],
                         'white' => ['\Controller'],
                     ],
-                    '@domain' => [
+                    'DomainLayer' => [
                         'define' => ['\Domain'],
                     ]
                 ],
@@ -30,29 +30,29 @@ class DependencyRuleTest extends TestCase
             ],
             'white list(invalid)' => [
                 [
-                    '@controller' => [
+                    'ControllerLayer' => [
                         'define' => ['\Controller'],
                     ],
-                    '@application' => [
+                    'ApplicationLayer' => [
                         'define' => ['\Application'],
                         'white' => ['\Domain'],
                     ],
-                    '@domain' => [
+                    'DomainLayer' => [
                         'define' => ['\Domain'],
                     ]
                 ],
-                ['Controller\Dir\Class2(@controller) must not depend on Application\Class1(@application).']
+                ['Controller\Dir\Class2(ControllerLayer) must not depend on Application\Class1(ApplicationLayer).']
             ],
             'black list(valid)' => [
                 [
-                    '@controller' => [
+                    'ControllerLayer' => [
                         'define' => ['\Controller'],
                     ],
-                    '@application' => [
+                    'ApplicationLayer' => [
                         'define' => ['\Application'],
                         'black' => ['\Domain'],
                     ],
-                    '@domain' => [
+                    'DomainLayer' => [
                         'define' => ['\Domain'],
                     ]
                 ],
@@ -60,30 +60,30 @@ class DependencyRuleTest extends TestCase
             ],
             'black list(invalid)' => [
                 [
-                    '@controller' => [
+                    'ControllerLayer' => [
                         'define' => ['\Controller'],
                     ],
-                    '@application' => [
+                    'ApplicationLayer' => [
                         'define' => ['\Application'],
                         'black' => ['\Controller'],
                     ],
-                    '@domain' => [
+                    'DomainLayer' => [
                         'define' => ['\Domain'],
                     ]
                 ],
-                ['Controller\Dir\Class2(@controller) must not depend on Application\Class1(@application).']
+                ['Controller\Dir\Class2(ControllerLayer) must not depend on Application\Class1(ApplicationLayer).']
             ],
 //            'exclude analysis list(valid)' => [
 //                [
-//                    '@controller' => [
+//                    'ControllerLayer' => [
 //                        'define' => ['\Controller'],
 //                    ],
-//                    '@application' => [
+//                    'ApplicationLayer' => [
 //                        'define' => ['\Application'],
-//                        'black' => ['@controller', '@domain'],
+//                        'black' => ['ControllerLayer', 'DomainLayer'],
 //                        'excludeAnalysis' => ['\Controller\Dir\Class2.php'],
 //                    ],
-//                    '@domain' => [
+//                    'DomainLayer' => [
 //                        'define' => ['\Domain'],
 //                    ]
 //                ],
@@ -91,20 +91,20 @@ class DependencyRuleTest extends TestCase
 //            ],
 //            'exclude analysis list(invalid)' => [
 //                [
-//                    '@controller' => [
+//                    'ControllerLayer' => [
 //                        'define' => ['\Controller'],
 //                        'exclude' => '\Controller\Providers'
 //                    ],
-//                    '@application' => [
+//                    'ApplicationLayer' => [
 //                        'define' => ['\Application'],
-//                        'black' => ['@controller', '@domain'],
+//                        'black' => ['ControllerLayer', 'DomainLayer'],
 //                        'excludeAnalysis' => ['\Controller\Dir\Class1.php'],
 //                    ],
-//                    '@domain' => [
+//                    'DomainLayer' => [
 //                        'define' => ['\Domain'],
 //                    ]
 //                ],
-//                ['\Controller\Dir\Class2.php(@controller) must not depend on \Application\Class1.php(@application).']
+//                ['\Controller\Dir\Class2.php(ControllerLayer) must not depend on \Application\Class1.php(ApplicationLayer).']
 //            ],
         ];
     }
@@ -166,17 +166,17 @@ class DependencyRuleTest extends TestCase
                     'controller' => [
                         'define' => '\Controller',
                     ],
-                    '@application' => [
+                    'ApplicationLayer' => [
                         'define' => '\Application',
                     ],
                 ]
             ],
             'no_define' => [
                 [
-                    '@controller' => [
+                    'ControllerLayer' => [
                         'define' => '\Controller',
                     ],
-                    '@application' => [
+                    'ApplicationLayer' => [
                     ],
                 ]
             ],
