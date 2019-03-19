@@ -73,6 +73,30 @@ class DependencyRuleTest extends TestCase
                 ],
                 ['Controller\Dir\Class2(ControllerLayer) must not depend on Application\Class1(ApplicationLayer).']
             ],
+            'have other component(valid)' => [
+                [
+                    'Target' => [
+                        'define' => ['\Application\Dir\Dir\Class3'],
+                        'white' => ['\Application\Class1', '\Application\Dir\Class2']
+                    ],
+                    'other' => [
+                        'define' => ['\\', '!\Application\Dir\Dir\Class3'],
+                    ]
+                ],
+                []
+            ],
+            'have other component(invalid)' => [
+                [
+                    'Target' => [
+                        'define' => ['\Application\Dir\Dir\Class3'],
+                        'white' => ['\Application\Dir\Class2']
+                    ],
+                    'other' => [
+                        'define' => ['\\', '!\Application\Dir\Dir\Class3'],
+                    ]
+                ],
+                ['Application\Class1(other) must not depend on Application\Dir\Dir\Class3(Target).']
+            ],
 //            'exclude analysis list(valid)' => [
 //                [
 //                    'ControllerLayer' => [
