@@ -35,7 +35,7 @@ class DependencyRuleFactory
 
         $components = [];
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
-            $components[] = $this->createComponent($componentName, $componentDefinition, $componentDefines);
+            $components[] = $this->createComponent($componentName, $componentDefinition);
         }
         return new DependencyRule($components);
     }
@@ -48,20 +48,19 @@ class DependencyRuleFactory
      *     'white' => [...]       // option
      *     'black' => [...]       // option
      *   ]
-     * @param array $componentDefines
      * @return Component
      */
-    protected function createComponent(string $name, array $definition, array $componentDefines)
+    protected function createComponent(string $name, array $definition)
     {
         // TODO: change white/black to depender/dependee
         $dependerPattern = [];
-        foreach ($definition['white'] ?? [] as $item) {
-            $dependerPattern[] = new QualifiedNamePattern($componentDefines[$item]);
+        if (isset($definition['white'])) {
+            $dependerPattern[] = new QualifiedNamePattern($definition['white']);
         }
-        foreach ($definition['black'] ?? [] as $item) {
+        if (isset($definition['black'])) {
             $dependerPattern[] = new QualifiedNamePattern(array_map(function (string $pattern) {
                 return '!' . $pattern;
-            }, $componentDefines[$item]));
+            }, $definition['black'] ?? []));
         }
 
         return new Component($name, new QualifiedNamePattern($definition['define']), $dependerPattern);

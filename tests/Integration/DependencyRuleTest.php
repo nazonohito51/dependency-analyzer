@@ -20,7 +20,7 @@ class DependencyRuleTest extends TestCase
                     ],
                     '@application' => [
                         'define' => ['\Application'],
-                        'white' => ['@controller'],
+                        'white' => ['\Controller'],
                     ],
                     '@domain' => [
                         'define' => ['\Domain'],
@@ -35,7 +35,7 @@ class DependencyRuleTest extends TestCase
                     ],
                     '@application' => [
                         'define' => ['\Application'],
-                        'white' => ['@domain'],
+                        'white' => ['\Domain'],
                     ],
                     '@domain' => [
                         'define' => ['\Domain'],
@@ -50,7 +50,7 @@ class DependencyRuleTest extends TestCase
                     ],
                     '@application' => [
                         'define' => ['\Application'],
-                        'black' => ['@domain'],
+                        'black' => ['\Domain'],
                     ],
                     '@domain' => [
                         'define' => ['\Domain'],
@@ -65,7 +65,7 @@ class DependencyRuleTest extends TestCase
                     ],
                     '@application' => [
                         'define' => ['\Application'],
-                        'black' => ['@controller'],
+                        'black' => ['\Controller'],
                     ],
                     '@domain' => [
                         'define' => ['\Domain'],
