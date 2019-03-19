@@ -47,10 +47,37 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
             throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $this->ruleFile));
         }
 
-        $detector = new RuleViolationDetector((new DependencyRuleFactory())->create($ruleDefinition));
+        $detector = new RuleViolationDetector((new DependencyRuleFactory())->create(array_merge(
+            $ruleDefinition,
+            $this->createRuleDefinitionFromPhpDoc($graph)
+        )));
         $result = $detector->inspect($graph);
         var_dump($result);
 
         return count($result) > 0 ? 1 : 0;
+    }
+
+    protected function createRuleDefinitionFromPhpDoc(DependencyGraph $graph): array
+    {
+        $ruleDefinitions = [];
+        foreach ($graph->getClassesHaveOnlyUsedTag() as $class => $classesInPhpDoc) {
+            $targetComponent = [
+                'define' => ['\\' . $class],
+                'white' => $classesInPhpDoc
+            ];
+
+            $otherComponent = [
+                'define' => array_merge(['\\'], array_map(function (string $className) {
+                    return '!' . $className;
+                }, $classesInPhpDoc)),
+            ];
+
+            $ruleDefinitions[] = [
+                'phpdoc' => $targetComponent,
+                'other' => $otherComponent
+            ];
+        }
+
+        return $ruleDefinitions;
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
+use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
 use Fhaculty\Graph\Edge\Directed;
@@ -84,6 +85,19 @@ class DependencyGraph implements \Countable
                 $this->walkThroughEdge($edgeOut, $path, $carry);
             }
         }
+    }
+
+    public function getClassesHaveOnlyUsedTag(): array
+    {
+        $classes = [];
+        foreach ($this->getClasses() as $class) {
+            /** @var Vertex $class */
+            if (!empty($classNames = $class->getAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS))) {
+                $classes[$class->getId()] = $classNames;
+            }
+        }
+
+        return $classes;
     }
 
     public function toArray()
