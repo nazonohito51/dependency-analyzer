@@ -24,28 +24,44 @@ class UmlFormatter
      */
     protected $components = [];
 
+    protected $groupedClasses = [];
+
+    /**
+     * @var QualifiedNamePattern
+     */
+    protected $excludeDefinition;
+
     public function __construct(DependencyGraph $graph, array $ruleDefinition = [])
     {
         $this->graph = $graph;
         $this->ruleDefinition = $ruleDefinition;
 
-        foreach ($ruleDefinition as $componentName => $componentDefinition) {
-            $this->components[] = new Component($componentName, new QualifiedNamePattern($componentDefinition));
+        if (isset($ruleDefinition['namespace'])) {
+            foreach ($ruleDefinition['namespace'] as $componentName => $componentDefinition) {
+                $this->components[] = new Component($componentName, new QualifiedNamePattern($componentDefinition));
+            }
         }
+        if (isset($ruleDefinition['exclude'])) {
+            $this->excludeDefinition = new QualifiedNamePattern($ruleDefinition['exclude']);
+        }
+
+        $this->groupedClasses = $this->getGroupedClasses($this->graph, $this->components);
     }
 
     public function format()
     {
         $output = '@startuml' . PHP_EOL;
 
-        foreach ($this->getGroupedClasses() as $componentName => $classes) {
+        foreach ($this->groupedClasses as $componentName => $classes) {
             if ($componentName !== '') {
                 $output .= "namespace {$componentName} {" . PHP_EOL;
             }
 
             foreach ($classes as $class) {
-                $output .= "class {$class} {" . PHP_EOL;
-                $output .= '}' . PHP_EOL;
+                if (!$this->isExcludeClass($class)) {
+                    $output .= "class {$class} {" . PHP_EOL;
+                    $output .= '}' . PHP_EOL;
+                }
             }
 
             if ($componentName !== '') {
@@ -56,7 +72,11 @@ class UmlFormatter
         foreach ($this->graph->getDependencyArrows() as $edge) {
             $depender = $edge->getVertexStart();
             $dependee = $edge->getVertexEnd();
-            $output .= "{$depender->getId()} --> {$dependee->getId()}" . PHP_EOL;
+
+            if ($this->isExcludeClass($depender->getId()) || $this->isExcludeClass($dependee->getId())) {
+                continue;
+            }
+            $output .= "{$this->searchGroupedClasses($depender->getId())} --> {$this->searchGroupedClasses($dependee->getId())}" . PHP_EOL;
         }
 
         $output .= '@enduml';
@@ -64,11 +84,20 @@ class UmlFormatter
         return $output;
     }
 
-    protected function getGroupedClasses(): array
+    protected function isExcludeClass(string $className)
+    {
+        if ($this->excludeDefinition) {
+            return $this->excludeDefinition->isMatch($className);
+        }
+
+        return false;
+    }
+
+    protected function getGroupedClasses(DependencyGraph $graph, array $components): array
     {
         $classNames = [];
-        foreach ($this->graph->getClasses() as $class) {
-            $key = $this->getBelongToComponent($class->getId());
+        foreach ($graph->getClasses() as $class) {
+            $key = $this->getBelongToComponent($class->getId(), $components);
             $classNames[$key][] = $class->getId();
 //            $classNames[] = $class->getId();
         }
@@ -77,14 +106,31 @@ class UmlFormatter
         return $classNames;
     }
 
-    protected function getBelongToComponent(string $className): string
+    protected function getBelongToComponent(string $className, array $components): string
     {
-        foreach ($this->components as $component) {
+        foreach ($components as $component) {
             if ($component->isBelongedTo($className)) {
                 return $component->getName();
             }
         }
 
         return '';
+    }
+
+    protected function searchGroupedClasses(string $needle)
+    {
+        foreach ($this->groupedClasses as $componentName => $classes) {
+            if ($componentName === '') {
+                continue;
+            }
+
+            foreach ($classes as $class) {
+                if ($class === $needle) {
+                    return "{$componentName}.$needle";
+                }
+            }
+        }
+
+        return $needle;
     }
 }

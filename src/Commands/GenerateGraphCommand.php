@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GenerateGraphCommand extends AnalyzeDependencyCommand
 {
     protected $output;
-    protected $ruleFile;
+    protected $ruleDefinition = [];
 
     protected function getCommandName(): string
     {
@@ -36,28 +36,26 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
     {
         parent::initialize($input, $output);
         $this->output = $input->getOption('output');
-        $this->ruleFile = $input->getOption('rule');
+
+        if ($ruleFile = $input->getOption('rule')) {
+            if (!is_file($ruleFile)) {
+                throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $ruleFile));
+            }
+            $this->ruleDefinition = require_once $ruleFile;
+            if (!is_array($this->ruleDefinition)) {
+                throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $ruleFile));
+            }
+        }
     }
 
     protected function inspectDependencyGraph(DependencyGraph $graph): int
     {
-        if ($this->ruleFile) {
-            if (!is_file($this->ruleFile)) {
-                throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $this->ruleFile));
-            }
-            $ruleDefinition = require_once $this->ruleFile;
-            if (!is_array($ruleDefinition)) {
-                throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $this->ruleFile));
-            }
-        } else {
-            $ruleDefinition = [];
-        }
-
-        $formatter = new UmlFormatter($graph, $ruleDefinition);
+        $formatter = new UmlFormatter($graph, $this->ruleDefinition);
 
         $outputFile = new \SplFileObject($this->output, 'w');
         $outputFile->fwrite($formatter->format());
 
+        // TODO: make Response
         return 0;
     }
 }
