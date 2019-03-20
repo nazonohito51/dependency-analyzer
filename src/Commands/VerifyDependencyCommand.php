@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class VerifyDependencyCommand extends AnalyzeDependencyCommand
 {
-    protected $ruleFile;
+    protected $ruleDefinition;
 
     protected function getCommandName(): string
     {
@@ -34,21 +34,21 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         parent::initialize($input, $output);
-        $this->ruleFile = $input->getOption('rule');
+
+        $ruleFile = $input->getOption('rule');
+        if (!is_file($ruleFile)) {
+            throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $ruleFile));
+        }
+        $this->ruleDefinition = require_once $ruleFile;
+        if (!is_array($this->ruleDefinition)) {
+            throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $ruleFile));
+        }
     }
 
     protected function inspectDependencyGraph(DependencyGraph $graph): int
     {
-        if (!is_file($this->ruleFile)) {
-            throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $this->ruleFile));
-        }
-        $ruleDefinition = require_once $this->ruleFile;
-        if (!is_array($ruleDefinition)) {
-            throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $this->ruleFile));
-        }
-
         $detector = new RuleViolationDetector((new DependencyRuleFactory())->create(array_merge(
-            $ruleDefinition,
+            $this->ruleDefinition,
             $this->createRuleDefinitionFromPhpDoc($graph)
         )));
         $result = $detector->inspect($graph);
