@@ -1,4 +1,14 @@
 {
+    "name": "nazonohito51/dependency-analyzer",
+    "description": "Analyze/Verify class dependencies in PHP.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "kawashima",
+            "email": "nazonohito51@gmail.com"
+        }
+    ],
     "require": {
         "php": "~7.1",
         "phpstan/phpstan": "~0.11",
