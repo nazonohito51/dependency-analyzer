@@ -52,22 +52,52 @@ class UmlFormatter
     {
         $output = '@startuml' . PHP_EOL;
 
-        foreach ($this->groupedClasses as $componentName => $classes) {
-            if ($componentName !== '') {
-                $output .= "namespace {$componentName} {" . PHP_EOL;
-            }
+        foreach ($this->components as $component) {
+            $output .= "namespace {$component->getName()} {" . PHP_EOL;
 
-            foreach ($classes as $class) {
-                if (!$this->isExcludeClass($class)) {
-                    $output .= "class {$class} {" . PHP_EOL;
-                    $output .= '}' . PHP_EOL;
+            foreach ($this->graph->getClasses() as $class) {
+                if ($component->isBelongedTo($class->getId())) {
+                    if (!$this->isExcludeClass($class->getId())) {
+                        $output .= "class {$class->getId()} {" . PHP_EOL;
+                        $output .= '}' . PHP_EOL;
+                    }
                 }
             }
 
-            if ($componentName !== '') {
-                $output .= '}' . PHP_EOL;
-            }
+            $output .= '}' . PHP_EOL;
         }
+
+        foreach ($this->graph->getClasses() as $class) {
+            if ($this->isExcludeClass($class->getId())) {
+                continue;
+            }
+
+            foreach ($this->components as $component) {
+                if ($component->isBelongedTo($class->getId())) {
+                    continue 2;
+                }
+            }
+
+            $output .= "class {$class->getId()} {" . PHP_EOL;
+            $output .= '}' . PHP_EOL;
+        }
+
+//        foreach ($this->groupedClasses as $componentName => $classes) {
+//            if ($componentName !== '') {
+//                $output .= "namespace {$componentName} {" . PHP_EOL;
+//            }
+//
+//            foreach ($classes as $class) {
+//                if (!$this->isExcludeClass($class)) {
+//                    $output .= "class {$class} {" . PHP_EOL;
+//                    $output .= '}' . PHP_EOL;
+//                }
+//            }
+//
+//            if ($componentName !== '') {
+//                $output .= '}' . PHP_EOL;
+//            }
+//        }
 
         foreach ($this->graph->getDependencyArrows() as $edge) {
             $depender = $edge->getVertexStart();
