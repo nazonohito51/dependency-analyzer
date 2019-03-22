@@ -6,6 +6,7 @@ namespace DependencyAnalyzer;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
+use DependencyAnalyzer\Patterns\QualifiedNamePattern;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Vertices;
@@ -36,6 +37,30 @@ class DependencyGraph implements \Countable
     public function getDependencyArrows()
     {
         return $this->graph->getEdges();
+    }
+
+    public function groupByPattern(string $name, QualifiedNamePattern $pattern)
+    {
+        $graph = new Graph();
+        $graph->createVertex($name);
+        foreach ($this->getClasses() as $class) {
+            /** @var Vertex $class */
+            if (!$pattern->isMatch($class->getId())) {
+                $graph->createVertex($class->getId());
+            }
+        }
+
+        foreach ($this->getDependencyArrows() as $dependencyArrow) {
+            /** @var Directed $dependencyArrow */
+            $start = $pattern->isMatch($dependencyArrow->getVertexStart()->getId()) ? $name : $dependencyArrow->getVertexStart()->getId();
+            $end = $pattern->isMatch($dependencyArrow->getVertexEnd()->getId()) ? $name : $dependencyArrow->getVertexEnd()->getId();
+
+            if ($start !== $end && !$graph->getVertex($start)->hasEdgeTo($graph->getVertex($end))) {
+                $graph->getVertex($start)->createEdgeTo($graph->getVertex($end));
+            }
+        }
+
+        return new self($graph);
     }
 
     public function getConnectedSubGraphsStartFrom(Vertex $vertex)
