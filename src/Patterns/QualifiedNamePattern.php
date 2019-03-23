@@ -7,6 +7,9 @@ use DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException;
 
 class QualifiedNamePattern
 {
+    const PHP_NATIVE_CLASSES = '@php_native';
+    protected static $nativeClasses = [];
+
     protected $patterns = [];
     protected $excludePatterns = [];
 
@@ -23,21 +26,32 @@ class QualifiedNamePattern
 
     protected function verifyPattern(string $pattern)
     {
-        return preg_match('/^!?' . preg_quote('\\', '/') . '(.*)$/', $pattern, $matches) === 1;
+        return (
+            preg_match('/^!?' . preg_quote('\\', '/') . '(.*)$/', $pattern, $matches) === 1 ||
+            $this->isMagicWordPattern($pattern)
+        );
     }
 
     protected function addPattern(string $pattern)
     {
         if ($this->isExcludePattern($pattern)) {
-            $this->excludePatterns[] = rtrim(substr($pattern, 2), '\\');
+            $this->excludePatterns[] = $this->isMagicWordPattern($pattern) ? substr($pattern, 1) : rtrim(substr($pattern, 2), '\\');
         } else {
-            $this->patterns[] = rtrim(substr($pattern, 1), '\\');
+            $this->patterns[] = $this->isMagicWordPattern($pattern) ? $pattern : rtrim(substr($pattern, 1), '\\');
         }
     }
 
     protected function isExcludePattern(string $pattern)
     {
         return preg_match('/^!/', $pattern) === 1;
+    }
+
+    protected function isMagicWordPattern(string $pattern)
+    {
+        return in_array($pattern, [
+            self::PHP_NATIVE_CLASSES,
+            '!' . self::PHP_NATIVE_CLASSES,
+        ]);
     }
 
     public function isMatch(string $className)
@@ -63,6 +77,10 @@ class QualifiedNamePattern
 
     protected function classNameBelongToPattern(string $className, string $pattern)
     {
+        if ($this->isMagicWordPattern($pattern)) {
+            return in_array($className, self::$nativeClasses);
+        }
+
         $separatedClassName = $this->explodeName($className);
         $separatedPattern = $this->explodeName($pattern);
 
@@ -86,5 +104,10 @@ class QualifiedNamePattern
     protected function explodeName(string $qualifiedName)
     {
         return explode('\\', $qualifiedName);
+    }
+
+    public static function setPhpNativeClasses(array $nativeClasses)
+    {
+        self::$nativeClasses = $nativeClasses;
     }
 }

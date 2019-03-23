@@ -8,6 +8,11 @@ use Tests\TestCase;
 
 class QualifiedNamePatternTest extends TestCase
 {
+    public function tearDown()
+    {
+        QualifiedNamePattern::setPhpNativeClasses([]);
+    }
+
     public function provideVerifyPattern_WhenValidPattern()
     {
         return [
@@ -18,6 +23,7 @@ class QualifiedNamePatternTest extends TestCase
             [['!\\Tests\\Fixtures']],
             [['!\\Tests\\Fixtures\\']],
             [['\\']],
+            [['@php_native']]
         ];
     }
 
@@ -38,7 +44,8 @@ class QualifiedNamePatternTest extends TestCase
             [['Tests']],
             [['Tests\\Fixtures']],
             [['!!\\Tests']],
-            [['?\\Tests']]
+            [['?\\Tests']],
+            [['@non_exist_magic_word']]
         ];
     }
 
@@ -67,7 +74,9 @@ class QualifiedNamePatternTest extends TestCase
             'multi patterns 3' => [['\\Tests\\Fixtures', '\\Tests\\Integration'], 'Tests\\Unit\\SomeClass', false],
             'pattern with exclude pattern 1' => [['\\Tests', '!\\Tests\\Fixtures'], 'Tests\\Fixtures\\SomeClass', false],
             'pattern with exclude pattern 2' => [['\\Tests', '!\\Tests\\Fixtures'], 'Tests\\Integration\\SomeClass', true],
-            'incomplete patten match' => [['\\Tests\\Inte'], 'Tests\\Integration\\SomeClass', false]
+            'incomplete patten match' => [['\\Tests\\Inte'], 'Tests\\Integration\\SomeClass', false],
+            'magic word' => [[QualifiedNamePattern::PHP_NATIVE_CLASSES], 'SplFileObject', true],
+            'exclude magic word' => [['!' . QualifiedNamePattern::PHP_NATIVE_CLASSES], 'SplFileObject', false]
         ];
     }
 
@@ -79,6 +88,7 @@ class QualifiedNamePatternTest extends TestCase
      */
     public function testIsMatch(array $patterns, string $className, bool $expected)
     {
+        QualifiedNamePattern::setPhpNativeClasses(['SplFileObject']);
         $qualifiedName = new QualifiedNamePattern($patterns);
 
         $actual = $qualifiedName->isMatch($className);

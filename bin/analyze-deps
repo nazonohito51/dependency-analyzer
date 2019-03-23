@@ -1,13 +1,16 @@
 #!/usr/bin/env php
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 use Composer\XdebugHandler\XdebugHandler;
 
 gc_disable(); // performance boost
 
+// TODO: How can I get native classes...
+define('PHP_NATIVE_CLASSES', get_declared_classes());
+\DependencyAnalyzer\Patterns\QualifiedNamePattern::setPhpNativeClasses(PHP_NATIVE_CLASSES);
 // TODO: This is not used anywhere.
 define('__PHPSTAN_RUNNING__', true);
-
 
 // TODO: require autoload
 $autoloaderInWorkingDirectory = getcwd() . '/vendor/autoload.php';
