@@ -68,6 +68,20 @@ Namespace1.v1 --> Namespace2.v3
 @enduml
 EOT;
 
+        $expectedWithGroupRule = <<<EOT
+@startuml
+namespace Namespace1 {
+class MyGroup {
+}
+}
+namespace Namespace2 {
+class v3 {
+}
+}
+Namespace1.MyGroup --> Namespace2.v3
+@enduml
+EOT;
+
         return [
             'without rule' => [$dependencyGraph, [], $expectedWithoutRule],
             'with rule' => [$dependencyGraph, [
@@ -83,6 +97,15 @@ EOT;
                 ],
                 'exclude' => ['\v2']
             ], $expectedWithExcludeRule],
+            'with group rule' => [$dependencyGraph, [
+                'namespace' => [
+                    'Namespace1' => ['\MyGroup'],
+                    'Namespace2' => ['\v3'],
+                ],
+                'group' => [
+                    'MyGroup' => ['\v1', '\v2']
+                ]
+            ], $expectedWithGroupRule],
         ];
     }
 

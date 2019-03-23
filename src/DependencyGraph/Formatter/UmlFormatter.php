@@ -44,6 +44,11 @@ class UmlFormatter
         if (isset($ruleDefinition['exclude'])) {
             $this->excludeDefinition = new QualifiedNamePattern($ruleDefinition['exclude']);
         }
+        if (isset($ruleDefinition['group'])) {
+            foreach ($ruleDefinition['group'] as $groupName => $groupDefinition) {
+                $this->graph = $this->graph->groupByPattern($groupName, new QualifiedNamePattern($groupDefinition));
+            }
+        }
 
         $this->groupedClasses = $this->getGroupedClasses($this->graph, $this->components);
     }
