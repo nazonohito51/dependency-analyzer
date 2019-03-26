@@ -8,7 +8,8 @@ gc_disable(); // performance boost
 
 // TODO: How can I get native classes...
 define('PHP_NATIVE_CLASSES', get_declared_classes());
-\DependencyAnalyzer\Patterns\QualifiedNamePattern::setPhpNativeClasses(PHP_NATIVE_CLASSES);
+define('PHP_NATIVE_INTERFACES', get_declared_interfaces());
+define('PHP_NATIVE_TRAITS', get_declared_traits());
 // TODO: This is not used anywhere.
 define('__PHPSTAN_RUNNING__', true);
 
@@ -37,6 +38,10 @@ try {
 } catch (\OutOfBoundsException $e) {
 
 }
+
+\DependencyAnalyzer\Patterns\QualifiedNamePattern::setPhpNativeClasses(array_merge(
+    PHP_NATIVE_CLASSES, PHP_NATIVE_INTERFACES, PHP_NATIVE_TRAITS
+));
 
 $application = new \Symfony\Component\Console\Application(
 	'PHP Dependency Analyzer',
