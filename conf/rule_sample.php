@@ -1,5 +1,5 @@
 <?php
-$controllerDefine = ['\App'];
+$controllerDefine = ['\App', '!\App\Providers'];
 $applicationDefine = ['\Acme\Application'];
 $domainDefine = ['\Acme\Domain'];
 $repositoryDefine = ['\Acme\Domain\Repositories'];
