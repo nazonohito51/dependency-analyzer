@@ -104,14 +104,31 @@ This library analyze those syntaxs by using [PHPStan](), and crate dependency ma
 ### Create dependency graph
 wiki
 
+* rule file
+* namespace
+* group
+* comment
+
 ### Verify your dependency rule
 wiki
+
+* rule file
+  * multiple rules
+  * depender/dependee
+* phpdoc
+* namespace rule
+* magic keyword
 
 ### Detect cycle dependency
 wiki
 
 ## TODO
+- [ ] README
+  - [ ] graph
+  - [ ] wiki
 - [ ] Response object & format
 - [ ] comment of Plant UML
+- [ ] namespace pattern matting
 - [ ] Graph format
-- [ ] 
+- [ ] original rule logic
+- [ ] remove dependency to vertex, edge
