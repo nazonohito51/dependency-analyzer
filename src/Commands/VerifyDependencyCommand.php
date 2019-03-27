@@ -61,6 +61,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
     {
         $ruleDefinitions = [];
         foreach ($graph->getClassesHaveOnlyUsedTag() as $class => $classesInPhpDoc) {
+            // TODO: Is '\\' needed?
             $targetComponent = [
                 'define' => ['\\' . $class],
                 'depender' => $classesInPhpDoc
