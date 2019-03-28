@@ -17,13 +17,16 @@ class DependencyRuleFactory
         $rules = [];
         foreach ($ruleDefinitions as $ruleName => $ruleDefinition) {
             $this->verifyDefinition($ruleDefinition);
+            if (is_int($ruleName)) {
+                $ruleName = (string)$ruleName;
+            }
             $rules[] = $this->createDependencyRule($ruleName, $ruleDefinition);
         }
 
         return $rules;
     }
 
-    protected function createDependencyRule($ruleName, array $ruleDefinition)
+    protected function createDependencyRule(string $ruleName, array $ruleDefinition)
     {
         $componentDefines = [];
         foreach ($ruleDefinition as $componentName => $componentDefinition) {

@@ -47,20 +47,20 @@ class DependencyRule
             $dependee = $edge->getVertexEnd();
 
             // TODO: add exclude rule
-            if (is_null($this->getGroupName($depender)) || is_null($this->getGroupName($dependee))) {
+            if (is_null($this->getComponentName($depender)) || is_null($this->getComponentName($dependee))) {
                 continue;
             }
 
             foreach ($this->components as $component) {
                 if ($component->isBelongedTo($dependee->getId())) {
                     if (!$component->verifyDepender($depender->getId())) {
-                        $errors[] = "{$depender->getId()}({$this->getGroupName($depender)}) must not depend on {$dependee->getId()}({$this->getGroupName($dependee)}).";
+                        $errors[] = "{$depender->getId()}({$this->getComponentName($depender)}) must not depend on {$dependee->getId()}({$this->getComponentName($dependee)}).";
                     }
                 }
 
                 if ($component->isBelongedTo($depender->getId())) {
                     if (!$component->verifyDependee($dependee->getId())) {
-                        $errors[] = "{$depender->getId()}({$this->getGroupName($depender)}) must not depend on {$dependee->getId()}({$this->getGroupName($dependee)}).";
+                        $errors[] = "{$depender->getId()}({$this->getComponentName($depender)}) must not depend on {$dependee->getId()}({$this->getComponentName($dependee)}).";
                     }
                 }
             }
@@ -69,11 +69,16 @@ class DependencyRule
         return $errors;
     }
 
-    protected function getGroupName(Vertex $vertex): ?string
+    protected function getComponentName(Vertex $vertex): ?string
+    {
+        return $this->getComponent($vertex) ? $this->getComponent($vertex)->getName() : null;
+    }
+
+    protected function getComponent(Vertex $vertex): ?Component
     {
         foreach ($this->components as $component) {
             if ($component->isBelongedTo($vertex->getId())) {
-                return $component->getName();
+                return $component;
             }
         }
 
