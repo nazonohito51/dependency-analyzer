@@ -73,7 +73,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
                 }, $classesInPhpDoc)),
             ];
 
-            $ruleDefinitions[] = [
+            $ruleDefinitions['phpdoc in ' . $class] = [
                 'phpdoc' => $targetComponent,
                 'other' => $otherComponent
             ];
