@@ -3,6 +3,7 @@ namespace DependencyAnalyzer\Detector;
 
 use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRule;
 use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\Responses\VerifyDependencyResponse;
 
 class RuleViolationDetector
 {
@@ -19,13 +20,17 @@ class RuleViolationDetector
         $this->rules = $rules;
     }
 
-    public function inspect(DependencyGraph $graph)
+    /**
+     * @param DependencyGraph $graph
+     * @return VerifyDependencyResponse[]
+     */
+    public function inspect(DependencyGraph $graph): array
     {
-        $ruleViolations = [];
+        $verifyDependencyResponses = [];
         foreach ($this->rules as $rule) {
-            $ruleViolations = array_merge($ruleViolations, $rule->isSatisfyBy($graph));
+            $verifyDependencyResponses[] = $rule->isSatisfyBy($graph);
         }
 
-        return $ruleViolations;
+        return $verifyDependencyResponses;
     }
 }

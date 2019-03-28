@@ -51,10 +51,20 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
             $this->ruleDefinition,
             $this->createRuleDefinitionFromPhpDoc($graph)
         )));
-        $result = $detector->inspect($graph);
-        var_dump($result);
+        $responses = $detector->inspect($graph);
 
-        return count($result) > 0 ? 1 : 0;
+        $errorCount = 0;
+        foreach ($responses as $respons) {
+            if ($respons->count() > 0) {
+                $errorCount += $respons->count();
+                $output->writeln($respons->getRuleName());
+                foreach ($respons->getViolations() as $violation) {
+                    $output->writeln("| {$violation['dependerComponent']} | {$violation['depender']} | -> | {$violation['dependeeComponent']} | {$violation['dependee']} |");
+                }
+            }
+        }
+
+        return $errorCount > 0 ? 1 : 0;
     }
 
     protected function createRuleDefinitionFromPhpDoc(DependencyGraph $graph): array

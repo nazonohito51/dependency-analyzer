@@ -5,6 +5,7 @@ namespace DependencyAnalyzer\Detector\RuleViolationDetector;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Patterns\QualifiedNamePattern;
+use DependencyAnalyzer\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Vertex;
 
 class DependencyRule
@@ -38,9 +39,10 @@ class DependencyRule
         return $this->ruleName;
     }
 
-    public function isSatisfyBy(DependencyGraph $graph): array
+    public function isSatisfyBy(DependencyGraph $graph): VerifyDependencyResponse
     {
-        $errors = [];
+        $response = new VerifyDependencyResponse($this->getRuleName());
+//        $errors = [];
 
         foreach ($graph->getDependencyArrows() as $edge) {
             $depender = $edge->getVertexStart();
@@ -54,19 +56,32 @@ class DependencyRule
             foreach ($this->components as $component) {
                 if ($component->isBelongedTo($dependee->getId())) {
                     if (!$component->verifyDepender($depender->getId())) {
-                        $errors[] = "{$depender->getId()}({$this->getComponentName($depender)}) must not depend on {$dependee->getId()}({$this->getComponentName($dependee)}).";
+                        $response->addRuleViolation(
+                            $this->getComponent($depender)->getName(),
+                            $depender->getId(),
+                            $this->getComponent($dependee)->getName(),
+                            $dependee->getId()
+                        );
+//                        $errors[] = "{$depender->getId()}({$this->getComponentName($depender)}) must not depend on {$dependee->getId()}({$this->getComponentName($dependee)}).";
                     }
                 }
 
                 if ($component->isBelongedTo($depender->getId())) {
                     if (!$component->verifyDependee($dependee->getId())) {
-                        $errors[] = "{$depender->getId()}({$this->getComponentName($depender)}) must not depend on {$dependee->getId()}({$this->getComponentName($dependee)}).";
+                        $response->addRuleViolation(
+                            $this->getComponent($depender)->getName(),
+                            $depender->getId(),
+                            $this->getComponent($dependee)->getName(),
+                            $dependee->getId()
+                        );
+//                        $errors[] = "{$depender->getId()}({$this->getComponentName($depender)}) must not depend on {$dependee->getId()}({$this->getComponentName($dependee)}).";
                     }
                 }
             }
         }
 
-        return $errors;
+        return $response;
+//        return $errors;
     }
 
     protected function getComponentName(Vertex $vertex): ?string

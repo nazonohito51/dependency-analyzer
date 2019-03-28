@@ -5,6 +5,7 @@ namespace Tests\Integration;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRuleFactory;
+use DependencyAnalyzer\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
@@ -41,7 +42,12 @@ class DependencyRuleTest extends TestCase
                         'define' => ['\Domain'],
                     ]
                 ],
-                ['Controller\Dir\Class2(ControllerLayer) must not depend on Application\Class1(ApplicationLayer).']
+                [[
+                    'dependerComponent' => 'ControllerLayer',
+                    'depender' => 'Controller\Dir\Class2',
+                    'dependeeComponent' => 'ApplicationLayer',
+                    'dependee' => 'Application\Class1',
+                ]]
             ],
             'dependee(valid)' => [
                 [
@@ -71,7 +77,12 @@ class DependencyRuleTest extends TestCase
                         'define' => ['\Domain'],
                     ]
                 ],
-                ['Application\Dir\Class2(ApplicationLayer) must not depend on Domain\Class1(DomainLayer).']
+                [[
+                    'dependerComponent' => 'ApplicationLayer',
+                    'depender' => 'Application\Dir\Class2',
+                    'dependeeComponent' => 'DomainLayer',
+                    'dependee' => 'Domain\Class1',
+                ]]
             ],
             'have other component(valid)' => [
                 [
@@ -95,7 +106,12 @@ class DependencyRuleTest extends TestCase
                         'define' => ['\\', '!\Application\Dir\Dir\Class3'],
                     ]
                 ],
-                ['Application\Class1(other) must not depend on Application\Dir\Dir\Class3(Target).']
+                [[
+                    'dependerComponent' => 'other',
+                    'depender' => 'Application\Class1',
+                    'dependeeComponent' => 'Target',
+                    'dependee' => 'Application\Dir\Dir\Class3',
+                ]]
             ],
 //            'exclude analysis list(valid)' => [
 //                [
@@ -146,7 +162,7 @@ class DependencyRuleTest extends TestCase
 
         $actual = $rules[0]->isSatisfyBy($graph);
 
-        $this->assertSame($expected, $actual);
+        $this->assertSame($expected, $actual->getViolations());
     }
 
     protected function createDependencyGraph()
