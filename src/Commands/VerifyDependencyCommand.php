@@ -45,7 +45,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         }
     }
 
-    protected function inspectDependencyGraph(DependencyGraph $graph): int
+    protected function inspectDependencyGraph(DependencyGraph $graph, OutputInterface $output): int
     {
         $detector = new RuleViolationDetector((new DependencyRuleFactory())->create(array_merge(
             $this->ruleDefinition,

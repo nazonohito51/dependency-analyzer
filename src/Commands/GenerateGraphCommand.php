@@ -48,7 +48,7 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
         }
     }
 
-    protected function inspectDependencyGraph(DependencyGraph $graph): int
+    protected function inspectDependencyGraph(DependencyGraph $graph, OutputInterface $output): int
     {
         $formatter = new UmlFormatter($graph, $this->ruleDefinition);
 

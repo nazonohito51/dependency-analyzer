@@ -18,7 +18,7 @@ abstract class AnalyzeDependencyCommand extends Command
 {
     const DEFAULT_CONFIG_FILES = [__DIR__ . '/../../conf/config.neon'];
 
-    protected abstract function inspectDependencyGraph(DependencyGraph $graph): int;
+    protected abstract function inspectDependencyGraph(DependencyGraph $graph, OutputInterface $output): int;
     protected abstract function getCommandName(): string;
     protected abstract function getCommandDescription(): string;
 
@@ -44,7 +44,7 @@ abstract class AnalyzeDependencyCommand extends Command
             !is_null($input->getOption('exclude')) ? [$input->getOption('exclude')] : []
         );
 
-        return $this->inspectDependencyGraph($dependencyGraph);
+        return $this->inspectDependencyGraph($dependencyGraph, $output);
     }
 
     /**

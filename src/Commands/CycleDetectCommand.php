@@ -5,6 +5,7 @@ namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\Detector\CycleDetector;
 use DependencyAnalyzer\DependencyGraph;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class CycleDetectCommand extends AnalyzeDependencyCommand
 {
@@ -18,7 +19,7 @@ class CycleDetectCommand extends AnalyzeDependencyCommand
         return 'detect cycle dependency in dependency map';
     }
 
-    protected function inspectDependencyGraph(DependencyGraph $graph): int
+    protected function inspectDependencyGraph(DependencyGraph $graph, OutputInterface $output): int
     {
         $result = (new CycleDetector())->inspect($graph);
         var_dump($result);
