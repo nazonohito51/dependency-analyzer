@@ -55,7 +55,8 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
         $outputFile = new \SplFileObject($this->output, 'w');
         $outputFile->fwrite($formatter->format());
 
-        // TODO: make Response
+        $output->writeln("generated graph: {$this->output}");
+
         return 0;
     }
 }
