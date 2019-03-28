@@ -142,7 +142,7 @@ class DependencyRuleTest extends TestCase
     {
         $graph = $this->createDependencyGraph();
         $factory = new DependencyRuleFactory();
-        $rules = $factory->create([$ruleDefinition]);
+        $rules = $factory->create(['testCreateRule' => $ruleDefinition]);
 
         $actual = $rules[0]->isSatisfyBy($graph);
 

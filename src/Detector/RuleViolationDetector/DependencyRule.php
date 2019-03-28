@@ -22,9 +22,20 @@ class DependencyRule
      */
     protected $components = [];
 
-    public function __construct(array $components)
+    /**
+     * @var string
+     */
+    private $ruleName;
+
+    public function __construct(string $ruleName, array $components)
     {
+        $this->ruleName = $ruleName;
         $this->components = $components;
+    }
+
+    public function getRuleName(): string
+    {
+        return $this->ruleName;
     }
 
     public function isSatisfyBy(DependencyGraph $graph): array

@@ -14,19 +14,16 @@ class DependencyRuleFactory
      */
     public function create(array $ruleDefinitions): array
     {
-        foreach ($ruleDefinitions as $ruleDefinition) {
-            $this->verifyDefinition($ruleDefinition);
-        }
-
         $rules = [];
-        foreach ($ruleDefinitions as $ruleDefinition) {
-            $rules[] = $this->createDependencyRule($ruleDefinition);
+        foreach ($ruleDefinitions as $ruleName => $ruleDefinition) {
+            $this->verifyDefinition($ruleDefinition);
+            $rules[] = $this->createDependencyRule($ruleName, $ruleDefinition);
         }
 
         return $rules;
     }
 
-    protected function createDependencyRule(array $ruleDefinition)
+    protected function createDependencyRule($ruleName, array $ruleDefinition)
     {
         $componentDefines = [];
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
@@ -37,7 +34,7 @@ class DependencyRuleFactory
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
             $components[] = $this->createComponent($componentName, $componentDefinition);
         }
-        return new DependencyRule($components);
+        return new DependencyRule($ruleName, $components);
     }
 
     /**
