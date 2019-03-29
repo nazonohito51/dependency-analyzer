@@ -2,6 +2,10 @@
 
 Analyze/Verify dependency map for php.
 
+[![Latest Stable Version](https://poser.pugx.org/nazonohito51/dependency-analyzer/version)](https://packagist.org/packages/nazonohito51/dependency-analyzer)
+[![Build Status](https://scrutinizer-ci.com/g/nazonohito51/dependency-analyzer/badges/build.png?b=master)](https://scrutinizer-ci.com/g/nazonohito51/dependency-analyzer/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nazonohito51/dependency-analyzer/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nazonohito51/dependency-analyzer/?branch=master)
+
 ## Description
 
 Dependency analyzer help you to keeping clean your architecture.
@@ -50,14 +54,16 @@ return [
 ```
 
 ```bash
-php ./bin/analyze-deps detect-cycle ./some/analyze/dir --rule ./conf/rule_sample.php
+php ./bin/analyze-deps verify --rule ./conf/rule_sample.php ./some/analyze/dir
 ```
 
 ```bash
-array(1) {
-  [0] =>
-  string(131) "App\UseCaseRequests\GetUserRequest(ControllerLayer) must not depend on Acme\Domain\Entities\User(DomainLayer)."
-}
+layer dependency rule
++------------------------------------+-----------------+----+---------------------------+-------------+
+| depender                           | component       |    | dependee                  | component   |
++------------------------------------+-----------------+----+---------------------------+-------------+
+| App\UseCaseRequests\GetUserRequest | ControllerLayer | -> | Acme\Domain\Entities\User | DomainLayer |
++------------------------------------+-----------------+----+---------------------------+-------------+
 ```
 
 ### Detect cycle dependency
@@ -67,20 +73,16 @@ php ./bin/analyze-deps detect-cycle ./some/analyze/dir
 ```
 
 ```bash
-  array(6) {
-    [0] =>
-    string(39) "App\Http\Controllers\Api\UserController"
-    [1] =>
-    string(43) "Acme\Application\UseCases\GetUserInteractor"
-    [2] =>
-    string(42) "Acme\Application\Responses\GetUserResponse"
-    [3] =>
-    string(25) "Acme\Domain\Entities\User"
-    [4] =>
-    string(35) "App\Http\Controllers\UserController"
-    [5] =>
-    string(34) "App\UseCaseRequests\GetUserRequest"
-  }
++---------------------------------------------+----+
+| class                                       |    |
++---------------------------------------------+----+
+| App\Http\Controllers\Api\UserController     | -> |
+| Acme\Application\UseCases\GetUserInteractor | -> |
+| Acme\Domain\Entities\User                   | -> |
+| App\Http\Controllers\UserController         | -> |
+| App\UseCaseRequests\GetUserRequest          | -> |
+| App\Http\Controllers\Api\UserController     |    |
++---------------------------------------------+----+
 ```
 
 ## What is dependency?
@@ -126,9 +128,12 @@ wiki
 - [ ] README
   - [ ] graph
   - [ ] wiki
-- [ ] Response object & format
+- [x] Response object & format
+  - [x] use table format
 - [ ] comment of Plant UML
-- [ ] namespace pattern matting
-- [ ] Graph format
+- [ ] fix namespace pattern matting(adjust file pattern matting)
+  - [ ] \Hoge\Fuga\*
+  - [ ] only !\Hoge\Fuga
+- [ ] Graph format(another puml)
 - [ ] original rule logic
-- [ ] remove dependency to vertex, edge
+  - [ ] remove dependency to vertex, edge
