@@ -7,6 +7,7 @@ use DependencyAnalyzer\Detector\RuleViolationDetector;
 use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRuleFactory;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
+use LucidFrame\Console\ConsoleTable;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -56,12 +57,32 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         $errorCount = 0;
         foreach ($responses as $respons) {
             if ($respons->count() > 0) {
+                $table = (new ConsoleTable())
+                    ->addHeader('depender')
+                    ->addHeader('component')
+                    ->addHeader('')
+                    ->addHeader('dependee')
+                    ->addHeader('component');
+
                 $errorCount += $respons->count();
+                $output->writeln('');
                 $output->writeln($respons->getRuleName());
                 foreach ($respons->getViolations() as $violation) {
-                    $output->writeln("| {$violation['dependerComponent']} | {$violation['depender']} | -> | {$violation['dependeeComponent']} | {$violation['dependee']} |");
+                    $table->addRow([
+                        $violation['depender'],
+                        $violation['dependerComponent'],
+                        '->',
+                        $violation['dependee'],
+                        $violation['dependeeComponent']
+                    ]);
                 }
+
+                $output->write($table->getTable());
             }
+        }
+
+        if ($errorCount === 0) {
+            $output->write('rule violation is not found.');
         }
 
         return $errorCount > 0 ? 1 : 0;

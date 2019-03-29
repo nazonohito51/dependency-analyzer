@@ -5,6 +5,7 @@ namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\Detector\CycleDetector;
 use DependencyAnalyzer\DependencyGraph;
+use LucidFrame\Console\ConsoleTable;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CycleDetectCommand extends AnalyzeDependencyCommand
@@ -27,14 +28,15 @@ class CycleDetectCommand extends AnalyzeDependencyCommand
         $output->writeln('');
 
         foreach ($response->getCycles() as $cycle) {
+            $table = (new ConsoleTable())
+                ->addHeader('class')
+                ->addHeader('');
             foreach ($cycle as $index => $class) {
-                if ($index < count($cycle) - 1) {
-                    $output->writeln("| {$class} | -> |");
-                } else {
-                    $output->writeln("| {$class} | |");
-                }
+                $haveNextClass = (bool)($index < (count($cycle) - 1));
+                $table->addRow([$class, $haveNextClass ? '->' : '']);
             }
 
+            $output->write($table->getTable());
             $output->writeln('');
         }
 
