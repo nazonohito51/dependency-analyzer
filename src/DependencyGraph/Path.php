@@ -74,25 +74,6 @@ class Path implements \Countable
         return $this->getFirstEdge()->getVertexStart()->getId() === $this->getLastEdge()->getVertexEnd()->getId();
     }
 
-    /**
-     * @return string[]
-     */
-    public function getIds(): array
-    {
-        if ($this->count() === 0) {
-            return [];
-        }
-
-        $ids = [$this->edges[0]->getVertexStart()->getId()];
-        foreach ($this->edges as $edge) {
-            if (!in_array($edge->getVertexEnd()->getId(), $ids)) {
-                $ids[] = $edge->getVertexEnd()->getId();
-            }
-        }
-
-        return $ids;
-    }
-
     public function isEqual(Path $that): bool
     {
         if ($this->count() === 0 || $that->count() === 0) {
@@ -105,9 +86,9 @@ class Path implements \Countable
         } elseif ($this->isSimpleCycle() !== $that->isSimpleCycle()) {
             return false;
         } elseif ($this->isSimpleCycle() && $that->isSimpleCycle()) {
-            return empty(array_diff($this->getIds(), $that->getIds())) && empty(array_diff($that->getIds(), $this->getIds()));
+            return empty(array_diff($this->toArray(), $that->toArray())) && empty(array_diff($that->toArray(), $this->toArray()));
         } else {
-            return $this->getIds() === $that->getIds();
+            return $this->toArray() === $that->toArray();
         }
     }
 
@@ -130,6 +111,23 @@ class Path implements \Countable
         reset($this->edges);
 
         return $edge;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        if ($this->count() === 0) {
+            return [];
+        }
+
+        $ids = [$this->edges[0]->getVertexStart()->getId()];
+        foreach ($this->edges as $edge) {
+            $ids[] = $edge->getVertexEnd()->getId();
+        }
+
+        return $ids;
     }
 
     public function count(): int

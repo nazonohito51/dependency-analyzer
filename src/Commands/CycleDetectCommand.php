@@ -21,9 +21,23 @@ class CycleDetectCommand extends AnalyzeDependencyCommand
 
     protected function inspectDependencyGraph(DependencyGraph $graph, OutputInterface $output): int
     {
-        $result = (new CycleDetector())->inspect($graph);
-        var_dump($result);
+        $response = (new CycleDetector())->inspect($graph);
 
-        return count($result) > 0 ? 1 : 0;
+        $output->writeln("{$response->count()} cycles detected.");
+        $output->writeln('');
+
+        foreach ($response->getCycles() as $cycle) {
+            foreach ($cycle as $index => $class) {
+                if ($index < count($cycle) - 1) {
+                    $output->writeln("| {$class} | -> |");
+                } else {
+                    $output->writeln("| {$class} | |");
+                }
+            }
+
+            $output->writeln('');
+        }
+
+        return count($response) > 0 ? 1 : 0;
     }
 }

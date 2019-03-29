@@ -54,13 +54,13 @@ class CycleDetectorTest extends TestCase
         $vertex9->createEdgeTo($vertex1);
 
         return [
-            [$this->createSimpleCycleGraph(['v1', 'v2']), [['v1', 'v2']]],
-            [$this->createSimpleCycleGraph(['v1', 'v2', 'v3']), [['v1', 'v2', 'v3']]],
+            [$this->createSimpleCycleGraph(['v1', 'v2']), [['v1', 'v2', 'v1']]],
+            [$this->createSimpleCycleGraph(['v1', 'v2', 'v3']), [['v1', 'v2', 'v3', 'v1']]],
             [new DependencyGraph($graph), [
-                ['v1', 'v2', 'v4', 'v6'],
-                ['v1', 'v2', 'v4', 'v6', 'v8', 'v9'],
-                ['v2', 'v4', 'v6', 'v7'],
-                ['v3', 'v5']
+                ['v1', 'v2', 'v4', 'v6', 'v1'],
+                ['v1', 'v2', 'v4', 'v6', 'v8', 'v9', 'v1'],
+                ['v2', 'v4', 'v6', 'v7', 'v2'],
+                ['v3', 'v5', 'v3']
             ]]
         ];
     }
@@ -74,9 +74,9 @@ class CycleDetectorTest extends TestCase
     {
         $detector = new CycleDetector();
 
-        $errors = $detector->inspect($graph);
+        $response = $detector->inspect($graph);
 
-        $this->assertEquals($expected, $errors);
+        $this->assertEquals($expected, $response->getCycles());
     }
 
     /**
