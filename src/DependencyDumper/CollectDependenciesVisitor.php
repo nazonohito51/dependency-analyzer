@@ -35,6 +35,8 @@ class CollectDependenciesVisitor
             foreach ($this->dependencyResolver->resolveDependencies($node, $scope) as $dependeeReflection) {
                 if ($dependeeReflection instanceof ClassReflection) {
                     $this->addDependency($node, $scope, $dependeeReflection);
+                } elseif ($dependeeReflection instanceof UnknownClassReflection) {
+                    $this->addDependency($node, $scope, $dependeeReflection);
                 } elseif ($dependeeReflection instanceof PhpFunctionReflection) {
                     // function call
                     // ex:
@@ -46,16 +48,17 @@ class CollectDependenciesVisitor
                 }
             }
         } catch (ResolveDependencyException $e) {
-            throw new ShouldNotHappenException('collecting dependencies is failed.', 0, $e);
+            // TODO: error handling...
+//            throw new ShouldNotHappenException('collecting dependencies is failed.', 0, $e);
         }
     }
 
     /**
      * @param \PhpParser\Node $node
      * @param Scope $scope
-     * @param ClassReflection $dependeeReflection
+     * @param ClassReflection|UnknownClassReflection $dependeeReflection
      */
-    protected function addDependency(\PhpParser\Node $node, Scope $scope, ClassReflection $dependeeReflection): void
+    protected function addDependency(\PhpParser\Node $node, Scope $scope, $dependeeReflection): void
     {
         if ($scope->isInClass()) {
             if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {

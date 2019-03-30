@@ -97,12 +97,12 @@ class DependencyResolver
         return [];
     }
 
-    public function resolveClassReflection(string $className): ?ReflectionWithFilename
+    public function resolveClassReflection(string $className): ReflectionWithFilename
     {
         try {
             return $this->broker->getClass($className);
         } catch (\PHPStan\Broker\ClassNotFoundException $e) {
-            return null;
+            return new UnknownClassReflection($className);
         }
     }
 

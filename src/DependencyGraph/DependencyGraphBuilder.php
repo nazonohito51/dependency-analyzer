@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph;
 
+use DependencyAnalyzer\DependencyDumper\UnknownClassReflection;
 use DependencyAnalyzer\DependencyGraph;
 use Fhaculty\Graph\Graph;
 use PHPStan\Reflection\ClassReflection;
@@ -10,7 +11,8 @@ use PHPStan\Reflection\ClassReflection;
 class DependencyGraphBuilder
 {
     /**
-     * @var ClassReflection[] $classReflections
+     * TODO: fix it...
+     * @var ClassReflection[]|UnknownClassReflection[] $classReflections
      */
     protected $classes = [];
 
@@ -29,7 +31,11 @@ class DependencyGraphBuilder
         $this->extraPhpDocTagResolver = $extraPhpDocTagResolver;
     }
 
-    public function addDependency(ClassReflection $depender, ClassReflection $dependee)
+    /**
+     * @param ClassReflection $depender
+     * @param ClassReflection|UnknownClassReflection $dependee
+     */
+    public function addDependency(ClassReflection $depender, $dependee)
     {
         $dependerId = $this->getClassReflectionId($depender);
         $dependeeId = $this->getClassReflectionId($dependee);
@@ -41,7 +47,11 @@ class DependencyGraphBuilder
         }
     }
 
-    protected function getClassReflectionId(ClassReflection $classReflection): int
+    /**
+     * @param ClassReflection|UnknownClassReflection $classReflection
+     * @return int
+     */
+    protected function getClassReflectionId($classReflection): int
     {
         foreach ($this->classes as $id => $reflection) {
             if ($reflection->getDisplayName() === $classReflection->getDisplayName()) {
@@ -61,7 +71,8 @@ class DependencyGraphBuilder
         foreach ($this->classes as $class) {
             $vertex = $graph->createVertex($class->getDisplayName());
             $vertex->setAttribute('reflection', $class);
-            $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class));
+            $canOnlyUsedByTags = ($class instanceof ClassReflection) ? $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class) : [];
+            $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, $canOnlyUsedByTags);
         }
 
         foreach ($this->dependencyMap as $dependerId => $dependeeIds) {
