@@ -27,7 +27,7 @@ class QualifiedNamePattern
     protected function verifyPattern(string $pattern)
     {
         return (
-            preg_match('/^!?' . preg_quote('\\', '/') . '(.*)$/', $pattern, $matches) === 1 ||
+            preg_match('/^!?' . preg_quote('\\', '/') . '([^\*]*)\*?$/', $pattern, $matches) === 1 ||
             $this->isMagicWordPattern($pattern)
         );
     }
@@ -35,10 +35,27 @@ class QualifiedNamePattern
     protected function addPattern(string $pattern)
     {
         if ($this->isExcludePattern($pattern)) {
-            $this->excludePatterns[] = $this->isMagicWordPattern($pattern) ? substr($pattern, 1) : rtrim(substr($pattern, 2), '\\');
+            $this->excludePatterns[] = $this->formatPattern(substr($pattern, 1));
         } else {
-            $this->patterns[] = $this->isMagicWordPattern($pattern) ? $pattern : rtrim(substr($pattern, 1), '\\');
+            $this->patterns[] = $this->formatPattern($pattern);
         }
+    }
+
+    protected function formatPattern(string $pattern)
+    {
+        if ($this->isMagicWordPattern($pattern)) {
+            return $pattern;
+        }
+
+        $pattern = substr($pattern, 1);
+        $explodedTokens = $this->explodeName($pattern);
+        $endToken = $explodedTokens[count($explodedTokens) - 1];
+
+        if ($endToken === '') {
+            return $pattern . '*';
+        }
+
+        return $pattern;
     }
 
     protected function isExcludePattern(string $pattern)
@@ -81,19 +98,23 @@ class QualifiedNamePattern
             return in_array($className, self::$nativeClasses);
         }
 
-        $separatedClassName = $this->explodeName($className);
-        $separatedPattern = $this->explodeName($pattern);
+        $explodedClassName = $this->explodeName($className);
+        $explodedPattern = $this->explodeName($pattern);
 
-        if (count($separatedPattern) === 1 && $separatedPattern[0] === '') {
+        if (count($explodedPattern) === 1 && $explodedPattern[0] === '*') {
             // Pattern likely '\\' will match with all className.
             return true;
         }
-        if (count($separatedClassName) < count($separatedPattern)) {
+        if (count($explodedClassName) < count($explodedPattern)) {
             return false;
         }
 
-        foreach ($separatedPattern as $index => $pattern) {
-            if ($separatedClassName[$index] !== $pattern) {
+        foreach ($explodedClassName as $index => $pattern) {
+            if (!isset($explodedPattern[$index])) {
+                return false;
+            } elseif ($explodedPattern[$index] === '*') {
+                return true;
+            } elseif ($explodedPattern[$index] !== $pattern) {
                 return false;
             }
         }

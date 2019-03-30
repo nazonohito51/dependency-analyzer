@@ -17,14 +17,14 @@ class DependencyRuleTest extends TestCase
             'depender(valid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\Controller'],
+                        'define' => ['\\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\Application'],
-                        'depender' => ['\Controller'],
+                        'define' => ['\\Application\\'],
+                        'depender' => ['\\Controller\\'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\Domain'],
+                        'define' => ['\\Domain\\'],
                     ]
                 ],
                 []
@@ -32,14 +32,14 @@ class DependencyRuleTest extends TestCase
             'depender(invalid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\Controller'],
+                        'define' => ['\\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\Application'],
-                        'depender' => ['\Domain'],
+                        'define' => ['\\Application\\'],
+                        'depender' => ['\\Domain\\'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\Domain'],
+                        'define' => ['\\Domain\\'],
                     ]
                 ],
                 [[
@@ -52,14 +52,14 @@ class DependencyRuleTest extends TestCase
             'dependee(valid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\Controller'],
+                        'define' => ['\\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\Application'],
-                        'dependee' => ['\Domain'],
+                        'define' => ['\\Application\\'],
+                        'dependee' => ['\\Domain\\'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\Domain'],
+                        'define' => ['\\Domain\\'],
                     ]
                 ],
                 []
@@ -67,14 +67,14 @@ class DependencyRuleTest extends TestCase
             'dependee(invalid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\Controller'],
+                        'define' => ['\\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\Application'],
-                        'dependee' => ['\Controller'],
+                        'define' => ['\\Application\\'],
+                        'dependee' => ['\\Controller\\'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\Domain'],
+                        'define' => ['\\Domain\\'],
                     ]
                 ],
                 [[
@@ -87,11 +87,11 @@ class DependencyRuleTest extends TestCase
             'have other component(valid)' => [
                 [
                     'Target' => [
-                        'define' => ['\Application\Dir\Dir\Class3'],
-                        'depender' => ['\Application\Class1', '\Application\Dir\Class2']
+                        'define' => ['\\Application\\Dir\\Dir\\Class3'],
+                        'depender' => ['\\Application\\Class1', '\\Application\\Dir\\Class2']
                     ],
                     'other' => [
-                        'define' => ['\\', '!\Application\Dir\Dir\Class3'],
+                        'define' => ['\\', '!\\Application\\Dir\\Dir\\Class3'],
                     ]
                 ],
                 []
@@ -99,11 +99,11 @@ class DependencyRuleTest extends TestCase
             'have other component(invalid)' => [
                 [
                     'Target' => [
-                        'define' => ['\Application\Dir\Dir\Class3'],
-                        'depender' => ['\Application\Dir\Class2']
+                        'define' => ['\\Application\\Dir\\Dir\\Class3'],
+                        'depender' => ['\\Application\\Dir\\Class2']
                     ],
                     'other' => [
-                        'define' => ['\\', '!\Application\Dir\Dir\Class3'],
+                        'define' => ['\\', '!\\Application\\Dir\\Dir\\Class3'],
                     ]
                 ],
                 [[
