@@ -24,6 +24,19 @@ class QualifiedNamePattern
         }
     }
 
+    public function addExcludePatterns(array $patterns)
+    {
+        foreach ($patterns as $pattern) {
+            if (!$this->verifyPattern($pattern)) {
+                throw new InvalidQualifiedNamePatternException($pattern);
+            }
+
+            $this->excludePatterns[] = $this->formatPattern($pattern);
+        }
+
+        return $this;
+    }
+
     protected function verifyPattern(string $pattern)
     {
         return (

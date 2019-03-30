@@ -147,6 +147,41 @@ class DependencyRuleTest extends TestCase
                     'dependeeComponent' => 'ApplicationLayer',
                     'dependee' => 'Application\Class1',
                 ]]
+            ],
+            'exclude component name string(valid)' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\\Application\\'],
+                        'depender' => ['!@DomainLayer'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\\Domain\\'],
+                    ]
+                ],
+                []
+            ],
+            'exclude component name string(invalid)' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\\Application\\'],
+                        'depender' => ['!@ControllerLayer'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\\Domain\\'],
+                    ]
+                ],
+                [[
+                    'dependerComponent' => 'ControllerLayer',
+                    'depender' => 'Controller\Dir\Class2',
+                    'dependeeComponent' => 'ApplicationLayer',
+                    'dependee' => 'Application\Class1',
+                ]]
             ]
 //            'exclude analysis list(valid)' => [
 //                [

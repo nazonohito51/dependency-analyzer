@@ -47,19 +47,22 @@ class DependencyRuleFactory
         return new DependencyRule($ruleName, $components);
     }
 
-    protected function createDependPattern(array $dependMatchers, array $componentDefines): ?QualifiedNamePattern
+    protected function createDependPattern(array $dependMatchers, array $componentDefines): QualifiedNamePattern
     {
         $matchers = [];
+        $excludeMatchers = [];
         foreach ($dependMatchers as $dependMatcher) {
-            if (
-                (substr($dependMatcher, 0, 1) === '@') && isset($componentDefines[substr($dependMatcher, 1)])) {
+            if (substr($dependMatcher, 0, 2) === '!@' && isset($componentDefines[substr($dependMatcher, 2)])) {
+                $excludeMatchers = array_merge($excludeMatchers, $componentDefines[substr($dependMatcher, 2)]);
+            } elseif (substr($dependMatcher, 0, 1) === '@' && isset($componentDefines[substr($dependMatcher, 1)])) {
                 $matchers = array_merge($matchers, $componentDefines[substr($dependMatcher, 1)]);
             } else {
                 $matchers[] = $dependMatcher;
             }
         }
 
-        return new QualifiedNamePattern($matchers);
+        // TODO: fix it...
+        return (new QualifiedNamePattern($matchers))->addExcludePatterns($excludeMatchers);
     }
 
     protected function verifyDefinition(array $ruleDefinition): void
