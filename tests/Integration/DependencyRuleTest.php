@@ -120,7 +120,7 @@ class DependencyRuleTest extends TestCase
                     ],
                     'ApplicationLayer' => [
                         'define' => ['\\Application\\'],
-                        'depender' => ['@ControllerLayer'],
+                        'depender' => ['ControllerLayer'],
                     ],
                     'DomainLayer' => [
                         'define' => ['\\Domain\\'],
@@ -135,7 +135,7 @@ class DependencyRuleTest extends TestCase
                     ],
                     'ApplicationLayer' => [
                         'define' => ['\\Application\\'],
-                        'depender' => ['@DomainLayer'],
+                        'depender' => ['DomainLayer'],
                     ],
                     'DomainLayer' => [
                         'define' => ['\\Domain\\'],
@@ -155,7 +155,7 @@ class DependencyRuleTest extends TestCase
                     ],
                     'ApplicationLayer' => [
                         'define' => ['\\Application\\'],
-                        'depender' => ['!@DomainLayer'],
+                        'depender' => ['!DomainLayer'],
                     ],
                     'DomainLayer' => [
                         'define' => ['\\Domain\\'],
@@ -170,7 +170,7 @@ class DependencyRuleTest extends TestCase
                     ],
                     'ApplicationLayer' => [
                         'define' => ['\\Application\\'],
-                        'depender' => ['!@ControllerLayer'],
+                        'depender' => ['!ControllerLayer'],
                     ],
                     'DomainLayer' => [
                         'define' => ['\\Domain\\'],

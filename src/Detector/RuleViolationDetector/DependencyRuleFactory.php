@@ -52,10 +52,10 @@ class DependencyRuleFactory
         $matchers = [];
         $excludeMatchers = [];
         foreach ($dependMatchers as $dependMatcher) {
-            if (substr($dependMatcher, 0, 2) === '!@' && isset($componentDefines[substr($dependMatcher, 2)])) {
-                $excludeMatchers = array_merge($excludeMatchers, $componentDefines[substr($dependMatcher, 2)]);
-            } elseif (substr($dependMatcher, 0, 1) === '@' && isset($componentDefines[substr($dependMatcher, 1)])) {
-                $matchers = array_merge($matchers, $componentDefines[substr($dependMatcher, 1)]);
+            if (preg_match('/^\![^\\\@]/', $dependMatcher) === 1 && isset($componentDefines[substr($dependMatcher, 1)])) {
+                $excludeMatchers = array_merge($excludeMatchers, $componentDefines[substr($dependMatcher, 1)]);
+            } elseif (preg_match('/^[^\\\@]/', $dependMatcher) === 1 && isset($componentDefines[$dependMatcher])) {
+                $matchers = array_merge($matchers, $componentDefines[$dependMatcher]);
             } else {
                 $matchers[] = $dependMatcher;
             }
