@@ -1,30 +1,30 @@
 <?php
-$controllerDefine = ['\App', '!\App\Providers'];
-$applicationDefine = ['\Acme\Application'];
-$domainDefine = ['\Acme\Domain'];
-$repositoryDefine = ['\Acme\Domain\Repositories'];
+$controllerDefine = ['\App\\', '!\App\Providers\\'];
+$applicationDefine = ['\Acme\Application\\'];
+$domainDefine = ['\Acme\Domain\\'];
+$repositoryDefine = ['\Acme\Domain\Repositories\\'];
 
 return [
-    'layer dependency rule' => [
+    'Layer dependency rule' => [
         'ControllerLayer' => [
             'define' => $controllerDefine,
         ],
         'ApplicationLayer' => [
             'define' => $applicationDefine,
-            'depender' => $controllerDefine,
+            'depender' => ['ControllerLayer'],
         ],
         'DomainLayer' => [
             'define' => $domainDefine,
-            'depender' => $applicationDefine
+            'depender' => ['ApplicationLayer']
         ]
     ],
-    'create entity rule' => [
-        'Entities' => [
-            'define' => ['\Acme\Domain\Entities'],
-            'depender' => $repositoryDefine
+    'Facade police' => [
+        'Sanctuary' => [
+            'define' => array_merge($controllerDefine, $applicationDefine, $domainDefine),
+            'dependee' => ['!Facade']
         ],
-        'Repositories' => [
-            'define' => $repositoryDefine,
+        'Facade' => [
+            'define' => ['\App','\Artisan','\Auth','\Blade','\Broadcast','\Bus','\Cache','\Config','\Cookie','\Crypt','\DB','\Event','\File','\Gate','\Hash','\Lang','\Log','\Mail','\Notification','\Password','\Queue','\Redirect','\Request','\Response','\Route','\Schema','\Session','\Storage','\URL','\Validator','\View']
         ]
-    ],
+    ]
 ];
