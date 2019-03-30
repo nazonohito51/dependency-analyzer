@@ -10,8 +10,8 @@ Analyze/Verify dependency map for php.
 
 Dependency analyzer help you to keeping clean your architecture.
 
-If you start to managing dependencies between classes likely [Clean Architecture]() or [Layered Architecture](), you will aware inspecting dependency between classes by eye is very difficult in PHP.
-This library analyze dependencies in your repository, and take some way of using it to you.(Example: Create graph, Verify rule, Detect cycle path)
+If you start to managing dependencies between classes likely [Clean Architecture](http://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) or Layered Architecture, you will aware inspecting dependency between classes by eye is very difficult in PHP.
+This library analyze dependencies in your repository, and take some way of using it to you.(Example: Create UML graph, Verify by your rule, Detect cycle path)
 
 ## Basic Usages
 ### Create dependency graph
@@ -19,42 +19,58 @@ This library analyze dependencies in your repository, and take some way of using
 ![graph](./dependency_graph_sample.png)
 
 ```bash
-php ./bin/analyze-deps graph ./some/analyze/dir
+vendor/bin/analyze-deps graph ./you/want/to/analyze/dir --output ./graph.puml
 ```
 
-Analysis dependency map and create graph. Now, dependency analyzer support only [Plant UML]() format.
+Analysis dependency map and create graph. Now, dependency analyzer support only [Plant UML](https://github.com/plantuml/plantuml) format.
+
+Maybe, your graph will have many classes, and is very complex! If you need to simplify your graph, see [Advanced Usage](#Advanced Usages). 
 
 ### Verify your dependency rule
-You can define your dependency rule by two ways. And, this library will detect rule violation in your repository, and notify them to you.
+In Clean Architecture, there is dependency rules between classes.
+You can define your dependency rule, and this library will detect rule violation in your repository and notify them to you.
 
 First way is defining by php file. In under sample, 
 
 ```php
 <?php
+// ./your_rule_file.php
+
 $controllerDefine = ['\App', '!\App\Providers'];
 $applicationDefine = ['\Acme\Application'];
 $domainDefine = ['\Acme\Domain'];
 $repositoryDefine = ['\Acme\Domain\Repositories'];
 
 return [
-    'layer dependency rule' => [                // name of your rule
-        'ControllerLayer' => [                  // component name
-            'define' => $controllerDefine,      // component definition by namespace
+    'layer dependency rule' => [                // name of your dependency rule
+        'DomainLayer' => [                      // component name
+            'define' => $domainDefine,          // component definition by namespace
+            'depender' => $applicationDefine    // rule of component dependency, for depender
         ],
         'ApplicationLayer' => [
             'define' => $applicationDefine,
-            'depender' => $controllerDefine,    // rule of component dependency
+            'depender' => $controllerDefine,
         ],
-        'DomainLayer' => [
-            'define' => $domainDefine,
-            'depender' => $applicationDefine
-        ]
-    ]
+        'ControllerLayer' => [
+            'define' => $controllerDefine,
+            'dependee' => []                    // rule of component dependency, for dependee
+        ],
+    ],
+//    'some more rules' => [
+//        'SomeComponent' => ['...'],
+//        '...' => []
+//    ]
 ];
 ```
 
+`'component'` is a group of classes.
+`'depender'` is classes that depend on component.
+`'dependee'` is classes that is depended on component.
+You can restrict depender/dependee.
+Then, you can verify your repository like this:
+
 ```bash
-php ./bin/analyze-deps verify --rule ./conf/rule_sample.php ./some/analyze/dir
+php ./bin/analyze-deps verify --rule ./your_rule_file.php ./some/analyze/dir1  ./some/analyze/dir2
 ```
 
 ```bash
@@ -86,11 +102,11 @@ php ./bin/analyze-deps detect-cycle ./some/analyze/dir
 ```
 
 ## What is dependency?
-Dependency is knowledge of interface is had by every class. 
-In classes colabolation, every class will have knowledge of other classes.
-If some interfaces is changed, classes know that interfaces is must fixed for change of interface.
+Dependency is knowledge of interface that is had by class. 
+In class collaboration, every class must have knowledge of interface of other classes.
+If some interfaces is changed, classes what know interface is must fixed.
 
-Dependency is created by under php syntaxs.
+Dependency is created by under php syntaxes.
 
 * Type hinting
 * Return value type
@@ -99,12 +115,15 @@ Dependency is created by under php syntaxs.
 * extends/implements
 * throw
 * catch
+* foreach
+* array access
+* others...
 
-This library analyze those syntaxs by using [PHPStan](), and crate dependency map.
+This library analyze those syntaxes by using [PHPStan](https://github.com/phpstan/phpstan), and crate dependency map.
 
 ## Advanced Usages
 ### Create dependency graph
-wiki
+TBD...
 
 * rule file
 * namespace
@@ -112,7 +131,7 @@ wiki
 * comment
 
 ### Verify your dependency rule
-wiki
+TBD...
 
 * rule file
   * multiple rules
@@ -121,13 +140,11 @@ wiki
 * namespace rule
 * magic keyword
 
-### Detect cycle dependency
-wiki
-
 ## TODO
 - [ ] README
   - [ ] graph
   - [ ] wiki
+- [ ] Analyze Facade
 - [x] Response object & format
   - [x] use table format
 - [ ] comment of Plant UML
