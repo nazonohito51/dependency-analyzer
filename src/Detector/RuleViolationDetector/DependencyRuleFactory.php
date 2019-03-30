@@ -35,39 +35,42 @@ class DependencyRuleFactory
 
         $components = [];
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
-            $components[] = $this->createComponent($componentName, $componentDefinition);
+            $depender = isset($componentDefinition['depender']) ? $this->createDependPattern($componentDefinition['depender'], $componentDefines) : null;
+            $dependee = isset($componentDefinition['dependee']) ? $this->createDependPattern($componentDefinition['dependee'], $componentDefines) : null;
+            $components[] = new Component(
+                $componentName,
+                new QualifiedNamePattern($componentDefinition['define']),
+                $depender,
+                $dependee
+            );
         }
         return new DependencyRule($ruleName, $components);
     }
 
-    /**
-     * @param string $name
-     * @param array $definition
-     *   ex: [
-     *     'define'   => [...]      // required
-     *     'depender' => [...]      // option
-     *     'dependee' => [...]      // option
-     *   ]
-     * @return Component
-     */
-    protected function createComponent(string $name, array $definition)
+    protected function createDependPattern(array $dependMatchers, array $componentDefines): ?QualifiedNamePattern
     {
-        return new Component(
-            $name,
-            new QualifiedNamePattern($definition['define']),
-            isset($definition['depender']) ? new QualifiedNamePattern($definition['depender']) : null,
-            isset($definition['dependee']) ? new QualifiedNamePattern($definition['dependee']) : null
-        );
+        $matchers = [];
+        foreach ($dependMatchers as $dependMatcher) {
+            if (
+                (substr($dependMatcher, 0, 1) === '@') && isset($componentDefines[substr($dependMatcher, 1)])) {
+                $matchers = array_merge($matchers, $componentDefines[substr($dependMatcher, 1)]);
+            } else {
+                $matchers[] = $dependMatcher;
+            }
+        }
+
+        return new QualifiedNamePattern($matchers);
     }
 
     protected function verifyDefinition(array $ruleDefinition): void
     {
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
             if (!isset($componentDefinition['define']) || !is_array($componentDefinition['define'])) {
-                throw new InvalidRuleDefinition(
-                    $ruleDefinition,
-                    "component must have 'define'. Invalid your component: {$componentName}"
-                );
+                throw new InvalidRuleDefinition($ruleDefinition, "component must have 'define'. Invalid your component: {$componentName}");
+            } elseif (isset($componentDefinition['depender']) && !is_array($componentDefinition['depender'])) {
+                throw new InvalidRuleDefinition($ruleDefinition, "depenee must be array. Invalid your component: {$componentName}");
+            } elseif (isset($componentDefinition['dependee']) && !is_array($componentDefinition['dependee'])) {
+                throw new InvalidRuleDefinition($ruleDefinition, "depenee must be array. Invalid your component: {$componentName}");
             }
         }
     }
