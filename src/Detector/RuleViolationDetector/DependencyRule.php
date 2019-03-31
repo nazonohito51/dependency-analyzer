@@ -5,7 +5,7 @@ namespace DependencyAnalyzer\Detector\RuleViolationDetector;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Patterns\QualifiedNamePattern;
-use DependencyAnalyzer\Responses\VerifyDependencyResponse;
+use DependencyAnalyzer\Detector\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Vertex;
 
 class DependencyRule

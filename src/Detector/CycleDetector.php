@@ -6,7 +6,7 @@ namespace DependencyAnalyzer\Detector;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\LogicException;
-use DependencyAnalyzer\Responses\CycleDetecterResponse;
+use DependencyAnalyzer\Detector\Responses\CycleDetectorResponse;
 
 class CycleDetector
 {
@@ -15,7 +15,7 @@ class CycleDetector
      */
     protected $cycles = [];
 
-    public function inspect(DependencyGraph $graph): CycleDetecterResponse
+    public function inspect(DependencyGraph $graph): CycleDetectorResponse
     {
         $subGraphs = $this->collectConnectedSubGraphs($graph);
 
@@ -23,7 +23,7 @@ class CycleDetector
             $subGraph->walkOnPath([$this, 'checkCycle']);
         }
 
-        $response = new CycleDetecterResponse();
+        $response = new CycleDetectorResponse();
         foreach ($this->cycles as $cycle) {
             $response->addCycle($cycle->toArray());
         }

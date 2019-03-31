@@ -3,7 +3,7 @@ namespace DependencyAnalyzer\Detector;
 
 use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRule;
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\Responses\VerifyDependencyResponse;
+use DependencyAnalyzer\Detector\Responses\VerifyDependencyResponse;
 
 class RuleViolationDetector
 {

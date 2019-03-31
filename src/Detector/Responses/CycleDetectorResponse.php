@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\Responses;
+namespace DependencyAnalyzer\Detector\Responses;
 
-class CycleDetecterResponse implements \Countable
+class CycleDetectorResponse implements \Countable
 {
     private $cycles = [];
 

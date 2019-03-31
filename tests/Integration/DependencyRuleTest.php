@@ -5,7 +5,7 @@ namespace Tests\Integration;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRuleFactory;
-use DependencyAnalyzer\Responses\VerifyDependencyResponse;
+use DependencyAnalyzer\Detector\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 

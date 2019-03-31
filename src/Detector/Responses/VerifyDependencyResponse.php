@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\Responses;
+namespace DependencyAnalyzer\Detector\Responses;
 
 class VerifyDependencyResponse implements \Countable
 {
