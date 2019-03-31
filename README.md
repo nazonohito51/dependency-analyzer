@@ -43,18 +43,17 @@ $repositoryDefine = ['\Acme\Domain\Repositories'];
 
 return [
     'layer dependency rule' => [                // name of your dependency rule
-        'DomainLayer' => [                      // component name
-            'define' => $domainDefine,          // component definition by namespace
-            'depender' => $applicationDefine    // rule of component dependency, for depender
+        'domain_layer' => [                     // component name
+            'define' => ['\Acme\Domain'],       // component definition by namespace
+            'depender' => ['application_layer'] // rule of component dependency, for depender
         ],
-        'ApplicationLayer' => [
-            'define' => $applicationDefine,
-            'depender' => $controllerDefine,
+        'application_layer' => [
+            'define' => ['\Acme\Application'],
+            'depender' => ['controller_layer']
         ],
-        'ControllerLayer' => [
-            'define' => $controllerDefine,
-            'dependee' => []                    // rule of component dependency, for dependee
-        ],
+        'controller_layer' => [
+            'define' => ['\App', '!\App\Providers']
+        ]
     ],
 //    'some more rules' => [
 //        'SomeComponent' => ['...'],
