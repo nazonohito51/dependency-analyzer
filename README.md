@@ -19,7 +19,7 @@ This library analyze dependencies in your repository, and take some way of using
 ![graph](./dependency_graph_sample.png)
 
 ```bash
-vendor/bin/analyze-deps graph ./you/want/to/analyze/dir --output ./graph.puml
+php vendor/bin/analyze-deps graph --output ./graph.puml ./some/analyze/dir1 ./some/analyze/dir2
 ```
 
 Analysis dependency map and create graph. Now, dependency analyzer support only [Plant UML](https://github.com/plantuml/plantuml) format.
@@ -64,7 +64,7 @@ You can restrict depender/dependee.
 Then, you can verify your repository like this:
 
 ```bash
-php ./bin/analyze-deps verify --rule ./your_rule_file.php ./some/analyze/dir1 ./some/analyze/dir2
+php vendor/bin/analyze-deps verify --rule ./your_rule_file.php ./some/analyze/dir1 ./some/analyze/dir2
 ```
 
 If there is rule violation, notify you of them.
@@ -117,7 +117,7 @@ In [Acyclic dependencies principle](https://en.wikipedia.org/wiki/Acyclic_depend
 You can detect cycles like this:
 
 ```bash
-php ./bin/analyze-deps detect-cycle ./some/analyze/dir
+php vendor/bin/analyze-deps detect-cycle ./some/analyze/dir
 ```
 
 ```bash

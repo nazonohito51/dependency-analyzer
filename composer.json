@@ -28,5 +28,6 @@
         "classmap": [
             "tests/TestCase.php"
         ]
-    }
+    },
+    "bin": ["bin/analyze-deps"]
 }
