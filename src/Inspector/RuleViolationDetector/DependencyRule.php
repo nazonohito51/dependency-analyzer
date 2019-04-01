@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\Detector\RuleViolationDetector;
+namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Patterns\QualifiedNamePattern;
-use DependencyAnalyzer\Detector\Responses\VerifyDependencyResponse;
+use DependencyAnalyzer\Inspector\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Vertex;
 
 class DependencyRule

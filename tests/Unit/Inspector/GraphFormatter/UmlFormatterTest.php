@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer\DependencyGraph\Detector\GraphFormatter;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\Detector\GraphFormatter\UmlFormatter;
+use DependencyAnalyzer\Inspector\GraphFormatter\UmlFormatter;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Unit\DependencyAnalyzer\Detector;
+namespace Tests\Unit\DependencyAnalyzer\Inspector;
 
-use DependencyAnalyzer\Detector\CycleDetector;
+use DependencyAnalyzer\Inspector\CycleDetector;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\Path;
 use Fhaculty\Graph\Graph;

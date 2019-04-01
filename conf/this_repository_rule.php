@@ -26,10 +26,10 @@ return [
         'dependency_graph' => [
             'define' => ['\DependencyAnalyzer\DependencyGraph', '\DependencyAnalyzer\DependencyGraph\\', '!\DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder'],
             'description' => 'Graph of dependencies between classes. Core of this library.',
-            'depender' => ['commands', 'dependency_dumper', 'graph_builder', 'detectors']
+            'depender' => ['commands', 'dependency_dumper', 'graph_builder', 'inspectors']
         ],
-        'detectors' => [
-            'define' => ['\DependencyAnalyzer\Detector\\'],
+        'inspectors' => [
+            'define' => ['\DependencyAnalyzer\Inspector\\'],
             'description' => 'Inspect DependencyGraph.',
             'depender' => ['commands']
         ],

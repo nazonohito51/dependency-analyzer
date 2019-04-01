@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\Detector\RuleViolationDetector;
+namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
 use DependencyAnalyzer\Exceptions\InvalidRuleDefinition;
 use DependencyAnalyzer\Patterns\QualifiedNamePattern;

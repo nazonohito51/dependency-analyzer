@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Commands;
 
-use DependencyAnalyzer\Detector\RuleViolationDetector;
-use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRuleFactory;
+use DependencyAnalyzer\Inspector\RuleViolationDetector;
+use DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use LucidFrame\Console\ConsoleTable;

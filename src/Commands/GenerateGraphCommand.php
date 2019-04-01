@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\Detector\GraphFormatter\UmlFormatter;
+use DependencyAnalyzer\Inspector\GraphFormatter\UmlFormatter;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

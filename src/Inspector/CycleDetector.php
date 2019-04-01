@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\Detector;
+namespace DependencyAnalyzer\Inspector;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\LogicException;
-use DependencyAnalyzer\Detector\Responses\CycleDetectorResponse;
+use DependencyAnalyzer\Inspector\Responses\CycleDetectorResponse;
 
 class CycleDetector
 {

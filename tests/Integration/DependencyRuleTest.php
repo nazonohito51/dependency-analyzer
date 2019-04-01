@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRuleFactory;
-use DependencyAnalyzer\Detector\Responses\VerifyDependencyResponse;
+use DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory;
+use DependencyAnalyzer\Inspector\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 

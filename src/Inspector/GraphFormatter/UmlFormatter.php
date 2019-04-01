@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\Detector\GraphFormatter;
+namespace DependencyAnalyzer\Inspector\GraphFormatter;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\Detector\RuleViolationDetector\Component;
+use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
 use DependencyAnalyzer\Patterns\QualifiedNamePattern;
 
 class UmlFormatter

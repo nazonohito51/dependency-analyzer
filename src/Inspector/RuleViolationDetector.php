@@ -1,9 +1,9 @@
 <?php
-namespace DependencyAnalyzer\Detector;
+namespace DependencyAnalyzer\Inspector;
 
-use DependencyAnalyzer\Detector\RuleViolationDetector\DependencyRule;
+use DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRule;
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\Detector\Responses\VerifyDependencyResponse;
+use DependencyAnalyzer\Inspector\Responses\VerifyDependencyResponse;
 
 class RuleViolationDetector
 {

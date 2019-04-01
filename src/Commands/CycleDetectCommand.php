@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Commands;
 
-use DependencyAnalyzer\Detector\CycleDetector;
+use DependencyAnalyzer\Inspector\CycleDetector;
 use DependencyAnalyzer\DependencyGraph;
 use LucidFrame\Console\ConsoleTable;
 use Symfony\Component\Console\Output\OutputInterface;

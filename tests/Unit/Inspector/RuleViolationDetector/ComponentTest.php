@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Unit\DependencyAnalyzer\Detector\RuleViolationDetector;
+namespace Tests\Unit\DependencyAnalyzer\Inspector\RuleViolationDetector;
 
-use DependencyAnalyzer\Detector\RuleViolationDetector\Component;
+use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
 use DependencyAnalyzer\Patterns\QualifiedNamePattern;
 use Tests\TestCase;
 
