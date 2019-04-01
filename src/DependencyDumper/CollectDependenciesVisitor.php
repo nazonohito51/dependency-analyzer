@@ -11,6 +11,9 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
 
+/**
+ * @canOnlyUsedBy \DependencyAnalyzer\DependencyDumper
+ */
 class CollectDependenciesVisitor
 {
     /**

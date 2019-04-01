@@ -5,6 +5,9 @@ namespace DependencyAnalyzer\DependencyDumper;
 
 use PHPStan\Reflection\ReflectionWithFilename;
 
+/**
+ * @canOnlyUsedBy \DependencyAnalyzer\DependencyDumper\
+ */
 class UnknownClassReflection implements ReflectionWithFilename
 {
     /**

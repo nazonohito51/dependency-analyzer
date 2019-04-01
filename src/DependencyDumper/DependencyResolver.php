@@ -19,6 +19,9 @@ use PHPStan\Reflection\ReflectionWithFilename;
 use PHPStan\Type\ClosureType;
 use PHPStan\Type\TypeWithClassName;
 
+/**
+ * @canOnlyUsedBy \DependencyAnalyzer\DependencyDumper\
+ */
 class DependencyResolver
 {
     /**
