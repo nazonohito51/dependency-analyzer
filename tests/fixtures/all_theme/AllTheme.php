@@ -23,9 +23,9 @@ use Tests\Fixtures\AllTheme\Foundations\SomeException2;
 use Tests\Fixtures\AllTheme\Foundations\SomeInterface;
 use Tests\Fixtures\AllTheme\Foundations\SomeTrait;
 
-class AllTheme extends ParentClass implements SomeInterface            // extends(=ParentClass), implements(=SomeInterface)
+class AllTheme extends ParentClass implements SomeInterface         // extends(=ParentClass), implements(=SomeInterface)
 {
-    use SomeTrait;                                                      // use trait(=SomeTrait)
+    use SomeTrait;                                                  // use trait(=SomeTrait)
 
     /**
      * @var SomeClass1 $someClass1
@@ -34,30 +34,30 @@ class AllTheme extends ParentClass implements SomeInterface            // extend
 
     public function __construct()
     {
-        $this->someClass1 = new SomeClass1(SomeClass2::STATUS_OK); // new(=SomeClass1), fetch public constant(=SomeClass2)
+        $this->someClass1 = new SomeClass1(SomeClass2::STATUS_OK);  // new(=SomeClass1), fetch public constant(=SomeClass2)
     }
 
-    public function someMethod1(SomeClass3 $someClass3): SomeClass4     // type hinting(=SomeClass3), return type declarations(=SomeClass4)
+    public function someMethod1(SomeClass3 $someClass3): SomeClass4 // type hinting(=SomeClass3), return type declarations(=SomeClass4)
     {
         try {
-            $unknownClass1 = $someClass3->getUnknownClass();            // (getUnknownClass() will return SomeClass5 object)
-            $unknownClass2 = $this->someClass1->someMethod(             // (someMethod() will return SomeClass6 object. In this case, you need phpdoc of $someClass1...)
-                $unknownClass1->property                                // fetch public property(=SomeClass5)
+            $unknownClass1 = $someClass3->getUnknownClass();        // (getUnknownClass() will return SomeClass5 object)
+            $unknownClass2 = $this->someClass1->someMethod(         // (someMethod() will return SomeClass6 object. In this case, you need phpdoc of $someClass1...)
+                $unknownClass1->property                            // fetch public property(=SomeClass5)
             );
 
-            if (!$unknownClass1->isStatusOk()) {                      // call public method(=SomeClass6)
-                throw new SomeException1();                             // throw(=SomeException1)
+            if (!$unknownClass1->isStatusOk()) {                    // call public method(=SomeClass6)
+                throw new SomeException1();                         // throw(=SomeException1)
             }
 
             return $unknownClass2->getSomeClass4();
-        } catch (SomeException2 $e) {                                   // catch(=SomeException2)
+        } catch (SomeException2 $e) {                               // catch(=SomeException2)
             // TODO: error handling
         }
     }
 
     /**
-     * @param SomeClass7|SomeClass8 $unknownClass                       // type hinting by phpdoc(=SomeClass7, SomeClass8)
-     * @return SomeClass9|SomeClass10                                   // return value declarations by phpdoc(=SomeClass9, SomeClass10)
+     * @param SomeClass7|SomeClass8 $unknownClass                   // type hinting by phpdoc(=SomeClass7, SomeClass8)
+     * @return SomeClass9|SomeClass10                               // return value declarations by phpdoc(=SomeClass9, SomeClass10)
      */
     public function someMethod2($unknownClass)
     {
@@ -66,9 +66,9 @@ class AllTheme extends ParentClass implements SomeInterface            // extend
 
     public function someMethod3()
     {
-        $unknownClass3 = SomeClass11::someMethod();                     // call class method(=SomeClass11)
+        $unknownClass3 = SomeClass11::someMethod();                 // call class method(=SomeClass11)
 
-        if ($unknownClass3 instanceof SomeClass12) {                    // instanceof(=SomeClass12)
+        if ($unknownClass3 instanceof SomeClass12) {                // instanceof(=SomeClass12)
             return $unknownClass3;
         }
 
@@ -81,7 +81,7 @@ class AllTheme extends ParentClass implements SomeInterface            // extend
         $array = [new SomeClass13, new SomeClass13, new SomeClass13];
 
         foreach ($array as $item) {
-            $ret[] = $item->someMethod();                               // foreach access, (new SomeClass13)->someMethod() will return SomeClass14 object(=SomeClass14)
+            $ret[] = $item->someMethod();                           // foreach access, (new SomeClass13)->someMethod() will return SomeClass14 object(=SomeClass14)
         }
 
         return $ret;
@@ -92,11 +92,11 @@ class AllTheme extends ParentClass implements SomeInterface            // extend
         $ret = [];
         $array = [new SomeClass15, new SomeClass16, new SomeClass17];
 
-        return $array[1]->someMethod();                                 // array dim fetch, (new SomeClass16)->someMethod() will return SomeClass18 object(=SomeClass18)
+        return $array[1]->someMethod();                             // array dim fetch, (new SomeClass16)->someMethod() will return SomeClass18 object(=SomeClass18)
     }
 
     public function someMethod6()
     {
-        return Foundations\some_function();                                         // some_method() will return SomeClass19 object(=SomeClass19)
+        return Foundations\some_function();                         // some_method() will return SomeClass19 object(=SomeClass19)
     }
 }
