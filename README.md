@@ -111,6 +111,8 @@ phpdoc in Acme\Domain\ValueObjects\UserName
 +------------------------------------------------+-----------+----+-----------------------------------+-----------+
 ```
 
+More example about rule file, [see this repository rule file](https://github.com/nazonohito51/dependency-analyzer/blob/master/conf/this_repository_rule.php).
+
 ### Detect cycle dependency
 
 In [Acyclic dependencies principle](https://en.wikipedia.org/wiki/Acyclic_dependencies_principle), dependencies graph should have no cycles.
@@ -138,7 +140,7 @@ Dependency is knowledge of interface that is had by class.
 In classes collaboration, every class always have knowledge of interface of other classes.
 If a interface is changed, classes what have knowledge of that interface is must fixed.
 
-Dependency is created by under php syntaxes below.
+Dependency is created by below php syntaxes.
 
 * extends/implements
 * use trait
@@ -155,7 +157,7 @@ Dependency is created by under php syntaxes below.
 * array dim access
 * call function
 
-This library analyze those syntaxes by using [PHPStan](https://github.com/phpstan/phpstan), and crate dependency map.
+This library analyze those syntaxes by using [PHPStan](https://github.com/phpstan/phpstan), and create dependency graph.
 If you want to know detail, [see example](https://github.com/nazonohito51/dependency-analyzer/blob/master/tests/fixtures/all_theme/AllTheme.php).
 
 ## Advanced Usages
@@ -174,6 +176,7 @@ TBD...
 * magic keyword
 
 ## TODO
+- [ ] Display error details
 - [ ] README
   - [ ] graph
   - [ ] wiki
