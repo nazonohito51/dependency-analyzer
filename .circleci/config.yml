@@ -53,7 +53,7 @@ jobs:
       #- run: php artisan migrate --env=testing --database=sqlite_testing --force
 
       # run tests with phpunit or codecept
-      - run: ./vendor/bin/phpunit
+      - run: ./vendor/bin/phpunit tests/
       #- run: ./vendor/bin/codecept build
       #- run: ./vendor/bin/codecept run
       - run: ./bin/analyze-deps verify --rule ./conf/this_repository_rule.php ./src
