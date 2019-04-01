@@ -7,6 +7,6 @@ class FunctionCall
 {
     public function __construct()
     {
-        $someClass1 = some_function1();
+        $someClass1 = Foundations\some_function1();
     }
 }

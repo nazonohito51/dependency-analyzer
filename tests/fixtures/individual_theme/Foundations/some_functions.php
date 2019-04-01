@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
 
-function some_function1(\Tests\Fixtures\Foundations\SomeClass1 $someClass1): \Tests\Fixtures\Foundations\SomeClass2 {}
+namespace Tests\Fixtures\Foundations;
 
-function some_function2(\Tests\Fixtures\Foundations\SomeClass2 $someClass2): \Tests\Fixtures\Foundations\SomeClass3 {}
+function some_function1(\Tests\Fixtures\Foundations\SomeClass1 $someClass1): \Tests\Fixtures\Foundations\SomeClass2 {}

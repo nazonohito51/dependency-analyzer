@@ -7,13 +7,14 @@ use Tests\Fixtures\Foundations\SomeClass2;
 
 class ForeachArray
 {
-    /**
-     * @param SomeClass2[] $array
-     */
-    public function someMethod(array $array)
+    public function someMethod()
     {
-        foreach ($array as $item) {
-            $item->someProperty;
-        }
+        $ret = [];
+
+        foreach ([new SomeClass2, new SomeClass2, new SomeClass2] as $someClass2) {
+            $ret = $someClass2->someProperty;
+        };
+
+        return $ret;
     }
 }
