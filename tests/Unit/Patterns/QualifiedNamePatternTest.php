@@ -76,7 +76,11 @@ class QualifiedNamePatternTest extends TestCase
             'multi patterns 4' => [['\\Tests\\Fixtures', '\\Tests\\Fixtures\\', '\\Tests\\Integration\\'], 'Tests\\Unit\\SomeClass', false],
             'pattern with exclude pattern 1' => [['\\Tests\\', '!\\Tests\\Fixtures\\'], 'Tests\\Fixtures\\SomeClass', false],
             'pattern with exclude pattern 2' => [['\\Tests\\', '!\\Tests\\Fixtures\\'], 'Tests\\Integration\\SomeClass', true],
-            'incomplete patten match' => [['\\Tests\\Inte'], 'Tests\\Integration', false],
+            'have only exclude pattern 1' => [['!\\Tests\\Fixtures\\SomeClass'], 'Tests\\Fixtures\\SomeClass', false],
+            'have only exclude pattern 2' => [['!\\Tests\\Fixtures\\SomeClass'], 'Tests\\Integration\\SomeClass', true],
+            'have only exclude pattern 3' => [['!\\Tests\\Fixtures\\SomeClass'], 'Tests', true],
+            'have only exclude pattern 4' => [['!\\'], 'Tests', false],
+            'incomplete pattern match' => [['\\Tests\\Inte'], 'Tests\\Integration', false],
             'magic word' => [[QualifiedNamePattern::PHP_NATIVE_CLASSES], 'SplFileObject', true],
             'exclude magic word' => [['!' . QualifiedNamePattern::PHP_NATIVE_CLASSES], 'SplFileObject', false]
         ];
