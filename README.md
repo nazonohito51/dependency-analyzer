@@ -165,10 +165,6 @@ TBD...
 ### Verify your dependency rule
 TBD...
 
-* rule file
-  * multiple rules
-  * depender/dependee
-* phpdoc
 * namespace rule
 * magic keyword
 
@@ -176,13 +172,12 @@ TBD...
 - [ ] README
   - [ ] graph
   - [ ] wiki
-- [ ] Analyze Facade
+- [x] Analyze Facade
 - [x] Response object & format
   - [x] use table format
 - [ ] comment of Plant UML
-- [ ] fix namespace pattern matting(adjust file pattern matting)
-  - [ ] \Hoge\Fuga\*
-  - [ ] only !\Hoge\Fuga
+- [x] fix namespace pattern matting(adjust file pattern matting)
+  - [x] only !\Hoge\Fuga
 - [ ] Graph format(another puml)
 - [ ] original rule logic
   - [ ] remove dependency to vertex, edge
