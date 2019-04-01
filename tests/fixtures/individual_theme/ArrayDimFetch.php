@@ -3,15 +3,13 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures;
 
-use Tests\Fixtures\Foundations\SomeClass3;
+use Tests\Fixtures\Foundations\SomeClass1;
 
 class ArrayDimFetch
 {
-    /**
-     * @param SomeClass3[] $array
-     */
-    public function someMethod(array $array)
+    public function someMethod()
     {
-        $array[0];
+        $array = [new SomeClass1(), new SomeClass1(), new SomeClass1()];
+        $array[1]->someMethod();
     }
 }

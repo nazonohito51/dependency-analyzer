@@ -187,8 +187,9 @@ class DependencyDumperTest extends TestCase
             'array_dim_fetch' => [
                 $this->getFixturePath('/individual_theme/ArrayDimFetch.php'),
                 [
-                    'Tests\Fixtures\ArrayDimFetch' => ['Tests\Fixtures\Foundations\SomeClass3'],
-                    'Tests\Fixtures\Foundations\SomeClass3' => []
+                    'Tests\Fixtures\ArrayDimFetch' => ['Tests\Fixtures\Foundations\SomeClass1', 'Tests\Fixtures\Foundations\SomeClass2'],
+                    'Tests\Fixtures\Foundations\SomeClass1' => [],
+                    'Tests\Fixtures\Foundations\SomeClass2' => []
                 ]
             ],
             'foreach_array' => [
