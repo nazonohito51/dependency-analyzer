@@ -64,18 +64,18 @@ You can restrict depender/dependee.
 Then, you can verify your repository like this:
 
 ```bash
-php ./bin/analyze-deps verify --rule ./your_rule_file.php ./some/analyze/dir1  ./some/analyze/dir2
+php ./bin/analyze-deps verify --rule ./your_rule_file.php ./some/analyze/dir1 ./some/analyze/dir2
 ```
 
 If there is rule violation, notify you of them.
 
 ```bash
 layer dependency rule
-+------------------------------------+-----------------+----+---------------------------+-------------+
-| depender                           | component       |    | dependee                  | component   |
-+------------------------------------+-----------------+----+---------------------------+-------------+
-| App\UseCaseRequests\GetUserRequest | ControllerLayer | -> | Acme\Domain\Entities\User | DomainLayer |
-+------------------------------------+-----------------+----+---------------------------+-------------+
++------------------------------------+------------------+----+---------------------------+--------------+
+| depender                           | component        |    | dependee                  | component    |
++------------------------------------+------------------+----+---------------------------+--------------+
+| App\UseCaseRequests\GetUserRequest | controller_layer | -> | Acme\Domain\Entities\User | domain_layer |
++------------------------------------+------------------+----+---------------------------+--------------+
 ```
 
 And, you can use phpdoc too.
@@ -135,7 +135,7 @@ php ./bin/analyze-deps detect-cycle ./some/analyze/dir
 
 ## What is dependency?
 Dependency is knowledge of interface that is had by class.
-In classes collaboration, every classes always have knowledge of interface of other classes.
+In classes collaboration, every class always have knowledge of interface of other classes.
 If a interface is changed, classes what have knowledge of that interface is must fixed.
 
 Dependency is created by under php syntaxes below.
