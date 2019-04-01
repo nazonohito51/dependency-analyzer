@@ -74,8 +74,9 @@ class DependencyDumperTest extends TestCase
             'argument_type_by_phpdoc' => [
                 $this->getFixturePath('/individual_theme/ArgumentTypeByPhpDoc.php'),
                 [
-                    'Tests\Fixtures\ArgumentTypeByPhpDoc' => ['Tests\Fixtures\Foundations\SomeClass1'],
-                    'Tests\Fixtures\Foundations\SomeClass1' => []
+                    'Tests\Fixtures\ArgumentTypeByPhpDoc' => ['Tests\Fixtures\Foundations\SomeClass1', 'Tests\Fixtures\Foundations\SomeClass2'],
+                    'Tests\Fixtures\Foundations\SomeClass1' => [],
+                    'Tests\Fixtures\Foundations\SomeClass2' => []
                 ]
             ],
             'return_type' => [
