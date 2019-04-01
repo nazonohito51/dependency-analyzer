@@ -56,4 +56,4 @@ jobs:
       - run: ./vendor/bin/phpunit tests/
       #- run: ./vendor/bin/codecept build
       #- run: ./vendor/bin/codecept run
-      - run: ./bin/analyze-deps verify --rule ./conf/this_repository_rule.php ./src
+      - run: php ./bin/analyze-deps verify --rule ./conf/this_repository_rule.php ./src
