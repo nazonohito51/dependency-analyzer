@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Fixtures;
+namespace Tests\Fixtures\IndividualTheme;
 
-use Tests\Fixtures\Foundations\SomeException;
+use Tests\Fixtures\IndividualTheme\Foundations\SomeException;
 
 class CatchException
 {

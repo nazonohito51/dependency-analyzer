@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Fixtures;
+namespace Tests\Fixtures\IndividualTheme;
 
 class NoDependency
 {

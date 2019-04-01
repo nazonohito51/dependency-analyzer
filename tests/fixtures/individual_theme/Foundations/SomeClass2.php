@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Fixtures\Foundations;
+namespace Tests\Fixtures\IndividualTheme\Foundations;
 
 class SomeClass2
 {

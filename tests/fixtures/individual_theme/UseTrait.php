@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Fixtures;
+namespace Tests\Fixtures\IndividualTheme;
 
-use Tests\Fixtures\Foundations\SomeTrait;
+use Tests\Fixtures\IndividualTheme\Foundations\SomeTrait;
 
 class UseTrait
 {

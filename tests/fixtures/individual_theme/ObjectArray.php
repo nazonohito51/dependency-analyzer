@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Fixtures;
+namespace Tests\Fixtures\IndividualTheme;
 
-use Tests\Fixtures\Foundations\SomeClass1;
+use Tests\Fixtures\IndividualTheme\Foundations\SomeClass1;
 
 class ObjectArray
 {

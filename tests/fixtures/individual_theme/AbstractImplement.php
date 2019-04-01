@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Fixtures;
+namespace Tests\Fixtures\IndividualTheme;
 
-use Tests\Fixtures\Foundations\SomeInterface;
+use Tests\Fixtures\IndividualTheme\Foundations\SomeInterface;
 
 abstract class AbstractImplement implements SomeInterface
 {
