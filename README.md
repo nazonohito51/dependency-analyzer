@@ -140,18 +140,23 @@ If a interface is changed, classes what have knowledge of that interface is must
 
 Dependency is created by under php syntaxes below.
 
-* Type hinting
-* Return value type
-* call public method
-* fetch public property/constant
 * extends/implements
+* use trait
+* new object
+* type hinting (defined by phpdoc too)
+* return type declaration (defined by phpdoc too)
+* fetch public property/constant
+* call public method
+* class class method
 * throw
 * catch
-* foreach
-* array access
-* others...
+* instanceof
+* foreach access
+* array dim access
+* call function
 
 This library analyze those syntaxes by using [PHPStan](https://github.com/phpstan/phpstan), and crate dependency map.
+If you want to know detail, [see example](https://github.com/nazonohito51/dependency-analyzer/blob/master/tests/fixtures/all_theme/AllTheme.php).
 
 ## Advanced Usages
 ### Create dependency graph
