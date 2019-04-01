@@ -57,11 +57,10 @@ return [
 ];
 ```
 
-`'component'` is a group of classes.
+`'component'` is a group of classes. (About class name matching rule, [see wiki](https://github.com/nazonohito51/dependency-analyzer/wiki/Class-name-matting).)
 `'depender'` is classes/components that depend on component.
 `'dependee'` is classes/components that is depended on component.
 You can restrict depender/dependee.
-About class name matching rule, [see wiki](https://github.com/nazonohito51/dependency-analyzer/wiki/Class-name-matting).
 Then, you can verify your repository like this:
 
 ```bash
