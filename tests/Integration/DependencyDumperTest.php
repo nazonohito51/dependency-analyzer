@@ -13,6 +13,7 @@ class DependencyDumperTest extends TestCase
     {
         parent::setUp();
         require_once $this->getFixturePath('/individual_theme/Foundations/some_functions.php');
+        require_once $this->getFixturePath('/all_theme/foundations.php');
         spl_autoload_register([$this, 'autoload']);
     }
 
@@ -33,6 +34,9 @@ class DependencyDumperTest extends TestCase
         if (array_slice($namespaces, 0, 3) === ['Tests', 'Fixtures', 'IndividualTheme']) {
             $fileName = implode('/', array_slice(explode('\\', $className), 3)) . '.php';
             require_once $this->getFixturePath("individual_theme/{$fileName}");
+        } elseif (array_slice($namespaces, 0, 3) === ['Tests', 'Fixtures', 'AllTheme']) {
+            $fileName = implode('/', array_slice(explode('\\', $className), 3)) . '.php';
+            require_once $this->getFixturePath("all_theme/{$fileName}");
         }
     }
 
@@ -227,6 +231,61 @@ class DependencyDumperTest extends TestCase
                 [
                     'Tests\Fixtures\IndividualTheme\DependOnComment' => ['Tests\Fixtures\IndividualTheme\Foundations\SomeClass1'],
                     'Tests\Fixtures\IndividualTheme\Foundations\SomeClass1' => [],
+                ]
+            ],
+            'all_theme' => [
+                $this->getFixturePath('/all_theme/AllTheme.php'),
+                [
+                    'Tests\Fixtures\AllTheme\AllTheme' => [
+                        'Tests\Fixtures\AllTheme\Foundations\ParentClass',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeInterface',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeTrait',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass1',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass2',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass3',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass4',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass5',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass6',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeException1',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeException2',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass7',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass8',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass10',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass9',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass11',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass12',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass13',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass14',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass15',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass16',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass17',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass18',
+                        'Tests\Fixtures\AllTheme\Foundations\SomeClass19',
+                    ],
+                    'Tests\Fixtures\AllTheme\Foundations\ParentClass' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeInterface' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeTrait' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass1' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass2' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass3' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass4' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass5' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass6' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeException1' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeException2' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass7' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass8' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass10' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass9' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass11' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass12' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass13' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass14' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass15' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass16' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass17' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass18' => [],
+                    'Tests\Fixtures\AllTheme\Foundations\SomeClass19' => [],
                 ]
             ]
         ];
