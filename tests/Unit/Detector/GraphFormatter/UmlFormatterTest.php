@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Unit\DependencyAnalyzer\DependencyGraph\Formatter;
+namespace Tests\Unit\DependencyAnalyzer\DependencyGraph\Detector\GraphFormatter;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\DependencyGraph\Formatter\UmlFormatter;
+use DependencyAnalyzer\Detector\GraphFormatter\UmlFormatter;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 

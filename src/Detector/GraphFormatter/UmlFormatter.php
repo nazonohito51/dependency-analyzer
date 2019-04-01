@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DependencyGraph\Formatter;
+namespace DependencyAnalyzer\Detector\GraphFormatter;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Detector\RuleViolationDetector\Component;
