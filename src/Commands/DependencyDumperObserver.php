@@ -55,8 +55,8 @@ class DependencyDumperObserver implements ObserverInterface
         if ($this->output->isVerbose()) {
             $this->output->writeln("exception: {$e->getMessage()} at {$e->getFile()}:{$e->getLine()}");
         }
-        if ($this->output->isVeryVerbose() && $previous = $e->getPrevious()) {
-            $this->output->writeln("previous exception: {$e}");
+        if ($this->output->isVeryVerbose()) {
+            $this->output->writeln("detail of exception: {$e}");
         }
     }
 
@@ -68,8 +68,8 @@ class DependencyDumperObserver implements ObserverInterface
         if ($this->output->isVerbose()) {
             $this->output->writeln("exception: {$e->getMessage()} at {$e->getFile()}:{$e->getLine()}");
         }
-        if ($this->output->isVeryVerbose() && $previous = $e->getPrevious()) {
-            $this->output->writeln("previous exception: {$e}");
+        if ($this->output->isVeryVerbose()) {
+            $this->output->writeln("detail of exception: {$e}");
         }
     }
 }

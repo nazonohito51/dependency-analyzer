@@ -14,6 +14,9 @@ If you start to managing dependencies between classes likely [Clean Architecture
 This library analyze dependencies in your repository, and take some way of using it to you.(Example: Create UML graph, Verify by your rule, Detect cycle path)
 
 ## Basic Usages
+This library have 3 functions.
+If you have error when use them, see [Trouble Shooting](#Trouble shooting).
+
 ### Create dependency graph
 
 ![graph](./dependency_graph_sample.png)
@@ -159,6 +162,13 @@ Dependency is created by below php syntaxes.
 
 This library analyze those syntaxes by using [PHPStan](https://github.com/phpstan/phpstan), and create dependency graph.
 If you want to know detail, [see example](https://github.com/nazonohito51/dependency-analyzer/blob/master/tests/fixtures/all_theme/AllTheme.php).
+
+## Trouble shooting
+### Error has occured when analyse repository
+Every command have verbose option. So use it, check error detail.
+
+`-v`: Display description of exceptions.
+`-vv`: Display detail of exception with stack trace.
 
 ## Advanced Usages
 ### Create dependency graph
