@@ -12,8 +12,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @canOnlyUsedBy \DependencyAnalyzer\Commands\
+ */
 abstract class AnalyzeDependencyCommand extends Command
 {
     const DEFAULT_CONFIG_FILES = [__DIR__ . '/../../conf/config.neon'];
@@ -40,6 +44,7 @@ abstract class AnalyzeDependencyCommand extends Command
         }
 
         $dependencyGraph = $this->createDependencyGraph(
+            $output,
             $input->getArgument('paths'),
             !is_null($input->getOption('exclude')) ? [$input->getOption('exclude')] : []
         );
@@ -48,11 +53,12 @@ abstract class AnalyzeDependencyCommand extends Command
     }
 
     /**
+     * @param OutputInterface $output
      * @param string[] $paths
      * @param string[] $excludePaths
      * @return DependencyGraph
      */
-    protected function createDependencyGraph(array $paths, array $excludePaths = []): DependencyGraph
+    protected function createDependencyGraph(OutputInterface $output, array $paths, array $excludePaths = []): DependencyGraph
     {
         $convertRealpathClosure = function ($path) {
             $realpath = realpath($path);
@@ -65,13 +71,14 @@ abstract class AnalyzeDependencyCommand extends Command
         $paths = array_map($convertRealpathClosure, $paths);
         $excludePaths = array_map($convertRealpathClosure, $excludePaths);
 
-        return $this->createDependencyDumper()->dump($paths, $excludePaths);
+        return $this->createDependencyDumper($output)->dump($paths, $excludePaths);
     }
 
     /**
+     * @param OutputInterface $output
      * @return DependencyDumper
      */
-    protected function createDependencyDumper(): DependencyDumper
+    protected function createDependencyDumper(OutputInterface $output): DependencyDumper
     {
         $currentWorkingDirectory = getcwd();
         if ($currentWorkingDirectory === false) {
@@ -83,7 +90,11 @@ abstract class AnalyzeDependencyCommand extends Command
             throw new ShouldNotHappenException('creating a temp directory is failed: ' . $tmpDir);
         }
 
-        return DependencyDumper::createFromConfig($currentWorkingDirectory, $tmpDir, self::DEFAULT_CONFIG_FILES);
+        return DependencyDumper::createFromConfig(
+            $currentWorkingDirectory,
+            $tmpDir,
+            self::DEFAULT_CONFIG_FILES
+        )->setObserver(new DependencyDumperObserver($output));
     }
 
     /**

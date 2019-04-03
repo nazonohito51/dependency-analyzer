@@ -26,10 +26,30 @@ class CollectDependenciesVisitor
      */
     protected $dependencyGraphBuilder;
 
+    /**
+     * @var ObserverInterface
+     */
+    protected $observer;
+
+    /**
+     * @var string
+     */
+    protected $file = null;
+
     public function __construct(DependencyResolver $dependencyResolver, DependencyGraphBuilder $dependencyGraphBuilder)
     {
         $this->dependencyResolver = $dependencyResolver;
         $this->dependencyGraphBuilder = $dependencyGraphBuilder;
+    }
+
+    public function setFile(string $file)
+    {
+        $this->file = $file;
+    }
+
+    public function setObserver(ObserverInterface $observer = null)
+    {
+        $this->observer = $observer;
     }
 
     public function __invoke(\PhpParser\Node $node, Scope $scope): void
@@ -47,12 +67,14 @@ class CollectDependenciesVisitor
                     //   var_dump(...);
                 } else {
                     // error of DependencyResolver
-                    throw new ShouldNotHappenException('resolving node dependency is failed.');
+                    throw new ResolveDependencyException($node, 'resolving node dependency is failed.');
                 }
             }
         } catch (ResolveDependencyException $e) {
-            // TODO: error handling...
-//            throw new ShouldNotHappenException('collecting dependencies is failed.', 0, $e);
+            // TODO: error handling... But, don't throw Exception, because NodeScopeResolver will die.
+            if ($this->observer) {
+                $this->observer->notifyResolveDependencyError($this->file, $e);
+            }
         }
     }
 
@@ -80,7 +102,7 @@ class CollectDependenciesVisitor
                 if ($dependerReflection instanceof ClassReflection) {
                     $this->dependencyGraphBuilder->addDependency($dependerReflection, $dependeeReflection);
                 } else {
-                    throw new ShouldNotHappenException('resolving node dependency is failed.');
+                    throw new ResolveDependencyException($node, 'resolving node dependency is failed, because unexpected node.');
                 }
             }
         }

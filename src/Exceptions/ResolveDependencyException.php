@@ -18,6 +18,16 @@ class ResolveDependencyException extends RuntimeException
         $this->node = $node;
     }
 
+    public function getNodeLine()
+    {
+        return $this->node->getLine();
+    }
+
+    public function getNodeType()
+    {
+        return $this->node->getType();
+    }
+
     public function __toString(): string
     {
         return parent::__toString() . ' ' . $this->nodeToString();
@@ -25,6 +35,6 @@ class ResolveDependencyException extends RuntimeException
 
     protected function nodeToString(): string
     {
-        return "type: {$this->node->getType()}, line: {$this->node->getLine()}";
+        return "type: {$this->getNodeType()}, line: {$this->getNodeLine()}";
     }
 }

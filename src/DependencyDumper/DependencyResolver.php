@@ -16,6 +16,7 @@ use PHPStan\Reflection\ParametersAcceptorWithPhpDocs;
 use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Reflection\Php\PhpPropertyReflection;
 use PHPStan\Reflection\ReflectionWithFilename;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ClosureType;
 use PHPStan\Type\TypeWithClassName;
 
@@ -94,6 +95,8 @@ class DependencyResolver
                 return $this->resolvePropertyProperty($node, $scope);
             }
         } catch (AnalysedCodeException $e) {
+            throw new ResolveDependencyException($node, 'resolving node dependency is failed.', 0, $e);
+        } catch (ShouldNotHappenException $e) {
             throw new ResolveDependencyException($node, 'resolving node dependency is failed.', 0, $e);
         }
 
