@@ -14,7 +14,7 @@ If you start to managing dependencies between classes likely [Clean Architecture
 This library analyze dependencies in your repository, and take some way of using it to you.(Example: Create UML graph, Verify by your rule, Detect cycle path)
 
 ## Basic Usages
-This library have 3 functions.
+This library have several functions.
 If you have error when use them, see [Trouble Shooting](#Trouble shooting).
 
 ### Create dependency graph
@@ -164,11 +164,15 @@ This library analyze those syntaxes by using [PHPStan](https://github.com/phpsta
 If you want to know detail, [see example](https://github.com/nazonohito51/dependency-analyzer/blob/master/tests/fixtures/all_theme/AllTheme.php).
 
 ## Trouble shooting
-### Error has occured when analyse repository
+### Error has occurred when analyse repository
 Every command have verbose option. So use it, check error detail.
 
 `-v`: Display description of exceptions.
 `-vv`: Display detail of exception with stack trace.
+
+### Error has occurred when resolving dependency
+PHPStan need autoloader (likely `vendor/autoload.php` ) of repository.
+So, current working directory is must repository root.
 
 ## Advanced Usages
 ### Create dependency graph
@@ -186,10 +190,10 @@ TBD...
 * magic keyword
 
 ## TODO
-- [ ] Display error details
+- [x] Display error details
 - [ ] README
   - [ ] graph
-  - [ ] wiki
+  - [x] wiki
 - [x] Analyze Facade
 - [x] Response object & format
   - [x] use table format
