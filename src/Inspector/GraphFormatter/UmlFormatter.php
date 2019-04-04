@@ -5,7 +5,7 @@ namespace DependencyAnalyzer\Inspector\GraphFormatter;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\Patterns\QualifiedNamePattern;
+use DependencyAnalyzer\Matcher\ClassNameMatcher;
 
 class UmlFormatter
 {
@@ -27,7 +27,7 @@ class UmlFormatter
     protected $groupedClasses = [];
 
     /**
-     * @var QualifiedNamePattern
+     * @var ClassNameMatcher
      */
     protected $excludeDefinition;
 
@@ -38,15 +38,15 @@ class UmlFormatter
 
         if (isset($ruleDefinition['namespace'])) {
             foreach ($ruleDefinition['namespace'] as $componentName => $componentDefinition) {
-                $this->components[] = new Component($componentName, new QualifiedNamePattern($componentDefinition));
+                $this->components[] = new Component($componentName, new ClassNameMatcher($componentDefinition));
             }
         }
         if (isset($ruleDefinition['exclude'])) {
-            $this->excludeDefinition = new QualifiedNamePattern($ruleDefinition['exclude']);
+            $this->excludeDefinition = new ClassNameMatcher($ruleDefinition['exclude']);
         }
         if (isset($ruleDefinition['group'])) {
             foreach ($ruleDefinition['group'] as $groupName => $groupDefinition) {
-                $this->graph = $this->graph->groupByPattern($groupName, new QualifiedNamePattern($groupDefinition));
+                $this->graph = $this->graph->groupByPattern($groupName, new ClassNameMatcher($groupDefinition));
             }
         }
 

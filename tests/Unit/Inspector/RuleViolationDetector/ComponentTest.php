@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer\Inspector\RuleViolationDetector;
 
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\Patterns\QualifiedNamePattern;
+use DependencyAnalyzer\Matcher\ClassNameMatcher;
 use Tests\TestCase;
 
 class ComponentTest extends TestCase
 {
     public function testGetName()
     {
-        $pattern = $this->createMock(QualifiedNamePattern::class);
+        $pattern = $this->createMock(ClassNameMatcher::class);
         $component = new Component('componentName', $pattern);
 
         $this->assertSame('componentName', $component->getName());
@@ -33,7 +33,7 @@ class ComponentTest extends TestCase
     public function testIsBelongedTo(bool $return, bool $expected)
     {
         $className = 'className';
-        $pattern = $this->createMock(QualifiedNamePattern::class);
+        $pattern = $this->createMock(ClassNameMatcher::class);
         $pattern->method('isMatch')->with($className)->willReturn($return);
         $component = new Component('componentName', $pattern);
 
@@ -58,9 +58,9 @@ class ComponentTest extends TestCase
     public function testVerifyDepender(bool $matchSameComponent, bool $matchDependerPattern, bool $expected)
     {
         $className = 'className';
-        $componentPattern = $this->createMock(QualifiedNamePattern::class);
+        $componentPattern = $this->createMock(ClassNameMatcher::class);
         $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
-        $dependerPattern = $this->createMock(QualifiedNamePattern::class);
+        $dependerPattern = $this->createMock(ClassNameMatcher::class);
         $dependerPattern->method('isMatch')->with($className)->willReturn($matchDependerPattern);
         $component = new Component('componentName', $componentPattern, $dependerPattern);
 
@@ -85,9 +85,9 @@ class ComponentTest extends TestCase
     public function testVerifyDependee(bool $matchSameComponent, bool $matchDependeePattern, bool $expected)
     {
         $className = 'className';
-        $componentPattern = $this->createMock(QualifiedNamePattern::class);
+        $componentPattern = $this->createMock(ClassNameMatcher::class);
         $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
-        $dependeePattern = $this->createMock(QualifiedNamePattern::class);
+        $dependeePattern = $this->createMock(ClassNameMatcher::class);
         $dependeePattern->method('isMatch')->with($className)->willReturn($matchDependeePattern);
         $component = new Component('componentName', $componentPattern, null, $dependeePattern);
 

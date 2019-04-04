@@ -39,7 +39,7 @@ try {
 
 }
 
-\DependencyAnalyzer\Patterns\QualifiedNamePattern::setPhpNativeClasses(array_merge(
+\DependencyAnalyzer\Matcher\ClassNameMatcher::setPhpNativeClasses(array_merge(
     PHP_NATIVE_CLASSES, PHP_NATIVE_INTERFACES, PHP_NATIVE_TRAITS
 ));
 

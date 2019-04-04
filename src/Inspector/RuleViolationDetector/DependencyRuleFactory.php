@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
 use DependencyAnalyzer\Exceptions\InvalidRuleDefinition;
-use DependencyAnalyzer\Patterns\QualifiedNamePattern;
+use DependencyAnalyzer\Matcher\ClassNameMatcher;
 
 class DependencyRuleFactory
 {
@@ -39,7 +39,7 @@ class DependencyRuleFactory
             $dependee = isset($componentDefinition['dependee']) ? $this->createDependPattern($componentDefinition['dependee'], $componentDefines) : null;
             $components[] = new Component(
                 $componentName,
-                new QualifiedNamePattern($componentDefinition['define']),
+                new ClassNameMatcher($componentDefinition['define']),
                 $depender,
                 $dependee
             );
@@ -47,7 +47,7 @@ class DependencyRuleFactory
         return new DependencyRule($ruleName, $components);
     }
 
-    protected function createDependPattern(array $dependMatchers, array $componentDefines): QualifiedNamePattern
+    protected function createDependPattern(array $dependMatchers, array $componentDefines): ClassNameMatcher
     {
         $matchers = [];
         $excludeMatchers = [];
@@ -62,7 +62,7 @@ class DependencyRuleFactory
         }
 
         // TODO: fix it...
-        return (new QualifiedNamePattern($matchers))->addExcludePatterns($excludeMatchers);
+        return (new ClassNameMatcher($matchers))->addExcludePatterns($excludeMatchers);
     }
 
     protected function verifyDefinition(array $ruleDefinition): void

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\Patterns;
+namespace DependencyAnalyzer\Matcher;
 
 use DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException;
 
-class QualifiedNamePattern
+class ClassNameMatcher
 {
     const PHP_NATIVE_CLASSES = '@php_native';
     protected static $nativeClasses = [];

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
-use DependencyAnalyzer\Patterns\QualifiedNamePattern;
+use DependencyAnalyzer\Matcher\ClassNameMatcher;
 
 class Component
 {
@@ -13,28 +13,28 @@ class Component
     protected $name;
 
     /**
-     * @var QualifiedNamePattern
+     * @var ClassNameMatcher
      */
     protected $pattern;
 
     /**
-     * @var array|QualifiedNamePattern[]
+     * @var array|ClassNameMatcher[]
      */
     protected $dependerPatterns;
 
     /**
-     * @var array|QualifiedNamePattern[]
+     * @var array|ClassNameMatcher[]
      */
     protected $dependeePatterns;
 
     /**
      * Component constructor.
      * @param string $name
-     * @param QualifiedNamePattern $pattern
-     * @param QualifiedNamePattern $dependerPatterns
-     * @param QualifiedNamePattern $dependeePatterns
+     * @param ClassNameMatcher $pattern
+     * @param ClassNameMatcher $dependerPatterns
+     * @param ClassNameMatcher $dependeePatterns
      */
-    public function __construct(string $name, QualifiedNamePattern $pattern, QualifiedNamePattern $dependerPatterns = null, QualifiedNamePattern $dependeePatterns = null)
+    public function __construct(string $name, ClassNameMatcher $pattern, ClassNameMatcher $dependerPatterns = null, ClassNameMatcher $dependeePatterns = null)
     {
         $this->name = $name;
         $this->pattern = $pattern;
@@ -78,7 +78,7 @@ class Component
 
     /**
      * @param string $className
-     * @param QualifiedNamePattern[] $patterns
+     * @param ClassNameMatcher[] $patterns
      * @return bool
      */
     protected function checkPatterns(string $className, array $patterns): bool

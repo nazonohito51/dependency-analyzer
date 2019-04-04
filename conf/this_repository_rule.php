@@ -35,9 +35,10 @@ return [
             'description' => 'Inspect DependencyGraph.',
             'depender' => ['commands']
         ],
-        'patterns' => [
-            'define' => ['\DependencyAnalyzer\Patterns\\'],
-            'description' => 'Name patterns'
+        'matchers' => [
+            'define' => ['\DependencyAnalyzer\Matcher\\'],
+            'description' => 'Matcher of class name and rule definition',
+            'depender' => ['dependency_graph', 'inspectors']
         ],
         'exceptions' => [
             'define' => ['\DependencyAnalyzer\Exceptions\\'],

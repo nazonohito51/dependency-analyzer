@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\Patterns\QualifiedNamePattern;
+use DependencyAnalyzer\Matcher\ClassNameMatcher;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
@@ -14,7 +14,7 @@ class DependencyGraphTest extends TestCase
     {
         $graph = new DependencyGraph($this->getGraph());
 
-        $newGraph = $graph->groupByPattern('MyGroup', new QualifiedNamePattern(['\v3', '\v4']));
+        $newGraph = $graph->groupByPattern('MyGroup', new ClassNameMatcher(['\v3', '\v4']));
 
         $this->assertSame([
             'MyGroup' => ['v5', 'v6'],
