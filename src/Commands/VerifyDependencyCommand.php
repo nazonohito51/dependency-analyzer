@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\Inspector\RuleViolationDetector;
+use DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRule;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
@@ -48,10 +49,12 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
 
     protected function inspectDependencyGraph(DependencyGraph $graph, OutputInterface $output): int
     {
-        $detector = new RuleViolationDetector((new DependencyRuleFactory())->create(array_merge(
+        $rules = (new DependencyRuleFactory())->create(array_merge(
             $this->ruleDefinition,
             $this->createRuleDefinitionFromPhpDoc($graph)
-        )));
+        ));
+        $this->debugRules($rules, $output);
+        $detector = new RuleViolationDetector($rules);
         $responses = $detector->inspect($graph);
 
         $errorCount = 0;
@@ -106,5 +109,20 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         }
 
         return $ruleDefinitions;
+    }
+
+    /**
+     * @param DependencyRule[] $rules
+     * @param OutputInterface $output
+     */
+    protected function debugRules(array $rules, OutputInterface $output): void
+    {
+        if ($output->isVerbose()) {
+            $output->writeln('');
+            $output->writeln('Defined rules:');
+            foreach ($rules as $rule) {
+                $output->writeln(var_export($rule->toArray(), true));
+            }
+        }
     }
 }
