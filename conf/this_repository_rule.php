@@ -4,7 +4,7 @@ return [
     'my dependency rule' => [
         'commands' => [
             'define' => ['\DependencyAnalyzer\Commands\\'],
-            'description' => 'CLI application commands. control CLI input/output.',
+            'description' => 'CLI application commands. Control CLI input/output.',
             'depender' => ['!\DependencyAnalyzer\\'],
         ],
         'dependency_dumper' => [
@@ -29,7 +29,7 @@ return [
         ],
         'matchers' => [
             'define' => ['\DependencyAnalyzer\Matcher\\'],
-            'description' => 'Matcher of class name and rule definition',
+            'description' => 'Matcher for class name and rule definition',
             'depender' => ['dependency_graph', 'inspectors']
         ],
 //        'exceptions' => [
