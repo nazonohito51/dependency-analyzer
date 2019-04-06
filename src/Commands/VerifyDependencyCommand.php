@@ -38,12 +38,16 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         parent::initialize($input, $output);
 
         $ruleFile = $input->getOption('rule');
-        if (!is_file($ruleFile)) {
-            throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $ruleFile));
-        }
-        $this->ruleDefinition = require_once $ruleFile;
-        if (!is_array($this->ruleDefinition)) {
-            throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $ruleFile));
+        if (is_null($ruleFile)) {
+            $this->ruleDefinition = [];
+        } else {
+            if (!is_file($ruleFile)) {
+                throw new InvalidCommandArgumentException(sprintf('rule is not file "%s".', $ruleFile));
+            }
+            $this->ruleDefinition = require_once $ruleFile;
+            if (!is_array($this->ruleDefinition)) {
+                throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $ruleFile));
+            }
         }
     }
 
