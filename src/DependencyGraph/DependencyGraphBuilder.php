@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph;
 
-use DependencyAnalyzer\DependencyDumper\UnknownClassReflection;
+use DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder\UnknownClassReflection;
 use DependencyAnalyzer\DependencyGraph;
 use Fhaculty\Graph\Graph;
 use PHPStan\Reflection\ClassReflection;
@@ -11,7 +11,6 @@ use PHPStan\Reflection\ClassReflection;
 class DependencyGraphBuilder
 {
     /**
-     * TODO: fix it...
      * @var ClassReflection[]|UnknownClassReflection[] $classReflections
      */
     protected $classes = [];
@@ -33,13 +32,22 @@ class DependencyGraphBuilder
 
     /**
      * @param ClassReflection $depender
-     * @param ClassReflection|UnknownClassReflection $dependee
+     * @param ClassReflection $dependee
      */
-    public function addDependency(ClassReflection $depender, $dependee)
+    public function addDependency(ClassReflection $depender, ClassReflection $dependee)
     {
-        $dependerId = $this->getClassReflectionId($depender);
-        $dependeeId = $this->getClassReflectionId($dependee);
+        $this->addDependencyMap($this->getClassReflectionId($depender), $this->getClassReflectionId($dependee));
+    }
 
+    public function addUnknownDependency(ClassReflection $depender, string $dependeeName)
+    {
+        $unknownClassReflection = new UnknownClassReflection($dependeeName);
+        $unknownClassReflection->addDepender($depender->getDisplayName());
+        $this->addDependencyMap($this->getClassReflectionId($depender), $this->getClassReflectionId($unknownClassReflection));
+    }
+
+    protected function addDependencyMap(int $dependerId, int $dependeeId)
+    {
         if (!isset($this->dependencyMap[$dependerId])) {
             $this->dependencyMap[$dependerId] = [$dependeeId];
         } elseif (!in_array($dependeeId, $this->dependencyMap[$dependerId])) {
@@ -55,12 +63,15 @@ class DependencyGraphBuilder
     {
         foreach ($this->classes as $id => $reflection) {
             if ($reflection->getDisplayName() === $classReflection->getDisplayName()) {
+                if ($reflection instanceof UnknownClassReflection) {
+                    $reflection->mergeDepender($classReflection);
+                }
+
                 return $id;
             }
         }
 
         $this->classes[] = $classReflection;
-
         return count($this->classes) - 1;
     }
 

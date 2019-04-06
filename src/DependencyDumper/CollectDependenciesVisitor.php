@@ -6,7 +6,6 @@ namespace DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
-use DependencyAnalyzer\Exceptions\ShouldNotHappenException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
@@ -59,7 +58,7 @@ class CollectDependenciesVisitor
                 if ($dependeeReflection instanceof ClassReflection) {
                     $this->addDependency($node, $scope, $dependeeReflection);
                 } elseif ($dependeeReflection instanceof UnknownClassReflection) {
-                    $this->addDependency($node, $scope, $dependeeReflection);
+                    $this->addUnknownDependency($node, $scope, $dependeeReflection);
                 } elseif ($dependeeReflection instanceof PhpFunctionReflection) {
                     // function call
                     // ex:
@@ -78,12 +77,7 @@ class CollectDependenciesVisitor
         }
     }
 
-    /**
-     * @param \PhpParser\Node $node
-     * @param Scope $scope
-     * @param ClassReflection|UnknownClassReflection $dependeeReflection
-     */
-    protected function addDependency(\PhpParser\Node $node, Scope $scope, $dependeeReflection): void
+    protected function addDependency(\PhpParser\Node $node, Scope $scope, ClassReflection $dependeeReflection): void
     {
         if ($scope->isInClass()) {
             if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {
@@ -105,6 +99,13 @@ class CollectDependenciesVisitor
                     throw new ResolveDependencyException($node, 'resolving node dependency is failed, because unexpected node.');
                 }
             }
+        }
+    }
+
+    protected function addUnknownDependency(\PhpParser\Node $node, Scope $scope, UnknownClassReflection $classReflection)
+    {
+        if ($scope->isInClass()) {
+            $this->dependencyGraphBuilder->addUnknownDependency($scope->getClassReflection(), $classReflection->getDisplayName());
         }
     }
 
