@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures\AllTheme;
 
+// Dependency analyzer will not analyse 'use' statements.
+use Tests\Fixtures\AllTheme\Foundations\NonExistClass;
 use Tests\Fixtures\AllTheme\Foundations\ParentClass;
 use Tests\Fixtures\AllTheme\Foundations\SomeClass1;
 use Tests\Fixtures\AllTheme\Foundations\SomeClass10;
@@ -89,7 +91,6 @@ class AllTheme extends ParentClass implements SomeInterface         // extends(=
 
     public function someMethod5()
     {
-        $ret = [];
         $array = [new SomeClass15, new SomeClass16, new SomeClass17];
 
         return $array[1]->someMethod();                             // array dim fetch, (new SomeClass16)->someMethod() will return SomeClass18 object(=SomeClass18)
