@@ -15,17 +15,17 @@ class Component
     /**
      * @var ClassNameMatcher
      */
-    protected $pattern;
+    protected $matcher;
 
     /**
-     * @var array|ClassNameMatcher[]
+     * @var ClassNameMatcher
      */
-    protected $dependerPatterns;
+    protected $dependerMatcher;
 
     /**
-     * @var array|ClassNameMatcher[]
+     * @var ClassNameMatcher
      */
-    protected $dependeePatterns;
+    protected $dependeeMathcer;
 
     /**
      * Component constructor.
@@ -37,9 +37,9 @@ class Component
     public function __construct(string $name, ClassNameMatcher $pattern, ClassNameMatcher $dependerPatterns = null, ClassNameMatcher $dependeePatterns = null)
     {
         $this->name = $name;
-        $this->pattern = $pattern;
-        $this->dependerPatterns = $dependerPatterns;
-        $this->dependeePatterns = $dependeePatterns;
+        $this->matcher = $pattern;
+        $this->dependerMatcher = $dependerPatterns;
+        $this->dependeeMathcer = $dependeePatterns;
     }
 
     public function getName(): string
@@ -49,18 +49,18 @@ class Component
 
     public function isBelongedTo(string $className): bool
     {
-        return $this->pattern->isMatch($className);
+        return $this->matcher->isMatch($className);
     }
 
     public function verifyDepender(string $className): bool
     {
         if ($this->isBelongedTo($className)) {
             return true;
-        } elseif (is_null($this->dependerPatterns)) {
+        } elseif (is_null($this->dependerMatcher)) {
             return true;
         }
 
-        return $this->dependerPatterns->isMatch($className);
+        return $this->dependerMatcher->isMatch($className);
 //        return $this->checkPatterns($className, $this->dependerPatterns);
     }
 
@@ -68,11 +68,11 @@ class Component
     {
         if ($this->isBelongedTo($className)) {
             return true;
-        } elseif (is_null($this->dependeePatterns)) {
+        } elseif (is_null($this->dependeeMathcer)) {
             return true;
         }
 
-        return $this->dependeePatterns->isMatch($className);
+        return $this->dependeeMathcer->isMatch($className);
 //        return $this->checkPatterns($className, $this->dependeePatterns);
     }
 
@@ -90,5 +90,21 @@ class Component
         }
 
         return false;
+    }
+
+    public function toArray()
+    {
+        $ret = [
+            'define' => $this->matcher->toArray()
+        ];
+
+        if (!is_null($this->dependerMatcher)) {
+            $ret['depender'] = $this->dependerMatcher->toArray();
+        }
+        if (!is_null($this->dependeeMathcer)) {
+            $ret['dependee'] = $this->dependeeMathcer->toArray();
+        }
+
+        return $ret;
     }
 }

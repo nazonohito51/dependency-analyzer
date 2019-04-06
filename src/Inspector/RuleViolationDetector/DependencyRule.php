@@ -104,4 +104,14 @@ class DependencyRule
     {
         return $this->definition;
     }
+
+    public function toArray()
+    {
+        $components = [];
+        foreach ($this->components as $component) {
+            $components[$component->getName()] = $component->toArray();
+        }
+
+        return [$this->getRuleName() => $components];
+    }
 }

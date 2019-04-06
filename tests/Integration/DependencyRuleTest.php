@@ -303,4 +303,150 @@ class DependencyRuleTest extends TestCase
         $factory = new DependencyRuleFactory();
         $factory->create($ruleDefinitions);
     }
+
+    public function provideToArray()
+    {
+        $depnderInvalid = [
+            'ControllerLayer' => [
+                'define' => ['\\Controller\\'],
+            ],
+            'ApplicationLayer' => [
+                'define' => ['\\Application\\'],
+                'depender' => ['\\Domain\\'],
+            ],
+            'DomainLayer' => [
+                'define' => ['\\Domain\\'],
+            ]
+        ];
+        return [
+            'basic' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\'],
+                        'depender' => ['\Controller\\'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                    ]
+                ],
+                [
+                    'ControllerLayer' => [
+                        'define' => [
+                            'include' => ['Controller\*'],
+                            'exclude' => []
+                        ],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => [
+                            'include' => ['Application\*'],
+                            'exclude' => []
+                        ],
+                        'depender' => [
+                            'include' => ['Controller\*'],
+                            'exclude' => [],
+                        ],
+                    ],
+                    'DomainLayer' => [
+                        'define' => [
+                            'include' => ['Domain\*'],
+                            'exclude' => []
+                        ],
+                    ]
+                ]
+            ],
+            'have exclude' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\', '!\Application\Providers\\'],
+                        'depender' => ['!\Controller\\'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                    ]
+                ],
+                [
+                    'ControllerLayer' => [
+                        'define' => [
+                            'include' => ['Controller\*'],
+                            'exclude' => []
+                        ],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => [
+                            'include' => ['Application\*'],
+                            'exclude' => ['Application\Providers\*']
+                        ],
+                        'depender' => [
+                            'include' => [],
+                            'exclude' => ['Controller\*'],
+                        ],
+                    ],
+                    'DomainLayer' => [
+                        'define' => [
+                            'include' => ['Domain\*'],
+                            'exclude' => []
+                        ],
+                    ]
+                ]
+            ],
+            'have component name string' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\'],
+                        'depender' => ['ControllerLayer'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                    ]
+                ],
+                [
+                    'ControllerLayer' => [
+                        'define' => [
+                            'include' => ['Controller\*'],
+                            'exclude' => []
+                        ],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => [
+                            'include' => ['Application\*'],
+                            'exclude' => []
+                        ],
+                        'depender' => [
+                            'include' => ['Controller\*'],
+                            'exclude' => []
+                        ],
+                    ],
+                    'DomainLayer' => [
+                        'define' => [
+                            'include' => ['Domain\*'],
+                            'exclude' => []
+                        ],
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider provideToArray
+     * @param array $ruleDefinition
+     * @param array $expected
+     */
+    public function testToArray(array $ruleDefinition, array $expected)
+    {
+        $factory = new DependencyRuleFactory();
+        $rules = $factory->create(['testCreateRule' => $ruleDefinition]);
+
+        $this->assertCount(1, $rules);
+        $this->assertEquals($expected, $rules[0]->toArray()['testCreateRule']);
+    }
 }

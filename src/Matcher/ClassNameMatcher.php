@@ -144,4 +144,12 @@ class ClassNameMatcher
     {
         self::$nativeClasses = $nativeClasses;
     }
+
+    public function toArray()
+    {
+        return [
+            'include' => $this->patterns,
+            'exclude' => $this->excludePatterns
+        ];
+    }
 }
