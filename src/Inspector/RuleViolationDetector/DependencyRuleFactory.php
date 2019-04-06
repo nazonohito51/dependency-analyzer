@@ -35,8 +35,8 @@ class DependencyRuleFactory
 
         $components = [];
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
-            $depender = isset($componentDefinition['depender']) ? $this->createDependPattern($componentDefinition['depender'], $componentDefines) : null;
-            $dependee = isset($componentDefinition['dependee']) ? $this->createDependPattern($componentDefinition['dependee'], $componentDefines) : null;
+            $depender = isset($componentDefinition['depender']) ? $this->createClassNameMatcher($componentDefinition['depender'], $componentDefines) : null;
+            $dependee = isset($componentDefinition['dependee']) ? $this->createClassNameMatcher($componentDefinition['dependee'], $componentDefines) : null;
             $components[] = new Component(
                 $componentName,
                 new ClassNameMatcher($componentDefinition['define']),
@@ -47,17 +47,19 @@ class DependencyRuleFactory
         return new DependencyRule($ruleName, $components);
     }
 
-    protected function createDependPattern(array $dependMatchers, array $componentDefines): ClassNameMatcher
+    protected function createClassNameMatcher(array $dependPatterns, array $componentDefines): ClassNameMatcher
     {
         $patterns = [];
         $excludePatterns = [];
-        foreach ($dependMatchers as $dependMatcher) {
-            if (preg_match('/^\![^\\\@]/', $dependMatcher) === 1 && isset($componentDefines[substr($dependMatcher, 1)])) {
-                $excludePatterns = array_merge($excludePatterns, $componentDefines[substr($dependMatcher, 1)]);
-            } elseif (preg_match('/^[^\\\@]/', $dependMatcher) === 1 && isset($componentDefines[$dependMatcher])) {
-                $patterns = array_merge($patterns, $componentDefines[$dependMatcher]);
+        foreach ($dependPatterns as $dependPattern) {
+            if (preg_match('/^\![^\\\@]/', $dependPattern) === 1 && isset($componentDefines[substr($dependPattern, 1)])) {
+                // ex: '!component_name' -> ['\Component\Define']
+                $excludePatterns = array_merge($excludePatterns, $componentDefines[substr($dependPattern, 1)]);
+            } elseif (preg_match('/^[^\\\@]/', $dependPattern) === 1 && isset($componentDefines[$dependPattern])) {
+                // ex: 'component_name' -> ['\Component\Define']
+                $patterns = array_merge($patterns, $componentDefines[$dependPattern]);
             } else {
-                $patterns[] = $dependMatcher;
+                $patterns[] = $dependPattern;
             }
         }
 
