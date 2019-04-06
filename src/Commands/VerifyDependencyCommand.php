@@ -92,21 +92,16 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
     {
         $ruleDefinitions = [];
         foreach ($graph->getClassesHaveOnlyUsedTag() as $class => $classesInPhpDoc) {
-            // TODO: Is '\\' needed?
-            $targetComponent = [
-                'define' => ['\\' . $class],
-                'depender' => $classesInPhpDoc
-            ];
-
-            $otherComponent = [
-                'define' => array_merge(['\\'], array_map(function (string $className) {
-                    return '!' . $className;
-                }, $classesInPhpDoc)),
-            ];
-
             $ruleDefinitions['phpdoc in ' . $class] = [
-                'phpdoc' => $targetComponent,
-                'other' => $otherComponent
+                'phpdoc' => [
+                    'define' => ["\\{$class}"],
+                    'depender' => $classesInPhpDoc
+                ],
+                'other' => [
+                    'define' => array_map(function (string $className) {
+                        return "!{$className}";
+                    }, $classesInPhpDoc),
+                ]
             ];
         }
 

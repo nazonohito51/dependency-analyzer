@@ -91,7 +91,6 @@ class DependencyResolver
             } elseif ($node instanceof \PhpParser\Node\Expr\Array_) {
                 return $this->resolveArray($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Stmt\PropertyProperty) {
-                // TODO: Additional logic...
                 return $this->resolvePropertyProperty($node, $scope);
             }
         } catch (AnalysedCodeException $e) {

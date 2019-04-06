@@ -51,7 +51,7 @@ class AllTheme extends ParentClass implements SomeInterface         // extends(=
 
             return $unknownClass2->getSomeClass4();
         } catch (SomeException2 $e) {                               // catch(=SomeException2)
-            // TODO: error handling
+            // error handling
         }
     }
 

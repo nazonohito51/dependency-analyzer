@@ -49,20 +49,20 @@ class DependencyRuleFactory
 
     protected function createDependPattern(array $dependMatchers, array $componentDefines): ClassNameMatcher
     {
-        $matchers = [];
-        $excludeMatchers = [];
+        $patterns = [];
+        $excludePatterns = [];
         foreach ($dependMatchers as $dependMatcher) {
             if (preg_match('/^\![^\\\@]/', $dependMatcher) === 1 && isset($componentDefines[substr($dependMatcher, 1)])) {
-                $excludeMatchers = array_merge($excludeMatchers, $componentDefines[substr($dependMatcher, 1)]);
+                $excludePatterns = array_merge($excludePatterns, $componentDefines[substr($dependMatcher, 1)]);
             } elseif (preg_match('/^[^\\\@]/', $dependMatcher) === 1 && isset($componentDefines[$dependMatcher])) {
-                $matchers = array_merge($matchers, $componentDefines[$dependMatcher]);
+                $patterns = array_merge($patterns, $componentDefines[$dependMatcher]);
             } else {
-                $matchers[] = $dependMatcher;
+                $patterns[] = $dependMatcher;
             }
         }
 
         // TODO: fix it...
-        return (new ClassNameMatcher($matchers))->addExcludePatterns($excludeMatchers);
+        return (new ClassNameMatcher($patterns))->addExcludePatterns($excludePatterns);
     }
 
     protected function verifyDefinition(array $ruleDefinition): void

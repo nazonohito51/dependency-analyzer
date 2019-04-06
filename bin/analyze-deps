@@ -6,14 +6,12 @@ use Composer\XdebugHandler\XdebugHandler;
 
 gc_disable(); // performance boost
 
-// TODO: How can I get native classes...
 define('PHP_NATIVE_CLASSES', get_declared_classes());
 define('PHP_NATIVE_INTERFACES', get_declared_interfaces());
 define('PHP_NATIVE_TRAITS', get_declared_traits());
 // TODO: This is not used anywhere.
 define('__PHPSTAN_RUNNING__', true);
 
-// TODO: require autoload
 $autoloaderInWorkingDirectory = getcwd() . '/vendor/autoload.php';
 if (is_file($autoloaderInWorkingDirectory)) {
 	require_once $autoloaderInWorkingDirectory;

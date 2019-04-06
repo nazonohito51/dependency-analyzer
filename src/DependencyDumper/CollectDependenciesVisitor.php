@@ -70,7 +70,6 @@ class CollectDependenciesVisitor
                 }
             }
         } catch (ResolveDependencyException $e) {
-            // TODO: error handling... But, don't throw Exception, because NodeScopeResolver will die.
             if ($this->observer) {
                 $this->observer->notifyResolveDependencyError($this->file, $e);
             }
