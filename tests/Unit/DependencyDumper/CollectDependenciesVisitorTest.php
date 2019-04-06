@@ -6,7 +6,7 @@ namespace Tests\Unit\DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyDumper\DependencyResolver;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\DependencyGraph\ClassLike;
-use DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder;
+use DependencyAnalyzer\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;

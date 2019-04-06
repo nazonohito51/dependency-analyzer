@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DependencyGraph;
+namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder\UnknownClassReflection;
+use DependencyAnalyzer\DependencyGraphBuilder\UnknownClassReflection;
 use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use Fhaculty\Graph\Graph;
 use PHPStan\Reflection\ClassReflection;
 

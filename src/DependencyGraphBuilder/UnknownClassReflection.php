@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder;
+namespace DependencyAnalyzer\DependencyGraphBuilder;
 
 class UnknownClassReflection
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\DependencyDumper;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder;
+use DependencyAnalyzer\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;

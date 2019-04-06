@@ -4,6 +4,6 @@ services:
 	-
 		class: DependencyAnalyzer\DependencyDumper\DependencyResolver
 	-
-		class: DependencyAnalyzer\DependencyGraph\DependencyGraphBuilder
+		class: DependencyAnalyzer\DependencyGraphBuilder
 	-
 		class: DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver
