@@ -7,7 +7,6 @@ Analyze/Verify dependency map for php.
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nazonohito51/dependency-analyzer/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nazonohito51/dependency-analyzer/?branch=master)
 
 ## Description
-
 Dependency analyzer help you to keep cleaning your architecture.
 
 If you start to managing dependencies between classes likely [Clean Architecture](http://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) or Layered Architecture, you will aware inspecting dependency between classes by eye is very difficult in PHP.
@@ -15,7 +14,7 @@ This library analyze dependencies in your repository, and take some way of using
 
 ## Basic Usages
 This library have several functions.
-If you have error when use them, see [Trouble Shooting](#Trouble shooting).
+If you have error when use them, see [Trouble Shooting](#trouble-shooting).
 
 ### Create dependency graph
 
@@ -27,7 +26,7 @@ php vendor/bin/analyze-deps graph --output ./graph.puml ./some/analyze/dir1 ./so
 
 Analysis dependency map and create graph. Now, dependency analyzer support only [Plant UML](https://github.com/plantuml/plantuml) format.
 
-Maybe, your graph will have many classes, and is very complex! If you need to simplify your graph, see [Advanced Usage](#Advanced Usages). 
+Maybe, your graph will have many classes, and is very complex! If you need to simplify your graph, see [Advanced Usage](#advanced-usages). 
 
 ### Verify your dependency rule
 In Clean Architecture, there is dependency rules between classes.
@@ -203,3 +202,4 @@ TBD...
 - [ ] Graph format(another puml)
 - [ ] original rule logic
   - [ ] remove dependency to vertex, edge
+- [ ] Improve performance by using cache
