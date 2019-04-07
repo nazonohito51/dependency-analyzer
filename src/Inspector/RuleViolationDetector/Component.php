@@ -25,10 +25,14 @@ class Component
     /**
      * @var ClassNameMatcher
      */
-    protected $dependeeMathcer;
+    protected $dependeeMatcher;
 
     /**
-     * Component constructor.
+     * @var array
+     */
+    protected $attributes = [];
+
+    /**
      * @param string $name
      * @param ClassNameMatcher $pattern
      * @param ClassNameMatcher $dependerPatterns
@@ -39,12 +43,17 @@ class Component
         $this->name = $name;
         $this->matcher = $pattern;
         $this->dependerMatcher = $dependerPatterns;
-        $this->dependeeMathcer = $dependeePatterns;
+        $this->dependeeMatcher = $dependeePatterns;
     }
 
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getDefineMatcher(): ClassNameMatcher
+    {
+        return $this->matcher;
     }
 
     public function isBelongedTo(string $className): bool
@@ -68,11 +77,11 @@ class Component
     {
         if ($this->isBelongedTo($className)) {
             return true;
-        } elseif (is_null($this->dependeeMathcer)) {
+        } elseif (is_null($this->dependeeMatcher)) {
             return true;
         }
 
-        return $this->dependeeMathcer->isMatch($className);
+        return $this->dependeeMatcher->isMatch($className);
 //        return $this->checkPatterns($className, $this->dependeePatterns);
     }
 
@@ -92,6 +101,16 @@ class Component
         return false;
     }
 
+    public function setAttribute(string $key, $name): void
+    {
+        $this->attributes[$key] = $name;
+    }
+
+    public function getAttribute(string $key)
+    {
+        return $this->attributes[$key] ?? null;
+    }
+
     public function toArray()
     {
         $ret = [
@@ -101,8 +120,8 @@ class Component
         if (!is_null($this->dependerMatcher)) {
             $ret['depender'] = $this->dependerMatcher->toArray();
         }
-        if (!is_null($this->dependeeMathcer)) {
-            $ret['dependee'] = $this->dependeeMathcer->toArray();
+        if (!is_null($this->dependeeMatcher)) {
+            $ret['dependee'] = $this->dependeeMatcher->toArray();
         }
 
         return $ret;

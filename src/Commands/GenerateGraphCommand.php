@@ -6,6 +6,8 @@ namespace DependencyAnalyzer\Commands;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\GraphFormatter\UmlFormatter;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
+use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
+use DependencyAnalyzer\Matcher\ClassNameMatcher;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,6 +16,11 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
 {
     protected $output;
     protected $ruleDefinition = [];
+
+    /**
+     * @var Component[]
+     */
+    protected $components = [];
 
     protected function getCommandName(): string
     {
@@ -45,12 +52,20 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
             if (!is_array($this->ruleDefinition)) {
                 throw new InvalidCommandArgumentException(sprintf('rule is invalid file "%s".', $ruleFile));
             }
+
+            foreach (array_values($this->ruleDefinition)[0] as $componentName => $componentsDefinition) {
+                $component = new Component($componentName, new ClassNameMatcher($componentsDefinition['define']));
+                foreach ($componentsDefinition['graph'] ?? [] as $graphOption) {
+                    $component->setAttribute($graphOption, true);
+                }
+                $this->components[] = $component;
+            }
         }
     }
 
     protected function inspectDependencyGraph(DependencyGraph $graph, OutputInterface $output): int
     {
-        $formatter = new UmlFormatter($graph, $this->ruleDefinition);
+        $formatter = new UmlFormatter($graph, $this->components);
 
         $outputFile = new \SplFileObject($this->output, 'w');
         $outputFile->fwrite($formatter->format());
