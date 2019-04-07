@@ -98,6 +98,6 @@ class AllTheme extends ParentClass implements SomeInterface         // extends(=
 
     public function someMethod6()
     {
-        return Foundations\some_function();                         // some_method() will return SomeClass19 object(=SomeClass19)
+        return Foundations\some_function();                         // some_function() will return SomeClass19 object(=SomeClass19)
     }
 }
