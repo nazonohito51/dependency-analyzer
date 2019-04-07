@@ -274,3 +274,4 @@ TBD...
 - [ ] original rule logic
   - [ ] remove dependency to vertex, edge
 - [ ] Improve performance by using cache
+- [ ] Analyze per class member(property/method/constant)
