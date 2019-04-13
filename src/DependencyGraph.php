@@ -14,6 +14,15 @@ use Fhaculty\Graph\Vertex;
 
 class DependencyGraph implements \Countable
 {
+    const TYPE_SOME_DEPENDENCY = 'some dependency';
+    const TYPE_NEW = 'new object';
+    const TYPE_METHOD_CALL = 'method call';
+    const TYPE_PROPERTY_FETCH = 'property fetch';
+    const TYPE_CONSTANT_FETCH = 'property fetch';
+    const TYPE_EXTENDS = 'extends';
+    const TYPE_IMPLEMENTS = 'implements';
+    const TYPE_USE_TRAIT = 'use trait';
+
     /**
      * @var Graph
      */
@@ -27,6 +36,11 @@ class DependencyGraph implements \Countable
             }
         }
         $this->graph = $graph;
+    }
+
+    public function getGraph()
+    {
+        return $this->graph;
     }
 
     public function getClasses()
