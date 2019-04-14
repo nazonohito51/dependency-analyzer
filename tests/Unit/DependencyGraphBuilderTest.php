@@ -6,6 +6,7 @@ namespace Tests\Unit\DependencyAnalyzer;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraphBuilder;
+use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
 use Fhaculty\Graph\Graph;
 use PHPStan\Reflection\ClassReflection;
 use Tests\TestCase;
@@ -40,6 +41,35 @@ class DependencyGraphBuilderTest extends TestCase
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@canOnlyUsedBy', []);
         $v3->setAttribute('reflection', $nativeClassReflection3);
+        $v3->setAttribute('@canOnlyUsedBy', []);
+        $e1->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
+        $e2->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
+        $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
+    }
+
+    public function testAddUnknownDependency()
+    {
+        $extraPhpDocTagResolver = $this->createMock( ExtraPhpDocTagResolver::class);
+        $extraPhpDocTagResolver->method('resolveCanOnlyUsedByTag')->willReturn([]);
+        $builder = new DependencyGraphBuilder($extraPhpDocTagResolver);
+
+        $nativeClassReflection1 = $this->createNativeClassReflection('v1');
+        $classReflection1 = $this->createClassReflection($nativeClassReflection1);
+        $builder->addUnknownDependency($classReflection1, 'v2');
+        $builder->addUnknownDependency($classReflection1, 'v3');
+        $dependencyGraph = $builder->build();
+
+        $graph = new Graph();
+        $v1 = $graph->createVertex('v1');
+        $v2 = $graph->createVertex('v2');
+        $v3 = $graph->createVertex('v3');
+        $e1 = $v1->createEdgeTo($v2);
+        $e2 = $v1->createEdgeTo($v3);
+        $v1->setAttribute('reflection', $nativeClassReflection1);
+        $v1->setAttribute('@canOnlyUsedBy', []);
+        $v2->setAttribute('reflection', new UnknownReflectionClass('v2'));
+        $v2->setAttribute('@canOnlyUsedBy', []);
+        $v3->setAttribute('reflection', new UnknownReflectionClass('v3'));
         $v3->setAttribute('@canOnlyUsedBy', []);
         $e1->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
         $e2->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);

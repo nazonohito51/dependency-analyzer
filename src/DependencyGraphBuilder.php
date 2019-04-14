@@ -6,6 +6,8 @@ namespace DependencyAnalyzer;
 use DependencyAnalyzer\DependencyGraphBuilder\UnknownClassReflection;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
+use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
+use DependencyAnalyzer\Exceptions\LogicException;
 use Fhaculty\Graph\Edge\Base;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
@@ -51,6 +53,24 @@ class DependencyGraphBuilder
         return $vertex;
     }
 
+    protected function getUnknownClassVertex(string $className): Vertex
+    {
+        if ($this->graph->hasVertex($className)) {
+            $vertex = $this->graph->getVertex($className);
+            if (!$vertex->getAttribute('reflection') instanceof UnknownReflectionClass) {
+                throw new LogicException("{$className} is not UnknownClassReflection");
+            }
+
+            return $vertex;
+        }
+
+        $vertex = $this->graph->createVertex($className);
+        $vertex->setAttribute('reflection', new UnknownReflectionClass($className));
+        $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, []);
+
+        return $vertex;
+    }
+
     /**
      * @param ClassReflection $dependerReflection
      * @param ClassReflection $dependeeReflection
@@ -64,11 +84,16 @@ class DependencyGraphBuilder
         $edge->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
     }
 
-    public function addUnknownDependency(ClassReflection $depender, string $dependeeName)
+    public function addUnknownDependency(ClassReflection $dependerReflection, string $dependeeName)
     {
-        $unknownClassReflection = new UnknownClassReflection($dependeeName);
-        $unknownClassReflection->addDepender($depender->getDisplayName());
-        $this->addDependencyMap($this->getClassReflectionId($depender), $this->getClassReflectionId($unknownClassReflection));
+        $depender = $this->getVertex($dependerReflection->getNativeReflection());
+        $dependee = $this->getUnknownClassVertex($dependeeName);
+
+        $edge = $depender->createEdgeTo($dependee);
+        $edge->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
+//        $unknownClassReflection = new UnknownReflectionClass($dependeeName);
+//        $unknownClassReflection->addDepender($dependerReflection->getDisplayName());
+//        $this->addDependencyMap($this->getClassReflectionId($dependerReflection), $this->getClassReflectionId($unknownClassReflection));
     }
 
     public function addMethodCall(ClassReflection $depender, ClassReflection $dependee, string $methodName)
