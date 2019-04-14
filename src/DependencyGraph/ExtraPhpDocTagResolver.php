@@ -31,13 +31,24 @@ class ExtraPhpDocTagResolver
         $this->phpDocParser = $phpDocParser;
     }
 
-    public function resolveCanOnlyUsedByTag(ClassReflection $classReflection): array
+    public function resolveCanOnlyUsedByTag(\ReflectionClass $classReflection): array
     {
-        if ($phpdoc = $classReflection->getNativeReflection()->getDocComment()) {
+        if ($phpdoc = $classReflection->getDocComment()) {
             return $this->resolve($phpdoc, self::ONLY_USED_BY_TAGS);
         }
 
         return [];
+//        $ret = [];
+//        if ($phpdoc = $classReflection->getNativeReflection()->getDocComment()) {
+//            $ret['class_must_have_special_chars_of_method'] = $this->resolve($phpdoc, self::ONLY_USED_BY_TAGS);
+//        }
+//
+//        foreach ($classReflection->getNativeReflection()->getMethods() as $reflectionMethod) {
+//            $phpdoc = $reflectionMethod->getDocComment();  // /**\n  * Hogefuga
+//            $ret[$reflectionMethod->getName()] = $this->resolve($phpdoc, self::ONLY_USED_BY_TAGS);
+//        }
+//
+//        return [];
     }
 
     /**
