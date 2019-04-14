@@ -33,7 +33,7 @@ class CollectDependenciesVisitorTest extends TestCase
                 $this->createSomeNode(),
                 $this->createScope($scopeOwner),
                 $this->createDependencyResolver($someClass, $this->createClassReflection($scopeOwnerName)),
-                [[$scopeOwner, $someClass]]
+                [[$scopeOwner->getNativeReflection(), $someClass->getNativeReflection()]]
             ],
             'return same class as scope_owner' => [
                 $this->createSomeNode(),
@@ -45,7 +45,7 @@ class CollectDependenciesVisitorTest extends TestCase
                 $this->createDeclareClassNode($scopeOwnerName),
                 $this->createScope(),
                 $this->createDependencyResolver($someClass, $this->createClassReflection($scopeOwnerName)),
-                [[$scopeOwner, $someClass]]
+                [[$scopeOwner->getNativeReflection(), $someClass->getNativeReflection()]]
             ],
             'is not in scope, and node is not declare class node' => [
                 $this->createSomeNode(),
@@ -71,16 +71,15 @@ class CollectDependenciesVisitorTest extends TestCase
      */
     public function testInvoke(Node $node, Scope $scope, DependencyResolver $dependencyResolver, array $expected)
     {
-        $factory = $this->createMock(DependencyGraphBuilder::class);
+        $builder = $this->createMock(DependencyGraphBuilder::class);
         if (count($expected) > 0) {
             foreach ($expected as $classes) {
-                $factory->expects($this->once())->method('addDependency')->with($classes[0], $classes[1]);
+                $builder->expects($this->once())->method('addDependency')->with($classes[0], $classes[1]);
             }
         } else {
-            $factory->expects($this->never())->method('addDependency');
+            $builder->expects($this->never())->method('addDependency');
         }
-//        $dependencyResolver = $this->createDependencyResolver($resolvedDependency);
-        $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver, $factory);
+        $nodeVisitor = new CollectDependenciesVisitor($dependencyResolver, $builder);
 
         $nodeVisitor($node, $scope);
 
@@ -105,8 +104,12 @@ class CollectDependenciesVisitorTest extends TestCase
 
     protected function createClassReflection(string $className)
     {
+        $nativeClassReflection = $this->createMock(\ReflectionClass::class);
+        $nativeClassReflection->method('getName')->willReturn($className);
+
         $classReflection = $this->createMock(ClassReflection::class);
         $classReflection->method('getDisplayName')->willReturn($className);
+        $classReflection->method('getNativeReflection')->willReturn($nativeClassReflection);
 
         return $classReflection;
     }

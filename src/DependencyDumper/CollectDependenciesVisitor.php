@@ -56,6 +56,13 @@ class CollectDependenciesVisitor
         try {
             foreach ($this->dependencyResolver->resolveDependencies($node, $scope) as $dependeeReflection) {
                 if ($dependeeReflection instanceof ClassReflection) {
+//                    if ($node instanceof MethodCall && $scope->getFunction()) {
+//                        $dependeeClass = $dependeeReflection;
+//                        $dependeeFunction = $node->name->name;
+//
+//                        $depender = $scope->getClassReflection();
+//                        $dependerFunction = $scope->getFunction();
+//                    }
                     $this->addDependency($node, $scope, $dependeeReflection);
                 } elseif ($dependeeReflection instanceof UnknownClassReflection) {
                     $this->addUnknownDependency($node, $scope, $dependeeReflection);
@@ -82,7 +89,10 @@ class CollectDependenciesVisitor
             if ($scope->getClassReflection()->getDisplayName() === $dependeeReflection->getDisplayName()) {
                 // call same class method/property
             } else {
-                $this->dependencyGraphBuilder->addDependency($scope->getClassReflection(), $dependeeReflection);
+                $this->dependencyGraphBuilder->addDependency(
+                    $scope->getClassReflection()->getNativeReflection(),
+                    $dependeeReflection->getNativeReflection()
+                );
             }
         } else {
             // Maybe, class declare statement
@@ -93,7 +103,10 @@ class CollectDependenciesVisitor
             if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
                 $dependerReflection = $this->dependencyResolver->resolveClassReflection($node->namespacedName->toString());
                 if ($dependerReflection instanceof ClassReflection) {
-                    $this->dependencyGraphBuilder->addDependency($dependerReflection, $dependeeReflection);
+                    $this->dependencyGraphBuilder->addDependency(
+                        $dependerReflection->getNativeReflection(),
+                        $dependeeReflection->getNativeReflection()
+                    );
                 } else {
                     throw new ResolveDependencyException($node, 'resolving node dependency is failed, because unexpected node.');
                 }
@@ -104,7 +117,10 @@ class CollectDependenciesVisitor
     protected function addUnknownDependency(\PhpParser\Node $node, Scope $scope, UnknownClassReflection $classReflection)
     {
         if ($scope->isInClass()) {
-            $this->dependencyGraphBuilder->addUnknownDependency($scope->getClassReflection(), $classReflection->getDisplayName());
+            $this->dependencyGraphBuilder->addUnknownDependency(
+                $scope->getClassReflection()->getNativeReflection(),
+                $classReflection->getDisplayName()
+            );
         }
     }
 

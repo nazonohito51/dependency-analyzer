@@ -23,11 +23,8 @@ class DependencyGraphBuilderTest extends TestCase
         $nativeClassReflection1 = $this->createNativeClassReflection('v1');
         $nativeClassReflection2 = $this->createNativeClassReflection('v2');
         $nativeClassReflection3 = $this->createNativeClassReflection('v3');
-        $classReflection1 = $this->createClassReflection($nativeClassReflection1);
-        $classReflection2 = $this->createClassReflection($nativeClassReflection2);
-        $classReflection3 = $this->createClassReflection($nativeClassReflection3);
-        $builder->addDependency($classReflection1, $classReflection2);
-        $builder->addDependency($classReflection2, $classReflection3);
+        $builder->addDependency($nativeClassReflection1, $nativeClassReflection2);
+        $builder->addDependency($nativeClassReflection2, $nativeClassReflection3);
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
@@ -54,9 +51,8 @@ class DependencyGraphBuilderTest extends TestCase
         $builder = new DependencyGraphBuilder($extraPhpDocTagResolver);
 
         $nativeClassReflection1 = $this->createNativeClassReflection('v1');
-        $classReflection1 = $this->createClassReflection($nativeClassReflection1);
-        $builder->addUnknownDependency($classReflection1, 'v2');
-        $builder->addUnknownDependency($classReflection1, 'v3');
+        $builder->addUnknownDependency($nativeClassReflection1, 'v2');
+        $builder->addUnknownDependency($nativeClassReflection1, 'v3');
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();

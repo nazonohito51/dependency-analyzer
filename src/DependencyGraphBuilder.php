@@ -6,10 +6,10 @@ namespace DependencyAnalyzer;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
 use DependencyAnalyzer\Exceptions\LogicException;
-
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use PHPStan\Reflection\ClassReflection;
+use ReflectionClass;
 
 class DependencyGraphBuilder
 {
@@ -36,7 +36,7 @@ class DependencyGraphBuilder
         $this->extraPhpDocTagResolver = $extraPhpDocTagResolver;
     }
 
-    protected function getVertex(\ReflectionClass $class): Vertex
+    protected function getVertex(ReflectionClass $class): Vertex
     {
         if ($this->graph->hasVertex($class->getName())) {
             return $this->graph->getVertex($class->getName());
@@ -69,13 +69,13 @@ class DependencyGraphBuilder
     }
 
     /**
-     * @param ClassReflection $dependerReflection
-     * @param ClassReflection $dependeeReflection
+     * @param ReflectionClass $dependerReflection
+     * @param ReflectionClass $dependeeReflection
      */
-    public function addDependency(ClassReflection $dependerReflection, ClassReflection $dependeeReflection): void
+    public function addDependency(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection): void
     {
-        $depender = $this->getVertex($dependerReflection->getNativeReflection());
-        $dependee = $this->getVertex($dependeeReflection->getNativeReflection());
+        $depender = $this->getVertex($dependerReflection);
+        $dependee = $this->getVertex($dependeeReflection);
 
         foreach ($depender->getEdgesTo($dependee) as $edge) {
             if ($edge->getAttribute('type') === DependencyGraph::TYPE_SOME_DEPENDENCY) {
@@ -87,9 +87,9 @@ class DependencyGraphBuilder
         $edge->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
     }
 
-    public function addUnknownDependency(ClassReflection $dependerReflection, string $dependeeName)
+    public function addUnknownDependency(ReflectionClass $dependerReflection, string $dependeeName)
     {
-        $depender = $this->getVertex($dependerReflection->getNativeReflection());
+        $depender = $this->getVertex($dependerReflection);
         $dependee = $this->getUnknownClassVertex($dependeeName);
 
         foreach ($depender->getEdgesTo($dependee) as $edge) {
