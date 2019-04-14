@@ -18,7 +18,7 @@ class DependencyGraph implements \Countable
     const TYPE_NEW = 'new object';
     const TYPE_METHOD_CALL = 'method call';
     const TYPE_PROPERTY_FETCH = 'property fetch';
-    const TYPE_CONSTANT_FETCH = 'property fetch';
+    const TYPE_CONSTANT_FETCH = 'constant fetch';
     const TYPE_EXTENDS = 'extends';
     const TYPE_IMPLEMENTS = 'implements';
     const TYPE_USE_TRAIT = 'use trait';
