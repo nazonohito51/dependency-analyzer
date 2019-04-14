@@ -3,13 +3,10 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
-use DependencyAnalyzer\DependencyGraphBuilder\UnknownClassReflection;
-use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
 use DependencyAnalyzer\Exceptions\LogicException;
-use Fhaculty\Graph\Edge\Base;
-use Fhaculty\Graph\Edge\Directed;
+
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use PHPStan\Reflection\ClassReflection;
@@ -19,7 +16,7 @@ class DependencyGraphBuilder
     protected $graph;
 
     /**
-     * @var ClassReflection[]|UnknownClassReflection[] $classReflections
+     * @var ClassReflection[] $classReflections
      */
     protected $classes = [];
 
@@ -111,7 +108,7 @@ class DependencyGraphBuilder
     public function addMethodCall(ClassReflection $depender, ClassReflection $dependee, string $methodName)
     {
         // TODO
-        $this->addDependencyMap($this->getClassReflectionId($depender), $this->getClassReflectionId($dependee), 'method_call', $methodName);
+//        $this->addDependencyMap($this->getClassReflectionId($depender), $this->getClassReflectionId($dependee), 'method_call', $methodName);
 
         // depender = ClassReflection
         // depender part = hoge method
@@ -124,36 +121,7 @@ class DependencyGraphBuilder
 
     public function addPropertyFetch()
     {
-        $this->addDependencyMap($this->getClassReflectionId($depender), $this->getClassReflectionId($dependee), 'property_fetch', $propertyName);
-    }
-
-    protected function addDependencyMap(int $dependerId, int $dependeeId)
-    {
-        if (!isset($this->dependencyMap[$dependerId])) {
-            $this->dependencyMap[$dependerId] = [$dependeeId];
-        } elseif (!in_array($dependeeId, $this->dependencyMap[$dependerId])) {
-            $this->dependencyMap[$dependerId][] = $dependeeId;
-        }
-    }
-
-    /**
-     * @param ClassReflection|UnknownClassReflection $classReflection
-     * @return int
-     */
-    protected function getClassReflectionId($classReflection): int
-    {
-        foreach ($this->classes as $id => $reflection) {
-            if ($reflection->getDisplayName() === $classReflection->getDisplayName()) {
-                if ($reflection instanceof UnknownClassReflection) {
-                    $reflection->mergeDepender($classReflection);
-                }
-
-                return $id;
-            }
-        }
-
-        $this->classes[] = $classReflection;
-        return count($this->classes) - 1;
+//        $this->addDependencyMap($this->getClassReflectionId($depender), $this->getClassReflectionId($dependee), 'property_fetch', $propertyName);
     }
 
     public function build(): DependencyGraph
