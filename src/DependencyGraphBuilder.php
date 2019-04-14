@@ -80,6 +80,12 @@ class DependencyGraphBuilder
         $depender = $this->getVertex($dependerReflection->getNativeReflection());
         $dependee = $this->getVertex($dependeeReflection->getNativeReflection());
 
+        foreach ($depender->getEdgesTo($dependee) as $edge) {
+            if ($edge->getAttribute('type') === DependencyGraph::TYPE_SOME_DEPENDENCY) {
+                return;
+            }
+        }
+
         $edge = $depender->createEdgeTo($dependee);
         $edge->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
     }
@@ -88,6 +94,12 @@ class DependencyGraphBuilder
     {
         $depender = $this->getVertex($dependerReflection->getNativeReflection());
         $dependee = $this->getUnknownClassVertex($dependeeName);
+
+        foreach ($depender->getEdgesTo($dependee) as $edge) {
+            if ($edge->getAttribute('type') === DependencyGraph::TYPE_SOME_DEPENDENCY) {
+                return;
+            }
+        }
 
         $edge = $depender->createEdgeTo($dependee);
         $edge->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
@@ -147,24 +159,5 @@ class DependencyGraphBuilder
     public function build(): DependencyGraph
     {
         return new DependencyGraph($this->graph);
-
-//        $graph = $this->graph;
-//
-//        foreach ($this->classes as $class) {
-//            $vertex = $graph->createVertex($class->getDisplayName());
-//            $vertex->setAttribute('reflection', $class);
-//            $canOnlyUsedByTags = ($class instanceof ClassReflection) ? $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class) : [];
-//            $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, $canOnlyUsedByTags);
-//        }
-//
-//        foreach ($this->dependencyMap as $dependerId => $dependeeIds) {
-//            $depender = $graph->getVertex($this->classes[$dependerId]->getDisplayName());
-//            foreach ($dependeeIds as $dependeeId) {
-//                $dependee = $graph->getVertex($this->classes[$dependeeId]->getDisplayName());
-//                $depender->createEdgeTo($dependee);
-//            }
-//        }
-//
-//        return new DependencyGraph($graph);
     }
 }
