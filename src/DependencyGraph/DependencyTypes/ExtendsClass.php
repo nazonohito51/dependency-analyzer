@@ -5,10 +5,15 @@ namespace DependencyAnalyzer\DependencyGraph\DependencyTypes;
 
 use DependencyAnalyzer\DependencyGraph;
 
-class ExtendsClass
+class ExtendsClass extends Base
 {
-    public function getType()
+    public function getType(): string
     {
         return DependencyGraph::TYPE_EXTENDS;
+    }
+
+    public function isEqual(Base $that): bool
+    {
+        return $this->getType() === $that->getType();
     }
 }

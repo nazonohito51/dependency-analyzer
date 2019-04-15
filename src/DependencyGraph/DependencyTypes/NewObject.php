@@ -5,25 +5,33 @@ namespace DependencyAnalyzer\DependencyGraph\DependencyTypes;
 
 use DependencyAnalyzer\DependencyGraph;
 
-class NewObject
+class NewObject extends Base
 {
-    /**
-     * @var \ReflectionClass
-     */
-    private $class;
     /**
      * @var string
      */
     private $caller;
 
-    public function __construct(\ReflectionClass $class, string $caller = null)
+    public function __construct(string $caller = null)
     {
-        $this->class = $class;
         $this->caller = $caller;
     }
 
-    public function getType()
+    public function getCaller(): ?string
+    {
+        return $this->caller;
+    }
+
+    public function getType(): string
     {
         return DependencyGraph::TYPE_NEW;
+    }
+
+    public function isEqual(Base $that): bool
+    {
+        return (
+            $that instanceof self &&
+            $this->getCaller() === $that->getCaller()
+        );
     }
 }

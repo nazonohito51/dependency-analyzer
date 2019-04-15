@@ -11,4 +11,9 @@ class UseTrait extends Base
     {
         return DependencyGraph::TYPE_USE_TRAIT;
     }
+
+    public function isEqual(Base $that)
+    {
+        return $this->getType() === $that->getType();
+    }
 }
