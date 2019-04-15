@@ -7,12 +7,12 @@ use DependencyAnalyzer\DependencyGraph;
 
 class UseTrait extends Base
 {
-    public function getType()
+    public function getType(): string
     {
         return DependencyGraph::TYPE_USE_TRAIT;
     }
 
-    public function isEqual(Base $that)
+    public function isEqual(Base $that): bool
     {
         return $this->getType() === $that->getType();
     }
