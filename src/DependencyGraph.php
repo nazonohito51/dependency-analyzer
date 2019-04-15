@@ -14,6 +14,8 @@ use Fhaculty\Graph\Vertex;
 
 class DependencyGraph implements \Countable
 {
+    const DEPENDENCY_TYPE_KEY = 'dependency_types';
+
     const TYPE_SOME_DEPENDENCY = 'some dependency';
     const TYPE_NEW = 'new object';
     const TYPE_METHOD_CALL = 'method call';
