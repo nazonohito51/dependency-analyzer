@@ -3,9 +3,19 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base as DependencyType;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\ConstantFetch;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\ExtendsClass;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\ImplementsClass;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\MethodCall;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\NewObject;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\PropertyFetch;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\SomeDependency;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\UseTrait;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
 use DependencyAnalyzer\Exceptions\LogicException;
+use Fhaculty\Graph\Edge\Base as Edge;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use PHPStan\Reflection\ClassReflection;
@@ -68,78 +78,109 @@ class DependencyGraphBuilder
         return $vertex;
     }
 
+    protected function addDependencyType(Vertex $depender, Vertex $dependee, DependencyType $additional): void
+    {
+        if (count($edges = $depender->getEdgesTo($dependee)) === 0) {
+            $depender->createEdgeTo($dependee);
+        }
+
+        $edge = $depender->getEdgesTo($dependee)->getEdgeFirst();
+        $types = $edge->getAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY) ?? [];
+
+        foreach ($types as $type) {
+            /** @var DependencyType $type */
+            if ($type->isEqual($additional)) {
+                return;
+            }
+        }
+
+        $types[] = $additional;
+        $edge->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, $types);
+    }
+
     /**
      * @param ReflectionClass $dependerReflection
      * @param ReflectionClass $dependeeReflection
      */
     public function addDependency(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection): void
     {
-        $depender = $this->getVertex($dependerReflection);
-        $dependee = $this->getVertex($dependeeReflection);
-
-        foreach ($depender->getEdgesTo($dependee) as $edge) {
-            if ($edge->getAttribute('type') === DependencyGraph::TYPE_SOME_DEPENDENCY) {
-                return;
-            }
-        }
-
-        $edge = $depender->createEdgeTo($dependee);
-        $edge->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getVertex($dependeeReflection),
+            new SomeDependency()
+        );
     }
 
     public function addUnknownDependency(ReflectionClass $dependerReflection, string $dependeeName)
     {
-        $depender = $this->getVertex($dependerReflection);
-        $dependee = $this->getUnknownClassVertex($dependeeName);
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getUnknownClassVertex($dependeeName),
+            new SomeDependency()
+        );
+    }
 
-        foreach ($depender->getEdgesTo($dependee) as $edge) {
-            if ($edge->getAttribute('type') === DependencyGraph::TYPE_SOME_DEPENDENCY) {
-                return;
-            }
-        }
-
-        $edge = $depender->createEdgeTo($dependee);
-        $edge->setAttribute('type', DependencyGraph::TYPE_SOME_DEPENDENCY);
+    public function addNew(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection, string $caller = null)
+    {
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getVertex($dependeeReflection),
+            new NewObject($caller)
+        );
     }
 
     public function addMethodCall(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection, string $callee, string $caller = null)
     {
-        $depender = $this->getVertex($dependerReflection);
-        $dependee = $this->getVertex($dependeeReflection);
-
-        foreach ($depender->getEdgesTo($dependee) as $edge) {
-            if ($edge->getAttribute('type') === DependencyGraph::TYPE_METHOD_CALL &&
-                $edge->getAttribute('callee') === $callee &&
-                $edge->getAttribute('caller') === $caller
-            ) {
-                return;
-            }
-        }
-
-        $edge = $depender->createEdgeTo($dependee);
-        $edge->setAttribute('type', DependencyGraph::TYPE_METHOD_CALL);
-        $edge->setAttribute('callee', $callee);
-        $edge->setAttribute('caller', $caller);
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getVertex($dependeeReflection),
+            new MethodCall($callee, $caller)
+        );
     }
 
     public function addPropertyFetch(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection, string $propertyName, string $caller = null)
     {
-        $depender = $this->getVertex($dependerReflection);
-        $dependee = $this->getVertex($dependeeReflection);
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getVertex($dependeeReflection),
+            new PropertyFetch($propertyName, $caller)
+        );
+    }
 
-        foreach ($depender->getEdgesTo($dependee) as $edge) {
-            if ($edge->getAttribute('type') === DependencyGraph::TYPE_PROPERTY_FETCH &&
-                $edge->getAttribute('property') === $propertyName &&
-                $edge->getAttribute('caller') === $caller
-            ) {
-                return;
-            }
-        }
+    public function addConstFetch(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection, string $constantName, string $caller = null)
+    {
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getVertex($dependeeReflection),
+            new ConstantFetch($constantName, $caller)
+        );
+    }
 
-        $edge = $depender->createEdgeTo($dependee);
-        $edge->setAttribute('type', DependencyGraph::TYPE_PROPERTY_FETCH);
-        $edge->setAttribute('property', $propertyName);
-        $edge->setAttribute('caller', $caller);
+    public function addExtends(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection)
+    {
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getVertex($dependeeReflection),
+            new ExtendsClass()
+        );
+    }
+
+    public function addImplements(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection)
+    {
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getVertex($dependeeReflection),
+            new ImplementsClass()
+        );
+    }
+
+    public function addUseTrait(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection)
+    {
+        $this->addDependencyType(
+            $this->getVertex($dependerReflection),
+            $this->getVertex($dependeeReflection),
+            new UseTrait()
+        );
     }
 
     public function build(): DependencyGraph

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base;
 use Fhaculty\Graph\Edge\Base as Edge;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
@@ -94,10 +96,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             /** @var Directed $expectedEdge */
             $edge = $this->getEdgeByVertexId($actual, $expectedEdge->getVertexEnd()->getId());
             $this->assertNotNull($edge);
-            $this->assertCount(count($expectedEdge->getAttributeBag()->getAttributes()), $edge->getAttributeBag()->getAttributes());
-
-            foreach ($expectedEdge->getAttributeBag()->getAttributes() as $key => $value) {
-                $this->assertEquals($value, $edge->getAttribute($key));
+            $this->assertCount(1, $edge->getAttributeBag()->getAttributes());
+            foreach ($expectedEdge->getAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY) as $id => $type) {
+                /** @var Base $type */
+                $this->assertTrue($type->isEqual($edge->getAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY)[$id]));
             }
         }
     }
