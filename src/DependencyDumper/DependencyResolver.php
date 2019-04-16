@@ -11,6 +11,7 @@ use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ParametersAcceptorWithPhpDocs;
 use PHPStan\Reflection\Php\PhpMethodReflection;
@@ -29,20 +30,45 @@ class DependencyResolver
      * @var Broker
      */
     protected $broker;
+
     /**
      * @var Lexer
      */
-    private $phpDocLexer;
+    protected $phpDocLexer;
+
     /**
      * @var PhpDocParser
      */
-    private $phpDocParser;
+    protected $phpDocParser;
+
+    /**
+     * @var ClassReflection
+     */
+    protected $depender = null;
 
     public function __construct(Broker $broker, Lexer $phpDocLexer, PhpDocParser $phpDocParser)
     {
         $this->broker = $broker;
         $this->phpDocLexer = $phpDocLexer;
         $this->phpDocParser = $phpDocParser;
+    }
+
+    protected function getDependerReflection(\PhpParser\Node $node, Scope $scope): ?ClassReflection
+    {
+        if ($scope->isInClass()) {
+            return $scope->getClassReflection();
+        } else {
+            // Maybe, class declare statement
+            // ex:
+            //   class Hoge {}
+            //   abstract class Hoge {}
+            //   interface Hoge {}
+            if ($node instanceof \PhpParser\Node\Stmt\ClassLike) {
+                return $this->resolveClassReflection($node->namespacedName->toString());
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -53,6 +79,10 @@ class DependencyResolver
     public function resolveDependencies(\PhpParser\Node $node, Scope $scope): array
     {
         try {
+            if (is_null($this->depender = $this->getDependerReflection($node, $scope))) {
+                return [];
+            }
+
             if ($node instanceof \PhpParser\Node\Stmt\Class_) {
                 return $this->resolveClassNode($node);
             } elseif ($node instanceof \PhpParser\Node\Stmt\Interface_) {
@@ -102,12 +132,13 @@ class DependencyResolver
         return [];
     }
 
-    public function resolveClassReflection(string $className): ReflectionWithFilename
+    public function resolveClassReflection(string $className): ?ClassReflection
     {
         try {
             return $this->broker->getClass($className);
         } catch (\PHPStan\Broker\ClassNotFoundException $e) {
-            return new UnknownClassReflection($className);
+            return null;
+//            return new UnknownClassReflection($className);
         }
     }
 
