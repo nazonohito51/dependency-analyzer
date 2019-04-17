@@ -95,7 +95,7 @@ class DependencyResolver
             if ($node instanceof \PhpParser\Node\Stmt\Class_) {
                 $this->resolveClassNode($node);
             } elseif ($node instanceof \PhpParser\Node\Stmt\Interface_) {
-                return $this->resolveInterfaceNode($node);
+                $this->resolveInterfaceNode($node);
             } elseif ($node instanceof \PhpParser\Node\Stmt\ClassMethod) {
                 return $this->resolveClassMethod($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Stmt\Function_) {
@@ -216,21 +216,15 @@ class DependencyResolver
         }
     }
 
-    /**
-     * @param \PhpParser\Node\Stmt\Interface_ $node
-     * @return ReflectionWithFilename[]
-     */
-    protected function resolveInterfaceNode(\PhpParser\Node\Stmt\Interface_ $node): array
+    protected function resolveInterfaceNode(\PhpParser\Node\Stmt\Interface_ $node): void
     {
-        $dependenciesReflections = [];
-
         if ($node->extends !== null) {
             foreach ($node->extends as $className) {
-                $dependenciesReflections[] = $this->resolveClassReflection($className->toString());
+                if ($dependee = $this->resolveClassReflection($className->toString())) {
+                    $this->dependencyGraphBuilder->addExtends($this->depender, $dependee->getNativeReflection());
+                }
             }
         }
-
-        return $dependenciesReflections;
     }
 
     /**
