@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
+use DependencyAnalyzer\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
@@ -42,7 +43,12 @@ class DependencyResolver
     protected $phpDocParser;
 
     /**
-     * @var ClassReflection
+     * @var DependencyGraphBuilder
+     */
+    protected $dependencyGraphBuilder;
+
+    /**
+     * @var \ReflectionClass
      */
     protected $depender = null;
 
@@ -74,17 +80,20 @@ class DependencyResolver
     /**
      * @param \PhpParser\Node $node
      * @param Scope $scope
+     * @param DependencyGraphBuilder $dependencyGraphBuilder
      * @return ReflectionWithFilename[]
      */
-    public function resolveDependencies(\PhpParser\Node $node, Scope $scope): array
+    public function resolveDependencies(\PhpParser\Node $node, Scope $scope, DependencyGraphBuilder $dependencyGraphBuilder): array
     {
         try {
             if (is_null($this->depender = $this->getDependerReflection($node, $scope))) {
                 return [];
             }
+            $this->depender = $this->depender->getNativeReflection();
+            $this->dependencyGraphBuilder = $dependencyGraphBuilder;
 
             if ($node instanceof \PhpParser\Node\Stmt\Class_) {
-                return $this->resolveClassNode($node);
+                $this->resolveClassNode($node);
             } elseif ($node instanceof \PhpParser\Node\Stmt\Interface_) {
                 return $this->resolveInterfaceNode($node);
             } elseif ($node instanceof \PhpParser\Node\Stmt\ClassMethod) {
@@ -182,19 +191,17 @@ class DependencyResolver
         return $dependenciesReflections;
     }
 
-    /**
-     * @param \PhpParser\Node\Stmt\Class_ $node
-     * @return ReflectionWithFilename[]
-     */
-    protected function resolveClassNode(\PhpParser\Node\Stmt\Class_ $node): array
+    protected function resolveClassNode(\PhpParser\Node\Stmt\Class_ $node): void
     {
-        $dependenciesReflections = [];
-
         if ($node->extends !== null) {
-            $dependenciesReflections[] = $this->resolveClassReflection($node->extends->toString());
+            if ($dependee = $this->resolveClassReflection($node->extends->toString())) {
+                $this->dependencyGraphBuilder->addExtends($this->depender, $dependee->getNativeReflection());
+            }
         }
         foreach ($node->implements as $className) {
-            $dependenciesReflections[] = $this->resolveClassReflection($className->toString());
+            if ($dependee = $this->resolveClassReflection($className->toString())) {
+                $this->dependencyGraphBuilder->addImplements($this->depender, $dependee->getNativeReflection());
+            }
         }
         if ($node->getDocComment() !== null) {
             $tokens = new TokenIterator($this->phpDocLexer->tokenize($node->getDocComment()->getText()));
@@ -202,11 +209,11 @@ class DependencyResolver
             foreach ($phpDocNode->getTagsByName('@dependOn') as $phpDocTagNode) {
                 /** @var PhpDocTagNode $phpDocTagNode */
                 preg_match('/^@dependOn\s+(.+)$/', $phpDocTagNode->__toString(), $matches);
-                $dependenciesReflections[] = $this->resolveClassReflection($matches[1]);
+                if ($dependee = $this->resolveClassReflection($matches[1])) {
+                    $this->dependencyGraphBuilder->addDependency($this->depender, $dependee->getNativeReflection());
+                }
             };
         }
-
-        return $dependenciesReflections;
     }
 
     /**

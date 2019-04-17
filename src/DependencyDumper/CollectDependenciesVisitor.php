@@ -54,7 +54,11 @@ class CollectDependenciesVisitor
     public function __invoke(\PhpParser\Node $node, Scope $scope): void
     {
         try {
-            foreach ($this->dependencyResolver->resolveDependencies($node, $scope) as $dependeeReflection) {
+            foreach ($this->dependencyResolver->resolveDependencies($node, $scope, $this->dependencyGraphBuilder) as $dependeeReflection) {
+                if ($node instanceof \PhpParser\Node\Stmt\Class_) {
+                    continue;
+                }
+
                 if ($dependeeReflection instanceof ClassReflection) {
 //                    if ($node instanceof MethodCall && $scope->getFunction()) {
 //                        $dependeeClass = $dependeeReflection;
