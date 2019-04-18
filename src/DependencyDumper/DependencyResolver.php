@@ -93,10 +93,19 @@ class DependencyResolver
             $this->dependencyGraphBuilder = $dependencyGraphBuilder;
 
             if ($node instanceof \PhpParser\Node\Stmt\Class_) {
+                // define class statement
+                // ex: class SomeClass {}
                 $this->resolveClassNode($node);
             } elseif ($node instanceof \PhpParser\Node\Stmt\Interface_) {
+                // define interface statement
+                // ex: interface SomeInterface {}
                 $this->resolveInterfaceNode($node);
             } elseif ($node instanceof \PhpParser\Node\Stmt\ClassMethod) {
+                // define class method statement
+                // ex:
+                //   class SomeClass {
+                //       function ClassMethod() {}
+                //   }
                 return $this->resolveClassMethod($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Stmt\Function_) {
                 return $this->resolveFunction($node);
