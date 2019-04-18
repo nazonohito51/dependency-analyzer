@@ -191,15 +191,31 @@ class DependencyResolver
         return $dependenciesReflections;
     }
 
+    protected function resolveClassReflectionOrAddUnkownDependency(string $className): ?ClassReflection
+    {
+        if (!is_null($classReflection = $this->resolveClassReflection($className))) {
+            return $classReflection;
+        }
+
+        $this->dependencyGraphBuilder->addUnknownDependency($this->depender, $className);
+    }
+
+    protected function addDependencyWhenResolveClassReflectionIsSucceeded(string $className): void
+    {
+        if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($className)) {
+            $this->dependencyGraphBuilder->addDependency($this->depender, $dependee->getNativeReflection());
+        }
+    }
+
     protected function resolveClassNode(\PhpParser\Node\Stmt\Class_ $node): void
     {
         if ($node->extends !== null) {
-            if ($dependee = $this->resolveClassReflection($node->extends->toString())) {
+            if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($node->extends->toString())) {
                 $this->dependencyGraphBuilder->addExtends($this->depender, $dependee->getNativeReflection());
             }
         }
         foreach ($node->implements as $className) {
-            if ($dependee = $this->resolveClassReflection($className->toString())) {
+            if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($className->toString())) {
                 $this->dependencyGraphBuilder->addImplements($this->depender, $dependee->getNativeReflection());
             }
         }
@@ -209,9 +225,8 @@ class DependencyResolver
             foreach ($phpDocNode->getTagsByName('@dependOn') as $phpDocTagNode) {
                 /** @var PhpDocTagNode $phpDocTagNode */
                 preg_match('/^@dependOn\s+(.+)$/', $phpDocTagNode->__toString(), $matches);
-                if ($dependee = $this->resolveClassReflection($matches[1])) {
-                    $this->dependencyGraphBuilder->addDependency($this->depender, $dependee->getNativeReflection());
-                }
+
+                $this->addDependencyWhenResolveClassReflectionIsSucceeded($matches[1]);
             };
         }
     }
