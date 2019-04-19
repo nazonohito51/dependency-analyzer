@@ -112,7 +112,12 @@ class DependencyResolver
 //                // ex: function SomeFunction() {}
 //                return $this->resolveFunction($node);
             } elseif ($node instanceof \PhpParser\Node\Expr\Closure) {
-                return $this->resolveClosure($node, $scope);
+                // closure expression
+                // ex:
+                //   function (SomeClass1 $someClass1): SomeClass2 {
+                //       // some logic.
+                //   }
+                $this->resolveClosure($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Expr\FuncCall) {
                 return $this->resolveFuncCall($node, $scope);
             } elseif (
@@ -298,29 +303,21 @@ class DependencyResolver
         return [];
     }
 
-    /**
-     * @param \PhpParser\Node\Expr\Closure $node
-     * @param Scope $scope
-     * @return ReflectionWithFilename[]
-     */
-    protected function resolveClosure(\PhpParser\Node\Expr\Closure $node, Scope $scope): array
+    protected function resolveClosure(\PhpParser\Node\Expr\Closure $node, Scope $scope)
     {
-        $dependenciesReflections = [];
-
         /** @var ClosureType $closureType */
         $closureType = $scope->getType($node);
         foreach ($closureType->getParameters() as $parameter) {
             $referencedClasses = $parameter->getType()->getReferencedClasses();
             foreach ($referencedClasses as $referencedClass) {
-                $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+                $this->addDependencyWhenResolveClassReflectionIsSucceeded($referencedClass);
             }
         }
 
         $returnTypeReferencedClasses = $closureType->getReturnType()->getReferencedClasses();
         foreach ($returnTypeReferencedClasses as $referencedClass) {
-            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+            $this->addDependencyWhenResolveClassReflectionIsSucceeded($referencedClass);
         }
-        return $dependenciesReflections;
     }
 
     /**
