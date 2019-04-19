@@ -119,7 +119,9 @@ class DependencyResolver
                 //   }
                 $this->resolveClosure($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Expr\FuncCall) {
-                return $this->resolveFuncCall($node, $scope);
+                // function call expression
+                // ex: someFunction();
+                $this->resolveFuncCall($node, $scope);
             } elseif (
                 $node instanceof \PhpParser\Node\Expr\MethodCall ||
                 $node instanceof \PhpParser\Node\Expr\PropertyFetch
@@ -320,37 +322,29 @@ class DependencyResolver
         }
     }
 
-    /**
-     * @param \PhpParser\Node\Expr\FuncCall $node
-     * @param Scope $scope
-     * @return ReflectionWithFilename[]
-     */
-    protected function resolveFuncCall(\PhpParser\Node\Expr\FuncCall $node, Scope $scope): array
+    protected function resolveFuncCall(\PhpParser\Node\Expr\FuncCall $node, Scope $scope)
     {
-        $dependenciesReflections = [];
-
-        $functionName = $node->name;
-        if ($functionName instanceof \PhpParser\Node\Name) {
-            try {
-                $dependenciesReflections[] = $this->getFunctionReflection($functionName, $scope);
-            } catch (\PHPStan\Broker\FunctionNotFoundException $e) {
-                // pass
-            }
-        } else {
-            $variants = $scope->getType($functionName)->getCallableParametersAcceptors($scope);
-            foreach ($variants as $variant) {
-                $referencedClasses = $variant->getReturnType()->getReferencedClasses();
-                foreach ($referencedClasses as $referencedClass) {
-                    $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
-                }
-            }
-        }
+//        $functionName = $node->name;
+//        if ($functionName instanceof \PhpParser\Node\Name) {
+//            try {
+//                $dependenciesReflections[] = $this->getFunctionReflection($functionName, $scope);
+//            } catch (\PHPStan\Broker\FunctionNotFoundException $e) {
+//                // pass
+//            }
+//        } else {
+//            $variants = $scope->getType($functionName)->getCallableParametersAcceptors($scope);
+//            foreach ($variants as $variant) {
+//                $referencedClasses = $variant->getReturnType()->getReferencedClasses();
+//                foreach ($referencedClasses as $referencedClass) {
+//                    $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+//                }
+//            }
+//        }
 
         $returnType = $scope->getType($node);
         foreach ($returnType->getReferencedClasses() as $referencedClass) {
-            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+            $this->addDependencyWhenResolveClassReflectionIsSucceeded($referencedClass);
         }
-        return $dependenciesReflections;
     }
 
     /**

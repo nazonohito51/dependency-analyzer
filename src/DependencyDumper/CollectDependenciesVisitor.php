@@ -58,7 +58,8 @@ class CollectDependenciesVisitor
                 if ($node instanceof \PhpParser\Node\Stmt\Class_ ||
                     $node instanceof \PhpParser\Node\Stmt\Interface_ ||
                     $node instanceof \PhpParser\Node\Stmt\ClassMethod ||
-                    $node instanceof \PhpParser\Node\Expr\Closure) {
+                    $node instanceof \PhpParser\Node\Expr\Closure ||
+                    $node instanceof \PhpParser\Node\Expr\FuncCall) {
                     continue;
                 }
 
