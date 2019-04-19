@@ -56,7 +56,8 @@ class CollectDependenciesVisitor
         try {
             foreach ($this->dependencyResolver->resolveDependencies($node, $scope, $this->dependencyGraphBuilder) as $dependeeReflection) {
                 if ($node instanceof \PhpParser\Node\Stmt\Class_ ||
-                    $node instanceof \PhpParser\Node\Stmt\Interface_) {
+                    $node instanceof \PhpParser\Node\Stmt\Interface_ ||
+                    $node instanceof \PhpParser\Node\Stmt\ClassMethod) {
                     continue;
                 }
 

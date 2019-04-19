@@ -106,7 +106,7 @@ class DependencyResolver
                 //   class SomeClass {
                 //       function ClassMethod() {}
                 //   }
-                return $this->resolveClassMethod($node, $scope);
+                $this->resolveClassMethod($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Stmt\Function_) {
                 return $this->resolveFunction($node);
             } elseif ($node instanceof \PhpParser\Node\Expr\Closure) {
@@ -172,7 +172,7 @@ class DependencyResolver
 
     /**
      * @param ParametersAcceptorWithPhpDocs $parametersAcceptor
-     * @return ReflectionWithFilename[]
+     * @return ClassReflection[]
      */
     protected function extractFromParametersAcceptor(ParametersAcceptorWithPhpDocs $parametersAcceptor): array
     {
@@ -254,10 +254,9 @@ class DependencyResolver
     /**
      * @param \PhpParser\Node\Stmt\ClassMethod $node
      * @param Scope $scope
-     * @return ReflectionWithFilename[]
      * @throws \PHPStan\Reflection\MissingMethodFromReflectionException
      */
-    protected function resolveClassMethod(\PhpParser\Node\Stmt\ClassMethod $node, Scope $scope): array
+    protected function resolveClassMethod(\PhpParser\Node\Stmt\ClassMethod $node, Scope $scope)
     {
         if (!$scope->isInClass()) {
             throw new \PHPStan\ShouldNotHappenException();
@@ -268,9 +267,10 @@ class DependencyResolver
             /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
             $parametersAcceptor = ParametersAcceptorSelector::selectSingle($nativeMethod->getVariants());
 
-            return $this->extractFromParametersAcceptor($parametersAcceptor);
+            foreach ($this->extractFromParametersAcceptor($parametersAcceptor) as $classReflection) {
+                $this->dependencyGraphBuilder->addDependency($this->depender, $classReflection->getNativeReflection());
+            }
         }
-        return [];
     }
 
     /**
