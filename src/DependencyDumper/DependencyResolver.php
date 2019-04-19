@@ -107,8 +107,10 @@ class DependencyResolver
                 //       function ClassMethod() {}
                 //   }
                 $this->resolveClassMethod($node, $scope);
-            } elseif ($node instanceof \PhpParser\Node\Stmt\Function_) {
-                return $this->resolveFunction($node);
+//            } elseif ($node instanceof \PhpParser\Node\Stmt\Function_) {
+//                // define function statement
+//                // ex: function SomeFunction() {}
+//                return $this->resolveFunction($node);
             } elseif ($node instanceof \PhpParser\Node\Expr\Closure) {
                 return $this->resolveClosure($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Expr\FuncCall) {
