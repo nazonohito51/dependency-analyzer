@@ -61,7 +61,8 @@ class CollectDependenciesVisitor
                     $node instanceof \PhpParser\Node\Expr\Closure ||
                     $node instanceof \PhpParser\Node\Expr\FuncCall ||
                     $node instanceof \PhpParser\Node\Expr\MethodCall ||
-                    $node instanceof \PhpParser\Node\Expr\PropertyFetch) {
+                    $node instanceof \PhpParser\Node\Expr\PropertyFetch ||
+                    $node instanceof \PhpParser\Node\Expr\StaticCall) {
                     continue;
                 }
 

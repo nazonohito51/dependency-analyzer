@@ -131,7 +131,9 @@ class DependencyResolver
                 // ex: $someObject->somePublicProperty;
                 $this->resolvePropertyFetch($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Expr\StaticCall) {
-                return $this->resolveStaticCall($node, $scope);
+                // static method call expression
+                // ex: SomeClass::someStaticMethod()
+                $this->resolveStaticCall($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Expr\ClassConstFetch) {
                 return $this->resolveClassConstFetch($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Expr\StaticPropertyFetch) {
@@ -390,23 +392,24 @@ class DependencyResolver
         }
     }
 
-    protected function resolveStaticCall(\PhpParser\Node\Expr\StaticCall $node, Scope $scope): array
+    protected function resolveStaticCall(\PhpParser\Node\Expr\StaticCall $node, Scope $scope)
     {
-        $dependenciesReflections = [];
         if ($node->class instanceof \PhpParser\Node\Name) {
-            $dependenciesReflections[] = $this->resolveClassReflection($scope->resolveName($node->class));
+            if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($scope->resolveName($node->class))) {
+                $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunction()->getName());
+            }
         } else {
             foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
-                $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+                if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($referencedClass)) {
+                    $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunction()->getName());
+                }
             }
         }
 
         $returnType = $scope->getType($node);
         foreach ($returnType->getReferencedClasses() as $referencedClass) {
-            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+            $this->addDependencyWhenResolveClassReflectionIsSucceeded($referencedClass);
         }
-
-        return $dependenciesReflections;
     }
 
     protected function resolveClassConstFetch(\PhpParser\Node\Expr\ClassConstFetch $node, Scope $scope): array
