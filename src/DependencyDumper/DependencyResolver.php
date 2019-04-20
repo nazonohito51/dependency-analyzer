@@ -123,9 +123,13 @@ class DependencyResolver
                 // ex: someFunction();
                 $this->resolveFuncCall($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Expr\MethodCall) {
-                return $this->resolveMethodCall($node, $scope);
+                // method call expression
+                // ex: $someObject->someMethod();
+                $this->resolveMethodCall($node, $scope);
             } elseif ($node instanceof \PhpParser\Node\Expr\PropertyFetch) {
-                return $this->resolvePropertyFetch($node, $scope);
+                // property fetch expression
+                // ex: $someObject->somePublicProperty;
+                $this->resolvePropertyFetch($node, $scope);
             } elseif (
                 $node instanceof \PhpParser\Node\Expr\StaticCall ||
                 $node instanceof \PhpParser\Node\Expr\ClassConstFetch ||
@@ -346,34 +350,44 @@ class DependencyResolver
         }
     }
 
-    protected function resolveMethodCall(\PhpParser\Node\Expr\MethodCall $node, Scope $scope): array
+    protected function resolveMethodCall(\PhpParser\Node\Expr\MethodCall $node, Scope $scope)
     {
-        $dependenciesReflections = [];
         $classNames = $scope->getType($node->var)->getReferencedClasses();
         foreach ($classNames as $className) {
-            $dependenciesReflections[] = $this->resolveClassReflection($className);
+            if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($className)) {
+                $this->dependencyGraphBuilder->addMethodCall(
+                    $this->depender,
+                    $dependee->getNativeReflection(),
+                    $node->name->toString(),
+                    $scope->getFunction()->getName()
+                );
+            }
         }
 
         $returnType = $scope->getType($node);
         foreach ($returnType->getReferencedClasses() as $referencedClass) {
-            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+            $this->addDependencyWhenResolveClassReflectionIsSucceeded($referencedClass);
         }
-        return $dependenciesReflections;
     }
 
-    protected function resolvePropertyFetch(\PhpParser\Node\Expr\PropertyFetch $node, Scope $scope): array
+    protected function resolvePropertyFetch(\PhpParser\Node\Expr\PropertyFetch $node, Scope $scope)
     {
-        $dependenciesReflections = [];
         $classNames = $scope->getType($node->var)->getReferencedClasses();
         foreach ($classNames as $className) {
-            $dependenciesReflections[] = $this->resolveClassReflection($className);
+            if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($className)) {
+                $this->dependencyGraphBuilder->addPropertyFetch(
+                    $this->depender,
+                    $dependee->getNativeReflection(),
+                    $node->name->toString(),
+                    $scope->getFunction()->getName()
+                );
+            }
         }
 
         $returnType = $scope->getType($node);
         foreach ($returnType->getReferencedClasses() as $referencedClass) {
-            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+            $this->addDependencyWhenResolveClassReflectionIsSucceeded($referencedClass);
         }
-        return $dependenciesReflections;
     }
 
     /**
