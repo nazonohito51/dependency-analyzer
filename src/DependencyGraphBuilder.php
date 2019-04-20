@@ -104,11 +104,13 @@ class DependencyGraphBuilder
      */
     public function addDependency(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection): void
     {
-        $this->addDependencyType(
-            $this->getVertex($dependerReflection),
-            $this->getVertex($dependeeReflection),
-            new SomeDependency()
-        );
+        if ($dependerReflection->getName() !== $dependeeReflection->getName()) {
+            $this->addDependencyType(
+                $this->getVertex($dependerReflection),
+                $this->getVertex($dependeeReflection),
+                new SomeDependency()
+            );
+        }
     }
 
     public function addUnknownDependency(ReflectionClass $dependerReflection, string $dependeeName)
@@ -122,65 +124,79 @@ class DependencyGraphBuilder
 
     public function addNew(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection, string $caller = null)
     {
-        $this->addDependencyType(
-            $this->getVertex($dependerReflection),
-            $this->getVertex($dependeeReflection),
-            new NewObject($caller)
-        );
+        if ($dependerReflection->getName() !== $dependeeReflection->getName()) {
+            $this->addDependencyType(
+                $this->getVertex($dependerReflection),
+                $this->getVertex($dependeeReflection),
+                new NewObject($caller)
+            );
+        }
     }
 
     public function addMethodCall(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection, string $callee, string $caller = null)
     {
-        $this->addDependencyType(
-            $this->getVertex($dependerReflection),
-            $this->getVertex($dependeeReflection),
-            new MethodCall($callee, $caller)
-        );
+        if ($dependerReflection->getName() !== $dependeeReflection->getName()) {
+            $this->addDependencyType(
+                $this->getVertex($dependerReflection),
+                $this->getVertex($dependeeReflection),
+                new MethodCall($callee, $caller)
+            );
+        }
     }
 
     public function addPropertyFetch(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection, string $propertyName, string $caller = null)
     {
-        $this->addDependencyType(
-            $this->getVertex($dependerReflection),
-            $this->getVertex($dependeeReflection),
-            new PropertyFetch($propertyName, $caller)
-        );
+        if ($dependerReflection->getName() !== $dependeeReflection->getName()) {
+            $this->addDependencyType(
+                $this->getVertex($dependerReflection),
+                $this->getVertex($dependeeReflection),
+                new PropertyFetch($propertyName, $caller)
+            );
+        }
     }
 
     public function addConstFetch(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection, string $constantName, string $caller = null)
     {
-        $this->addDependencyType(
-            $this->getVertex($dependerReflection),
-            $this->getVertex($dependeeReflection),
-            new ConstantFetch($constantName, $caller)
-        );
+        if ($dependerReflection->getName() !== $dependeeReflection->getName()) {
+            $this->addDependencyType(
+                $this->getVertex($dependerReflection),
+                $this->getVertex($dependeeReflection),
+                new ConstantFetch($constantName, $caller)
+            );
+        }
     }
 
     public function addExtends(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection)
     {
-        $this->addDependencyType(
-            $this->getVertex($dependerReflection),
-            $this->getVertex($dependeeReflection),
-            new ExtendsClass()
-        );
+        if ($dependerReflection->getName() !== $dependeeReflection->getName()) {
+            $this->addDependencyType(
+                $this->getVertex($dependerReflection),
+                $this->getVertex($dependeeReflection),
+                new ExtendsClass()
+            );
+        }
     }
 
     public function addImplements(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection)
     {
-        $this->addDependencyType(
-            $this->getVertex($dependerReflection),
-            $this->getVertex($dependeeReflection),
-            new ImplementsClass()
-        );
+        if ($dependerReflection->getName() !== $dependeeReflection->getName()) {
+            $this->addDependencyType(
+                $this->getVertex($dependerReflection),
+                $this->getVertex($dependeeReflection),
+                new ImplementsClass()
+            );
+        }
     }
 
     public function addUseTrait(ReflectionClass $dependerReflection, ReflectionClass $dependeeReflection)
     {
-        $this->addDependencyType(
-            $this->getVertex($dependerReflection),
-            $this->getVertex($dependeeReflection),
-            new UseTrait()
-        );
+        if ($dependerReflection->getName() !== $dependeeReflection->getName()) {
+            $this->addDependencyType(
+                $this->getVertex($dependerReflection),
+                $this->getVertex($dependeeReflection),
+                new UseTrait()
+            );
+        }
     }
 
     public function build(): DependencyGraph
