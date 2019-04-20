@@ -246,6 +246,7 @@ class DependencyResolver
         }
 
         $this->dependencyGraphBuilder->addUnknownDependency($this->depender, $className);
+        return null;
     }
 
     protected function addDependencyWhenResolveClassReflectionIsSucceeded(string $className): void
@@ -386,7 +387,7 @@ class DependencyResolver
                     $this->depender,
                     $dependee->getNativeReflection(),
                     $node->name->toString(),
-                    $scope->getFunction()->getName()
+                    $scope->getFunctionName()
                 );
             }
         }
@@ -406,7 +407,7 @@ class DependencyResolver
                     $this->depender,
                     $dependee->getNativeReflection(),
                     $node->name->toString(),
-                    $scope->getFunction()->getName()
+                    $scope->getFunctionName()
                 );
             }
         }
@@ -421,12 +422,12 @@ class DependencyResolver
     {
         if ($node->class instanceof \PhpParser\Node\Name) {
             if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($scope->resolveName($node->class))) {
-                $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunction()->getName());
+                $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunctionName());
             }
         } else {
             foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
                 if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($referencedClass)) {
-                    $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunction()->getName());
+                    $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunctionName());
                 }
             }
         }
@@ -441,12 +442,17 @@ class DependencyResolver
     {
         if ($node->class instanceof \PhpParser\Node\Name) {
             if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($scope->resolveName($node->class))) {
-                $this->dependencyGraphBuilder->addConstFetch($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunction()->getName());
+                $this->dependencyGraphBuilder->addConstFetch(
+                    $this->depender,
+                    $dependee->getNativeReflection(),
+                    $node->name->toString(),
+                    $scope->getFunctionName()
+                );
             }
         } else {
             foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
                 if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($referencedClass)) {
-                    $this->dependencyGraphBuilder->addConstFetch($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunction()->getName());
+                    $this->dependencyGraphBuilder->addConstFetch($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunctionName());
                 }
             }
         }
@@ -461,12 +467,12 @@ class DependencyResolver
     {
         if ($node->class instanceof \PhpParser\Node\Name) {
             if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($scope->resolveName($node->class))) {
-                $this->dependencyGraphBuilder->addPropertyFetch($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunction()->getName());
+                $this->dependencyGraphBuilder->addPropertyFetch($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunctionName());
             }
         } else {
             foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
                 if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($scope->resolveName($node->class))) {
-                    $this->dependencyGraphBuilder->addPropertyFetch($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunction()->getName());
+                    $this->dependencyGraphBuilder->addPropertyFetch($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunctionName());
                 }
             }
         }
@@ -481,7 +487,7 @@ class DependencyResolver
     {
         if ($node->class instanceof \PhpParser\Node\Name) {
             if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($scope->resolveName($node->class))) {
-                $this->dependencyGraphBuilder->addNew($this->depender, $dependee->getNativeReflection(), $scope->getFunction()->getName());
+                $this->dependencyGraphBuilder->addNew($this->depender, $dependee->getNativeReflection(), $scope->getFunctionName());
             }
         }
     }
