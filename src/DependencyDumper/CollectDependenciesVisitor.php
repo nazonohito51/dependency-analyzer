@@ -62,7 +62,17 @@ class CollectDependenciesVisitor
                     $node instanceof \PhpParser\Node\Expr\FuncCall ||
                     $node instanceof \PhpParser\Node\Expr\MethodCall ||
                     $node instanceof \PhpParser\Node\Expr\PropertyFetch ||
-                    $node instanceof \PhpParser\Node\Expr\StaticCall) {
+                    $node instanceof \PhpParser\Node\Expr\StaticCall ||
+                    $node instanceof \PhpParser\Node\Expr\ClassConstFetch ||
+                    $node instanceof \PhpParser\Node\Expr\StaticPropertyFetch ||
+                    $node instanceof \PhpParser\Node\Expr\New_ ||
+                    $node instanceof \PhpParser\Node\Stmt\TraitUse ||
+                    $node instanceof \PhpParser\Node\Expr\Instanceof_ ||
+                    $node instanceof \PhpParser\Node\Stmt\Catch_ ||
+                    $node instanceof \PhpParser\Node\Expr\ArrayDimFetch ||
+                    $node instanceof \PhpParser\Node\Stmt\Foreach_ ||
+                    $node instanceof \PhpParser\Node\Expr\Array_ ||
+                    $node instanceof \PhpParser\Node\Stmt\PropertyProperty) {
                     continue;
                 }
 
