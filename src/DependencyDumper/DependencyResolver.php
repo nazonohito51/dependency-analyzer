@@ -122,11 +122,10 @@ class DependencyResolver
                 // function call expression
                 // ex: someFunction();
                 $this->resolveFuncCall($node, $scope);
-            } elseif (
-                $node instanceof \PhpParser\Node\Expr\MethodCall ||
-                $node instanceof \PhpParser\Node\Expr\PropertyFetch
-            ) {
-                return $this->resolveAccessClassElement($node, $scope);
+            } elseif ($node instanceof \PhpParser\Node\Expr\MethodCall) {
+                return $this->resolveMethodCall($node, $scope);
+            } elseif ($node instanceof \PhpParser\Node\Expr\PropertyFetch) {
+                return $this->resolvePropertyFetch($node, $scope);
             } elseif (
                 $node instanceof \PhpParser\Node\Expr\StaticCall ||
                 $node instanceof \PhpParser\Node\Expr\ClassConstFetch ||
@@ -347,12 +346,22 @@ class DependencyResolver
         }
     }
 
-    /**
-     * @param \PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\PropertyFetch $node
-     * @param Scope $scope
-     * @return ReflectionWithFilename[]
-     */
-    protected function resolveAccessClassElement($node, Scope $scope): array
+    protected function resolveMethodCall(\PhpParser\Node\Expr\MethodCall $node, Scope $scope): array
+    {
+        $dependenciesReflections = [];
+        $classNames = $scope->getType($node->var)->getReferencedClasses();
+        foreach ($classNames as $className) {
+            $dependenciesReflections[] = $this->resolveClassReflection($className);
+        }
+
+        $returnType = $scope->getType($node);
+        foreach ($returnType->getReferencedClasses() as $referencedClass) {
+            $dependenciesReflections[] = $this->resolveClassReflection($referencedClass);
+        }
+        return $dependenciesReflections;
+    }
+
+    protected function resolvePropertyFetch(\PhpParser\Node\Expr\PropertyFetch $node, Scope $scope): array
     {
         $dependenciesReflections = [];
         $classNames = $scope->getType($node->var)->getReferencedClasses();
