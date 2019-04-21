@@ -307,8 +307,34 @@ class DependencyResolver
             /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
             $parametersAcceptor = ParametersAcceptorSelector::selectSingle($nativeMethod->getVariants());
 
-            foreach ($this->extractFromParametersAcceptor($parametersAcceptor) as $classReflection) {
-                $this->dependencyGraphBuilder->addDependency($this->depender, $classReflection->getNativeReflection());
+//            foreach ($this->extractFromParametersAcceptor($parametersAcceptor) as $classReflection) {
+//                $this->dependencyGraphBuilder->addDependency($this->depender, $classReflection->getNativeReflection());
+//            }
+
+            foreach ($parametersAcceptor->getParameters() as $parameter) {
+                $referencedClasses = array_merge(
+                    $parameter->getNativeType()->getReferencedClasses(),
+                    $parameter->getPhpDocType()->getReferencedClasses()
+                );
+
+                foreach ($referencedClasses as $referencedClass) {
+                    if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($referencedClass)) {
+                        $this->dependencyGraphBuilder->addMethodCall(
+                            $this->depender,
+                            $dependee->getNativeReflection(),
+                            $node->name->name,
+                            $scope->getFunctionName()
+                        );
+                    }
+                }
+            }
+
+            $returnTypeReferencedClasses = array_merge(
+                $parametersAcceptor->getNativeReturnType()->getReferencedClasses(),
+                $parametersAcceptor->getPhpDocReturnType()->getReferencedClasses()
+            );
+            foreach ($returnTypeReferencedClasses as $referencedClass) {
+                $this->addDependencyWhenResolveClassReflectionIsSucceeded($referencedClass);
             }
         }
     }
