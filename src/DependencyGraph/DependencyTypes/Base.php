@@ -7,4 +7,5 @@ abstract class Base
 {
     public abstract function getType(): string;
     public abstract function isEqual(Base $that): bool;
+    public abstract function toString(): string;
 }

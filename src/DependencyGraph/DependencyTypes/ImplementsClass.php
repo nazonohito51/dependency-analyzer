@@ -16,4 +16,9 @@ class ImplementsClass extends Base
     {
         return $this->getType() === $that->getType();
     }
+
+    public function toString(): string
+    {
+        return $this->getType();
+    }
 }

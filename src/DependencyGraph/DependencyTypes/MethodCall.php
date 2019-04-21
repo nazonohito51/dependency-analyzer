@@ -45,4 +45,14 @@ class MethodCall extends Base
             $this->getCaller() === $that->getCaller()
         );
     }
+
+    public function toString(): string
+    {
+        $ret = "{$this->getType()}:{$this->getCaller()}";
+        if ($this->getCaller()) {
+            $ret .= ":{$this->getCaller()}";
+        }
+
+        return $ret;
+    }
 }

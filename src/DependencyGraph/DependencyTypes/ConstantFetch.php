@@ -45,4 +45,14 @@ class ConstantFetch extends Base
             $this->getCaller() === $that->getCaller()
         );
     }
+
+    public function toString(): string
+    {
+        $ret = "{$this->getType()}:{$this->getConstantName()}";
+        if ($this->getCaller()) {
+            $ret .= ":{$this->getCaller()}";
+        }
+
+        return $ret;
+    }
 }

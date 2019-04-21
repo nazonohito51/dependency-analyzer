@@ -34,4 +34,14 @@ class NewObject extends Base
             $this->getCaller() === $that->getCaller()
         );
     }
+
+    public function toString(): string
+    {
+        $ret = $this->getType();
+        if ($this->getCaller()) {
+            $ret .= ":{$this->getCaller()}";
+        }
+
+        return $ret;
+    }
 }
