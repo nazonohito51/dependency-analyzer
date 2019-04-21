@@ -8,7 +8,7 @@ use Tests\Fixtures\IndividualTheme\Foundations\SomeClass2;
 
 class ArrayDimFetch
 {
-    public function someMethod()
+    public function testMethod()
     {
         $array = [new SomeClass2, new SomeClass1, new SomeClass2];
 

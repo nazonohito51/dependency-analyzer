@@ -7,7 +7,7 @@ use Tests\Fixtures\IndividualTheme\Foundations\SomeClass1;
 
 class MethodCall
 {
-    public function someMethod()
+    public function testMethod()
     {
         $someClass1 = new SomeClass1();
         $someClass1->someMethod();

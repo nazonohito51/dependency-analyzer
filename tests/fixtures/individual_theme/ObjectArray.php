@@ -10,7 +10,7 @@ class ObjectArray
     /**
      * @param SomeClass1[] $array
      */
-    public function someMethod(array $array)
+    public function testMethod(array $array)
     {
         $array[0]->someMethod();
     }

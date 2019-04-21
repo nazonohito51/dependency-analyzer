@@ -7,7 +7,7 @@ use Tests\Fixtures\IndividualTheme\Foundations\SomeClass2;
 
 class ForeachArray
 {
-    public function someMethod()
+    public function testMethod()
     {
         $ret = [];
 

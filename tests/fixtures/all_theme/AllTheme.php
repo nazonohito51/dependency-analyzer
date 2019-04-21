@@ -39,7 +39,7 @@ class AllTheme extends ParentClass implements SomeInterface         // extends(=
         $this->someClass1 = new SomeClass1(SomeClass2::STATUS_OK);  // new(=SomeClass1), fetch public constant(=SomeClass2)
     }
 
-    public function someMethod1(SomeClass3 $someClass3): SomeClass4 // type hinting(=SomeClass3), return type declarations(=SomeClass4)
+    public function testMethod1(SomeClass3 $someClass3): SomeClass4 // type hinting(=SomeClass3), return type declarations(=SomeClass4)
     {
         try {
             $unknownClass1 = $someClass3->getUnknownClass();        // (getUnknownClass() will return SomeClass5 object)
@@ -61,12 +61,12 @@ class AllTheme extends ParentClass implements SomeInterface         // extends(=
      * @param SomeClass7|SomeClass8 $unknownClass                   // type hinting by phpdoc(=SomeClass7, SomeClass8)
      * @return SomeClass9|SomeClass10                               // return value declarations by phpdoc(=SomeClass9, SomeClass10)
      */
-    public function someMethod2($unknownClass)
+    public function testMethod2($unknownClass)
     {
         return $unknownClass->someMethod();
     }
 
-    public function someMethod3()
+    public function testMethod3()
     {
         $unknownClass3 = SomeClass11::someMethod();                 // call class method(=SomeClass11)
 
@@ -77,7 +77,7 @@ class AllTheme extends ParentClass implements SomeInterface         // extends(=
         return null;
     }
 
-    public function someMethod4()
+    public function testMethod4()
     {
         $ret = [];
         $array = [new SomeClass13, new SomeClass13, new SomeClass13];
@@ -89,14 +89,14 @@ class AllTheme extends ParentClass implements SomeInterface         // extends(=
         return $ret;
     }
 
-    public function someMethod5()
+    public function testMethod5()
     {
         $array = [new SomeClass15, new SomeClass16, new SomeClass17];
 
         return $array[1]->someMethod();                             // array dim fetch, (new SomeClass16)->someMethod() will return SomeClass18 object(=SomeClass18)
     }
 
-    public function someMethod6()
+    public function testMethod6()
     {
         return Foundations\some_function();                         // some_function() will return SomeClass19 object(=SomeClass19)
     }
