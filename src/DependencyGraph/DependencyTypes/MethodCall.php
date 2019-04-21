@@ -48,7 +48,7 @@ class MethodCall extends Base
 
     public function toString(): string
     {
-        $ret = "{$this->getType()}:{$this->getCaller()}";
+        $ret = "{$this->getType()}:{$this->getCallee()}";
         if ($this->getCaller()) {
             $ret .= ":{$this->getCaller()}";
         }

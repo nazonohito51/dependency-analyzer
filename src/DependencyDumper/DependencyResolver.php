@@ -318,14 +318,7 @@ class DependencyResolver
                 );
 
                 foreach ($referencedClasses as $referencedClass) {
-                    if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($referencedClass)) {
-                        $this->dependencyGraphBuilder->addMethodCall(
-                            $this->depender,
-                            $dependee->getNativeReflection(),
-                            $node->name->name,
-                            $scope->getFunctionName()
-                        );
-                    }
+                    $this->addDependencyWhenResolveClassReflectionIsSucceeded($referencedClass);
                 }
             }
 
