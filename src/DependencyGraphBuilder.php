@@ -23,17 +23,10 @@ use ReflectionClass;
 
 class DependencyGraphBuilder
 {
+    /**
+     * @var Graph
+     */
     protected $graph;
-
-    /**
-     * @var ClassReflection[] $classReflections
-     */
-    protected $classes = [];
-
-    /**
-     * @var array $dependencyMap
-     */
-    protected $dependencyMap = [];
 
     /**
      * @var ExtraPhpDocTagResolver
