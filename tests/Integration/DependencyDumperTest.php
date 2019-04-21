@@ -233,6 +233,16 @@ class DependencyDumperTest extends TestCase
                     'Tests\Fixtures\IndividualTheme\Foundations\SomeClass1' => [],
                 ]
             ],
+            'unknown_dependency' => [
+                $this->getFixturePath('/individual_theme/UnknownDependency.php'),
+                [
+                    'Tests\Fixtures\IndividualTheme\UnknownDependency' => ['UnknownNew', 'UnknownProperty', 'UnknownMethod', 'UnknownClassMethod'],
+                    'UnknownNew' => [],
+                    'UnknownProperty' => [],
+                    'UnknownMethod' => [],
+                    'UnknownClassMethod' => [],
+                ]
+            ],
             'all_theme' => [
                 $this->getFixturePath('/all_theme/AllTheme.php'),
                 [
