@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base as DependencyType;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
@@ -16,14 +17,14 @@ class DependencyGraph implements \Countable
 {
     const DEPENDENCY_TYPE_KEY = 'dependency_types';
 
-    const TYPE_SOME_DEPENDENCY = 'some dependency';
-    const TYPE_NEW = 'new object';
-    const TYPE_METHOD_CALL = 'method call';
-    const TYPE_PROPERTY_FETCH = 'property fetch';
-    const TYPE_CONSTANT_FETCH = 'constant fetch';
+    const TYPE_SOME_DEPENDENCY = 'some_dependency';
+    const TYPE_NEW = 'new';
+    const TYPE_METHOD_CALL = 'method_call';
+    const TYPE_PROPERTY_FETCH = 'property_fetch';
+    const TYPE_CONSTANT_FETCH = 'constant_fetch';
     const TYPE_EXTENDS = 'extends';
     const TYPE_IMPLEMENTS = 'implements';
-    const TYPE_USE_TRAIT = 'use trait';
+    const TYPE_USE_TRAIT = 'use_trait';
 
     /**
      * @var Graph
@@ -148,8 +149,13 @@ class DependencyGraph implements \Countable
         foreach ($this->graph->getVertices() as $vertex) {
             $ret[$vertex->getId()] = [];
 
-            foreach ($vertex->getVerticesEdgeTo() as $edgeTo) {
-                $ret[$vertex->getId()][] = $edgeTo->getId();
+            foreach ($vertex->getEdgesOut() as $edge) {
+                /** @var Directed $edge */
+                $types = $edge->getAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY) ?? [];
+
+                $ret[$vertex->getId()][$edge->getVertexEnd()->getId()] = array_map(function (DependencyType $type) {
+                    return $type->toString();
+                }, $types);
             }
         }
 

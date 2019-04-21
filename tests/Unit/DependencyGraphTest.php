@@ -17,9 +17,17 @@ class DependencyGraphTest extends TestCase
         $newGraph = $graph->groupByPattern('MyGroup', new ClassNameMatcher(['\v3', '\v4']));
 
         $this->assertSame([
-            'MyGroup' => ['v5', 'v6'],
-            'v1' => ['v2', 'MyGroup'],
-            'v2' => ['MyGroup'],
+            'MyGroup' => [
+                'v5' => [],
+                'v6' => []
+            ],
+            'v1' => [
+                'v2' => [],
+                'MyGroup' => []
+            ],
+            'v2' => [
+                'MyGroup' => []
+            ],
             'v5' => [],
             'v6' => []
         ], $newGraph->toArray());
@@ -30,10 +38,21 @@ class DependencyGraphTest extends TestCase
         $sut = new DependencyGraph($this->getGraph());
 
         $this->assertEquals([
-            'v1' => ['v2', 'v3'],
-            'v2' => ['v3', 'v4'],
-            'v3' => ['v4', 'v5'],
-            'v4' => ['v6'],
+            'v1' => [
+                'v2' => [],
+                'v3' => []
+            ],
+            'v2' => [
+                'v3' => [],
+                'v4' => []
+            ],
+            'v3' => [
+                'v4' => [],
+                'v5' => []
+            ],
+            'v4' => [
+                'v6' => []
+            ],
             'v5' => [],
             'v6' => []
         ], $sut->toArray());
