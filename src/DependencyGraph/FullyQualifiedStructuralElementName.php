@@ -34,9 +34,7 @@ class FullyQualifiedStructuralElementName
 
     public static function createFromString(string $element): self
     {
-        if (self::isFullyQualifiedClassElement($element)) {
-            $type = self::TYPE_CLASS;
-        } elseif (self::isMethodElement($element)) {
+        if (self::isMethodElement($element)) {
             $type = self::TYPE_METHOD;
         } elseif (self::isPropertyElement($element)) {
             $type = self::TYPE_PROPERTY;
@@ -44,6 +42,8 @@ class FullyQualifiedStructuralElementName
             $type = self::TYPE_CLASS_CONSTANT;
         } elseif (self::isFunctionElement($element)) {
             $type = self::TYPE_FUNCTION;
+        } elseif (self::isFullyQualifiedClassElement($element)) {
+            $type = self::TYPE_CLASS;
         } else {
             throw new InvalidFullyQualifiedStructureElementNameException($element);
         }
