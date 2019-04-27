@@ -47,7 +47,7 @@ class DependencyDumper
     /**
      * @var ObserverInterface
      */
-    protected $observer = null;
+    protected static $observer = null;
 
     public function __construct(
         NodeScopeResolver $nodeScopeResolver,
@@ -136,37 +136,46 @@ class DependencyDumper
 
     public function setObserver(ObserverInterface $observer = null): self
     {
-        $this->observer = $observer;
-        $this->collectNodeVisitor->setObserver($observer);
+        self::$observer = $observer;
 
         return $this;
     }
 
+    /**
+     * @return ObserverInterface|null
+     * @deps-internal \DependencyAnalyzer\DependencyDumper
+     * @deps-internal \DependencyAnalyzer\DependencyDumper\
+     */
+    public static function getObserver(): ?ObserverInterface
+    {
+        return self::$observer;
+    }
+
     protected function notifyDumpStart(int $max): void
     {
-        if ($this->observer) {
-            $this->observer->start($max);
+        if (self::getObserver()) {
+            self::getObserver()->start($max);
         }
     }
 
     protected function notifyCurrentFile(string $file): void
     {
-        if ($this->observer) {
-            $this->observer->update($file);
+        if (self::getObserver()) {
+            self::getObserver()->update($file);
         }
     }
 
     protected function notifyAnalysedFileException(AnalysedFileException $e): void
     {
-        if ($this->observer) {
-            $this->observer->notifyAnalyzeFileError($e);
+        if (self::getObserver()) {
+            self::getObserver()->notifyAnalyzeFileError($e);
         }
     }
 
     protected function notifyDumpEnd(): void
     {
-        if ($this->observer) {
-            $this->observer->end();
+        if (self::getObserver()) {
+            self::getObserver()->end();
         }
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyDumper;
 
+use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
@@ -24,11 +25,6 @@ class CollectDependenciesVisitor
     protected $dependencyGraphBuilder;
 
     /**
-     * @var ObserverInterface
-     */
-    protected $observer;
-
-    /**
      * @var string
      */
     protected $file = null;
@@ -42,11 +38,6 @@ class CollectDependenciesVisitor
     public function setFile(string $file)
     {
         $this->file = $file;
-    }
-
-    public function setObserver(ObserverInterface $observer = null)
-    {
-        $this->observer = $observer;
     }
 
     public function __invoke(\PhpParser\Node $node, Scope $scope): void
@@ -78,8 +69,8 @@ class CollectDependenciesVisitor
 //                }
 //            }
         } catch (ResolveDependencyException $e) {
-            if ($this->observer) {
-                $this->observer->notifyResolveDependencyError($this->file, $e);
+            if (DependencyDumper::getObserver()) {
+                DependencyDumper::getObserver()->notifyResolveDependencyError($this->file, $e);
             }
         }
     }
