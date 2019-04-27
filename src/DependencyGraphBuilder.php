@@ -15,10 +15,8 @@ use DependencyAnalyzer\DependencyGraph\DependencyTypes\UseTrait;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
 use DependencyAnalyzer\Exceptions\LogicException;
-use Fhaculty\Graph\Edge\Base as Edge;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
-use PHPStan\Reflection\ClassReflection;
 use ReflectionClass;
 
 class DependencyGraphBuilder
@@ -47,8 +45,8 @@ class DependencyGraphBuilder
 
         $vertex = $this->graph->createVertex($class->getName());
         $vertex->setAttribute('reflection', $class);
-        $canOnlyUsedByTags = $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class);
-        $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, $canOnlyUsedByTags);
+        $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class));
+        $vertex->setAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL, $this->extraPhpDocTagResolver->resolveDepsInternalTag($class));
 
         return $vertex;
     }
@@ -67,6 +65,7 @@ class DependencyGraphBuilder
         $vertex = $this->graph->createVertex($className);
         $vertex->setAttribute('reflection', new UnknownReflectionClass($className));
         $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, []);
+        $vertex->setAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL, []);
 
         return $vertex;
     }
@@ -190,6 +189,26 @@ class DependencyGraphBuilder
                 new UseTrait()
             );
         }
+    }
+
+    public function addClassRule(ReflectionClass $class)
+    {
+        
+    }
+
+    public function addMethodRule(\ReflectionMethod $method)
+    {
+
+    }
+
+    public function addPropertyRule(\ReflectionProperty $property)
+    {
+
+    }
+
+    public function addConstantRule(\ReflectionClassConstant $constant)
+    {
+
     }
 
     public function build(): DependencyGraph
