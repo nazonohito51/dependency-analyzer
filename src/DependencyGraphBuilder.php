@@ -191,26 +191,6 @@ class DependencyGraphBuilder
         }
     }
 
-    public function addClassRule(ReflectionClass $class)
-    {
-        
-    }
-
-    public function addMethodRule(\ReflectionMethod $method)
-    {
-
-    }
-
-    public function addPropertyRule(\ReflectionProperty $property)
-    {
-
-    }
-
-    public function addConstantRule(\ReflectionClassConstant $constant)
-    {
-
-    }
-
     public function build(): DependencyGraph
     {
         return new DependencyGraph($this->graph);
