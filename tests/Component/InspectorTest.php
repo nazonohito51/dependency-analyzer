@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Integration;
+namespace Tests\Component;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\RuleViolationDetector;
