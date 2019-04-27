@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Commands;
 
 use DependencyAnalyzer\DependencyDumper\ObserverInterface;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 use DependencyAnalyzer\Exceptions\AnalysedFileException;
+use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -71,5 +73,11 @@ class DependencyDumperObserver implements ObserverInterface
         if ($this->output->isVeryVerbose()) {
             $this->output->writeln("detail of exception: {$e}");
         }
+    }
+
+    public function notifyResolvePhpDocError(string $file, FullyQualifiedStructuralElementName $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void
+    {
+        $this->output->writeln("Error: resolving phpdoc is failed, {$fqsen->toString()} in {$file}. Because element name is invalid: {$e->getInvalidElementName()}");
+        $this->output->writeln('Skip analysing this phpdoc, therefore result of analyse of this file is incomplete.');
     }
 }
