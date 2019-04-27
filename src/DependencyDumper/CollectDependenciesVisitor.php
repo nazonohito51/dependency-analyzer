@@ -69,9 +69,7 @@ class CollectDependenciesVisitor
 //                }
 //            }
         } catch (ResolveDependencyException $e) {
-            if (DependencyDumper::getObserver()) {
-                DependencyDumper::getObserver()->notifyResolveDependencyError($this->file, $e);
-            }
+            DependencyDumper::getObserver()->notifyResolveDependencyError($this->file, $e);
         }
     }
 

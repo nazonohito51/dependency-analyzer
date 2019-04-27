@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
+use DependencyAnalyzer\DependencyDumper\NullObserver;
 use DependencyAnalyzer\DependencyDumper\ObserverInterface;
-use DependencyAnalyzer\DependencyGraph\ClassLikeAggregate;
 use DependencyAnalyzer\Exceptions\AnalysedFileException;
-use DependencyAnalyzer\Exceptions\UnexpectedException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Parser\Parser;
@@ -142,40 +141,36 @@ class DependencyDumper
     }
 
     /**
-     * @return ObserverInterface|null
+     * @return ObserverInterface
      * @deps-internal \DependencyAnalyzer\DependencyDumper
      * @deps-internal \DependencyAnalyzer\DependencyDumper\
      */
-    public static function getObserver(): ?ObserverInterface
+    public static function getObserver(): ObserverInterface
     {
-        return self::$observer;
+        if (!is_null(self::$observer)) {
+            return self::$observer;
+        }
+
+        return new NullObserver();
     }
 
     protected function notifyDumpStart(int $max): void
     {
-        if (self::getObserver()) {
-            self::getObserver()->start($max);
-        }
+        self::getObserver()->start($max);
     }
 
     protected function notifyCurrentFile(string $file): void
     {
-        if (self::getObserver()) {
-            self::getObserver()->update($file);
-        }
+        self::getObserver()->update($file);
     }
 
     protected function notifyAnalysedFileException(AnalysedFileException $e): void
     {
-        if (self::getObserver()) {
-            self::getObserver()->notifyAnalyzeFileError($e);
-        }
+        self::getObserver()->notifyAnalyzeFileError($e);
     }
 
     protected function notifyDumpEnd(): void
     {
-        if (self::getObserver()) {
-            self::getObserver()->end();
-        }
+        self::getObserver()->end();
     }
 }
