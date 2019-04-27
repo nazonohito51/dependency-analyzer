@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Unit\DependencyAnalyzer;
+namespace Tests\Component;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\ConstantFetch;
