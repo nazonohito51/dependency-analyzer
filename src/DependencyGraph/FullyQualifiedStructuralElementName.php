@@ -35,7 +35,7 @@ class FullyQualifiedStructuralElementName
 
     public static function createFromString(string $element): self
     {
-        if (self::isNamespace($element)) {
+        if (self::isNamespaceElement($element)) {
             $type = self::TYPE_NAMESPACE;
         } elseif (self::isMethodElement($element)) {
             $type = self::TYPE_METHOD;
@@ -54,7 +54,7 @@ class FullyQualifiedStructuralElementName
         return new self($element, $type);
     }
 
-    protected static function isNamespace(string $element): bool
+    protected static function isNamespaceElement(string $element): bool
     {
         if ($element === '\\') {
             return true;
@@ -135,6 +135,11 @@ class FullyQualifiedStructuralElementName
         return preg_match('/^[a-zA-Z\_][0-9a-zA-Z\_]+$/', $element) === 1;
     }
 
+    public static function createNamespace(string $namespaceName): self
+    {
+        return new self($namespaceName, self::TYPE_NAMESPACE);
+    }
+
     public static function createClass(string $className): self
     {
         return new self($className, self::TYPE_CLASS);
@@ -175,6 +180,11 @@ class FullyQualifiedStructuralElementName
         return new self("{$constantName}", self::TYPE_CONSTANT);
     }
 
+    public function isNamespace(): bool
+    {
+        return $this->type === self::TYPE_NAMESPACE;
+    }
+
     public function isClass(): bool
     {
         return $this->type === self::TYPE_CLASS;
@@ -213,6 +223,34 @@ class FullyQualifiedStructuralElementName
     public function isConstant(): bool
     {
         return $this->type === self::TYPE_CONSTANT;
+    }
+
+    public function include(FullyQualifiedStructuralElementName $that): bool
+    {
+        if ($this->isNamespace()) {
+            if ($this->toString() === '\\') {
+                // Pattern likely '\\' will match with all className.
+                return true;
+            }
+
+            $explodedPattern = explode('\\', $this->toString());
+            $explodedClassName = explode('\\', $that->toString());
+            if (count($explodedClassName) < count($explodedPattern)) {
+                return false;
+            }
+
+            foreach ($explodedPattern as $index => $pattern) {
+                if (!isset($explodedClassName[$index])) {
+                    return false;
+                } elseif ($explodedClassName[$index] !== $pattern) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     public function getType(): string
