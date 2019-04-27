@@ -172,8 +172,7 @@ class FullyQualifiedStructuralElementNameTest extends TestCase
             'invalid_fqcn' => ['SomeClass'],
             'invalid_method1' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass::methodName('],
             'invalid_method2' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass::$methodName()'],
-            'empty' => [''],
-            'only_backslash' => ['\\']
+            'empty' => ['']
         ];
     }
 

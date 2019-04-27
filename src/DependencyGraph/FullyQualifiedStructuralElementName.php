@@ -56,6 +56,10 @@ class FullyQualifiedStructuralElementName
 
     protected static function isNamespace(string $element): bool
     {
+        if ($element === '\\') {
+            return true;
+        }
+
         // TODO: This is my original definition...
         return substr($element, -1) === '\\' &&
             self::isFullyQualifiedClassElement(substr($element, 0, -1));
