@@ -7,6 +7,7 @@ use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameExcep
 
 class FullyQualifiedStructuralElementName
 {
+    const TYPE_NAMESPACE = 'namespace';
     const TYPE_CLASS = 'class';
     const TYPE_METHOD = 'method';
     const TYPE_PROPERTY = 'property';
@@ -34,7 +35,9 @@ class FullyQualifiedStructuralElementName
 
     public static function createFromString(string $element): self
     {
-        if (self::isMethodElement($element)) {
+        if (self::isNamespace($element)) {
+            $type = self::TYPE_NAMESPACE;
+        } elseif (self::isMethodElement($element)) {
             $type = self::TYPE_METHOD;
         } elseif (self::isPropertyElement($element)) {
             $type = self::TYPE_PROPERTY;
@@ -49,6 +52,13 @@ class FullyQualifiedStructuralElementName
         }
 
         return new self($element, $type);
+    }
+
+    protected static function isNamespace(string $element): bool
+    {
+        // TODO: This is my original definition...
+        return substr($element, -1) === '\\' &&
+            self::isFullyQualifiedClassElement(substr($element, 0, -1));
     }
 
     protected static function isMethodElement(string $element): bool

@@ -140,6 +140,7 @@ class FullyQualifiedStructuralElementNameTest extends TestCase
     public function provideCreateFromString()
     {
         return [
+            'namespace' => ['\SomeClass\\', FQSEN::TYPE_NAMESPACE],
             'class1' => ['\SomeClass', FQSEN::TYPE_CLASS],
             'class2' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass', FQSEN::TYPE_CLASS],
             'method' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass::methodName()', FQSEN::TYPE_METHOD],
