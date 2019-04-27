@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph;
 
+use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver\DepsInternal;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
+use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
@@ -50,36 +52,68 @@ class ExtraPhpDocTagResolver
         $ret = [];
 
         if ($this->haveTag($reflectionClass, self::DEPS_INTERNAL)) {
-            $ret[] = new DepsInternal(
-                FQSEN::createClass($reflectionClass->getName()),
-                $this->resolve($reflectionClass->getDocComment(), self::DEPS_INTERNAL)
-            );
+            try {
+                $ret[] = new DepsInternal(
+                    FQSEN::createClass($reflectionClass->getName()),
+                    $this->resolve($reflectionClass->getDocComment(), self::DEPS_INTERNAL)
+                );
+            } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+                DependencyDumper::getObserver()->notifyResolvePhpDocError(
+                    $reflectionClass->getFileName(),
+                    FQSEN::createClass($reflectionClass->getName()),
+                    $e
+                );
+            }
         }
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
             if ($this->haveTag($reflectionProperty, self::DEPS_INTERNAL)) {
-                $ret[] = new DepsInternal(
-                    FQSEN::createProperty($reflectionClass->getName(), $reflectionProperty->getName()),
-                    $this->resolve($reflectionProperty->getDocComment(), self::DEPS_INTERNAL)
-                );
+                try {
+                    $ret[] = new DepsInternal(
+                        FQSEN::createProperty($reflectionClass->getName(), $reflectionProperty->getName()),
+                        $this->resolve($reflectionProperty->getDocComment(), self::DEPS_INTERNAL)
+                    );
+                } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+                    DependencyDumper::getObserver()->notifyResolvePhpDocError(
+                        $reflectionClass->getFileName(),
+                        FQSEN::createClass($reflectionClass->getName()),
+                        $e
+                    );
+                }
             }
         }
 
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
             if ($this->haveTag($reflectionMethod, self::DEPS_INTERNAL)) {
-                $ret[] = new DepsInternal(
-                    FQSEN::createMethod($reflectionClass->getName(), $reflectionMethod->getName()),
-                    $this->resolve($reflectionMethod->getDocComment(), self::DEPS_INTERNAL)
-                );
+                try {
+                    $ret[] = new DepsInternal(
+                        FQSEN::createMethod($reflectionClass->getName(), $reflectionMethod->getName()),
+                        $this->resolve($reflectionMethod->getDocComment(), self::DEPS_INTERNAL)
+                    );
+                } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+                    DependencyDumper::getObserver()->notifyResolvePhpDocError(
+                        $reflectionClass->getFileName(),
+                        FQSEN::createClass($reflectionClass->getName()),
+                        $e
+                    );
+                }
             }
         }
 
         foreach ($reflectionClass->getReflectionConstants() as $reflectionClassConstant) {
             if ($this->haveTag($reflectionClassConstant, self::DEPS_INTERNAL)) {
-                $ret[] = new DepsInternal(
-                    FQSEN::createClassConstant($reflectionClass->getName(), $reflectionClassConstant->getName()),
-                    $this->resolve($reflectionClassConstant->getDocComment(), self::DEPS_INTERNAL)
-                );
+                try {
+                    $ret[] = new DepsInternal(
+                        FQSEN::createClassConstant($reflectionClass->getName(), $reflectionClassConstant->getName()),
+                        $this->resolve($reflectionClassConstant->getDocComment(), self::DEPS_INTERNAL)
+                    );
+                } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+                    DependencyDumper::getObserver()->notifyResolvePhpDocError(
+                        $reflectionClass->getFileName(),
+                        FQSEN::createClass($reflectionClass->getName()),
+                        $e
+                    );
+                }
             }
         }
 
