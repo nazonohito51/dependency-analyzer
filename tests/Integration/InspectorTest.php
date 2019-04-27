@@ -4,12 +4,13 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\Inspector\RuleViolationDetector;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory;
 use DependencyAnalyzer\Inspector\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
-class DependencyRuleTest extends TestCase
+class InspectorTest extends TestCase
 {
     public function provideCreate()
     {
@@ -229,10 +230,13 @@ class DependencyRuleTest extends TestCase
         $graph = $this->createDependencyGraph();
         $factory = new DependencyRuleFactory();
         $rules = $factory->create(['testCreateRule' => $ruleDefinition]);
+        $detector = new RuleViolationDetector($rules);
 
-        $actual = $rules[0]->isSatisfyBy($graph);
+        $actual = $detector->inspect($graph);
 
-        $this->assertSame($expected, $actual->getViolations());
+        $this->assertSame($expected, array_reduce($actual, function (array $result, VerifyDependencyResponse $response) {
+            return array_merge($result, $response->getViolations());
+        }, []));
     }
 
     protected function createDependencyGraph()

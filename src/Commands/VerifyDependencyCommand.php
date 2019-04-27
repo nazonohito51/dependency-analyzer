@@ -62,8 +62,8 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         $responses = $detector->inspect($graph);
 
         $errorCount = 0;
-        foreach ($responses as $respons) {
-            if ($respons->count() > 0) {
+        foreach ($responses as $response) {
+            if ($response->count() > 0) {
                 $table = (new ConsoleTable())
                     ->addHeader('depender')
                     ->addHeader('component')
@@ -71,10 +71,10 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
                     ->addHeader('dependee')
                     ->addHeader('component');
 
-                $errorCount += $respons->count();
+                $errorCount += $response->count();
                 $output->writeln('');
-                $output->writeln($respons->getRuleName());
-                foreach ($respons->getViolations() as $violation) {
+                $output->writeln($response->getRuleName());
+                foreach ($response->getViolations() as $violation) {
                     $table->addRow([
                         $violation['depender'],
                         $violation['dependerComponent'],
