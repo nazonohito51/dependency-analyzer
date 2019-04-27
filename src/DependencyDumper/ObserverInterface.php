@@ -11,7 +11,7 @@ interface ObserverInterface
     public function start(int $max): void;
     public function end(): void;
 
-    public function update(string $currentFile);
-    public function notifyAnalyzeFileError(AnalysedFileException $e);
-    public function notifyResolveDependencyError(string $file, ResolveDependencyException $e);
+    public function update(string $currentFile): void;
+    public function notifyAnalyzeFileError(AnalysedFileException $e): void;
+    public function notifyResolveDependencyError(string $file, ResolveDependencyException $e): void;
 }

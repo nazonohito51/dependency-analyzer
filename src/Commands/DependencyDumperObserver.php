@@ -41,14 +41,14 @@ class DependencyDumperObserver implements ObserverInterface
         return;
     }
 
-    public function update(string $currentFile)
+    public function update(string $currentFile): void
     {
         $this->counter++;
 
         $this->output->writeln("Analyse start({$this->counter}/{$this->max}): {$currentFile}");
     }
 
-    public function notifyAnalyzeFileError(AnalysedFileException $e)
+    public function notifyAnalyzeFileError(AnalysedFileException $e): void
     {
         $this->output->writeln("Error: analysing file is failed. file is {$e->getAnalysedFile()}.");
 
@@ -60,7 +60,7 @@ class DependencyDumperObserver implements ObserverInterface
         }
     }
 
-    public function notifyResolveDependencyError(string $file, ResolveDependencyException $e)
+    public function notifyResolveDependencyError(string $file, ResolveDependencyException $e): void
     {
         $this->output->writeln("Error: resolving dependency is failed, node_type:{$e->getNodeType()} in {$file}:{$e->getNodeLine()}");
         $this->output->writeln('Skip analysing this file, therefore result of analyse of this file is incomplete.');
