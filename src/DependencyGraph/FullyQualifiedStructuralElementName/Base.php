@@ -7,6 +7,8 @@ abstract class Base
 {
     abstract public function getType(): string;
     abstract public function include(Base $that): bool;
+    abstract public function getFullyQualifiedNamespaceName(): array;
+    abstract public function getFullyQualifiedClassName(): ?array;
 
     /**
      * @var string
@@ -75,10 +77,5 @@ abstract class Base
     public function isSame(Base $that): bool
     {
         return $this->getType() === $that->getType() && $this->toString() === $that->toString();
-    }
-
-    protected function explode()
-    {
-        return explode('\\', $this->toString());
     }
 }

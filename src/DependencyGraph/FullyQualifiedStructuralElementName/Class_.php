@@ -14,11 +14,24 @@ class Class_ extends Base
 
     public function include(Base $that): bool
     {
-        // TODO: Implement include() method.
+        return $this->getFullyQualifiedClassName() === $that->getFullyQualifiedClassName();
     }
 
     public function isClass(): bool
     {
         return true;
+    }
+
+    public function getFullyQualifiedNamespaceName(): array
+    {
+        $names = $this->getFullyQualifiedClassName();
+        array_pop($names);
+
+        return $names;
+    }
+
+    public function getFullyQualifiedClassName(): ?array
+    {
+        return explode('\\', substr($this->toString(), 1));
     }
 }

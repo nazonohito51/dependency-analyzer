@@ -210,38 +210,4 @@ class FullyQualifiedStructuralElementNameTest extends TestCase
     {
         FQSEN::createFromString($elementString);
     }
-
-    public function provideInclude()
-    {
-        return [
-            'class1' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass', true],
-            'class2' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeNamespace\SomeClass', true],
-            'class3' => ['\Tests\Fixtures\SomeClass', false],
-            'property1' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass::$propertyName', true],
-            'property2' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeNamespace\SomeClass::$propertyName', true],
-            'property3' => ['\Tests\Fixtures\SomeClass1::$propertyName', false],
-            'method1' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass1::methodName()', true],
-            'method2' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeNamespace\SomeClass1::methodName()', true],
-            'method3' => ['\Tests\Fixtures\SomeClass1::methodName()', false],
-            'class_constant1' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass1::SOME_CONSTANT', true],
-            'class_constant2' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeNamespace\SomeClass1::SOME_CONSTANT', true],
-            'class_constant3' => ['\Tests\Fixtures\SomeClass1::SOME_CONSTANT', false],
-            'namespace1' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\Some\\', true],
-            'namespace2' => ['\Tests\Fixtures\FullyQualifiedStructuralElementName\Some\Namespace\\', true],
-            'namespace3' => ['\Tests\Fixtures\OtherNamespace\\', false]
-        ];
-    }
-
-    /**
-     * @param string $targetElement
-     * @param bool $expected
-     * @dataProvider provideInclude
-     */
-    public function testInclude(string $targetElement, bool $expected)
-    {
-        $namespace = FQSEN::createNamespace('\Tests\Fixtures\FullyQualifiedStructuralElementName');
-        $target = FQSEN::createFromString($targetElement);
-
-        $this->assertSame($expected, $namespace->include($target));
-    }
 }

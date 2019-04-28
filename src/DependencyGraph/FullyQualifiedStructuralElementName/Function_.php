@@ -14,11 +14,24 @@ class Function_ extends Base
 
     public function include(Base $that): bool
     {
-        return false;
+        return $this->isSame($that);
     }
 
     public function isFunction(): bool
     {
         return true;
+    }
+
+    public function getFullyQualifiedNamespaceName(): array
+    {
+        $names = explode('\\', substr($this->toString(), 1));
+        array_pop($names);
+
+        return $names;
+    }
+
+    public function getFullyQualifiedClassName(): ?array
+    {
+        return null;
     }
 }
