@@ -3,6 +3,16 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph;
 
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Class_;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\ClassConstant;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Constant;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Function_;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Interface_;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Method;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Namespace_;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Property;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Trait_;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 
 class FullyQualifiedStructuralElementName
@@ -17,41 +27,23 @@ class FullyQualifiedStructuralElementName
     const TYPE_FUNCTION = 'function';
     const TYPE_CONSTANT = 'constant';
 
-    /**
-     * @var string
-     */
-    private $elementName;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    protected function __construct(string $elementName, string $type)
-    {
-        $this->elementName = $elementName;
-        $this->type = $type;
-    }
-
-    public static function createFromString(string $element): self
+    public static function createFromString(string $element): Base
     {
         if (self::isNamespaceElement($element)) {
-            $type = self::TYPE_NAMESPACE;
+            return new Namespace_($element);
         } elseif (self::isMethodElement($element)) {
-            $type = self::TYPE_METHOD;
+            return new Method($element);
         } elseif (self::isPropertyElement($element)) {
-            $type = self::TYPE_PROPERTY;
+            return new Property($element);
         } elseif (self::isClassConstantElement($element)) {
-            $type = self::TYPE_CLASS_CONSTANT;
+            return new ClassConstant($element);
         } elseif (self::isFunctionElement($element)) {
-            $type = self::TYPE_FUNCTION;
+            return new Function_($element);
         } elseif (self::isFullyQualifiedClassElement($element)) {
-            $type = self::TYPE_CLASS;
-        } else {
-            throw new InvalidFullyQualifiedStructureElementNameException($element);
+            return new Class_($element);
         }
 
-        return new self($element, $type);
+        throw new InvalidFullyQualifiedStructureElementNameException($element);
     }
 
     protected static function isNamespaceElement(string $element): bool
@@ -135,131 +127,48 @@ class FullyQualifiedStructuralElementName
         return preg_match('/^[a-zA-Z\_][0-9a-zA-Z\_]+$/', $element) === 1;
     }
 
-    public static function createNamespace(string $namespaceName): self
+    public static function createNamespace(string $namespaceName): Base
     {
-        return new self($namespaceName, self::TYPE_NAMESPACE);
+        return new Namespace_($namespaceName);
     }
 
-    public static function createClass(string $className): self
+    public static function createClass(string $className): Base
     {
-        return new self($className, self::TYPE_CLASS);
+        return new Class_($className);
     }
 
-    public static function createMethod(string $className, string $functionName): self
+    public static function createMethod(string $className, string $functionName): Base
     {
-        return new self("{$className}::{$functionName}()", self::TYPE_METHOD);
+        return new Method("{$className}::{$functionName}()");
     }
 
-    public static function createProperty(string $className, string $propertyName): self
+    public static function createProperty(string $className, string $propertyName): Base
     {
-        return new self("{$className}::\${$propertyName}", self::TYPE_PROPERTY);
+        return new Property("{$className}::\${$propertyName}");
     }
 
-    public static function createClassConstant(string $className, string $constantName): self
+    public static function createClassConstant(string $className, string $constantName): Base
     {
-        return new self("{$className}::{$constantName}", self::TYPE_CLASS_CONSTANT);
+        return new ClassConstant("{$className}::{$constantName}");
     }
 
-    public static function createInterface(string $interfaceName): self
+    public static function createInterface(string $interfaceName): Base
     {
-        return new self($interfaceName, self::TYPE_INTERFACE);
+        return new Interface_($interfaceName);
     }
 
-    public static function createTrait(string $traitName): self
+    public static function createTrait(string $traitName): Base
     {
-        return new self($traitName, self::TYPE_TRAIT);
+        return new Trait_($traitName);
     }
 
-    public static function createFunction(string $functionName): self
+    public static function createFunction(string $functionName): Base
     {
-        return new self("{$functionName}()", self::TYPE_FUNCTION);
+        return new Function_("{$functionName}()");
     }
 
-    public static function createConstant(string $constantName): self
+    public static function createConstant(string $constantName): Base
     {
-        return new self("{$constantName}", self::TYPE_CONSTANT);
-    }
-
-    public function isNamespace(): bool
-    {
-        return $this->type === self::TYPE_NAMESPACE;
-    }
-
-    public function isClass(): bool
-    {
-        return $this->type === self::TYPE_CLASS;
-    }
-
-    public function isMethod(): bool
-    {
-        return $this->type === self::TYPE_METHOD;
-    }
-
-    public function isProperty(): bool
-    {
-        return $this->type === self::TYPE_PROPERTY;
-    }
-
-    public function isClassConstant(): bool
-    {
-        return $this->type === self::TYPE_CLASS_CONSTANT;
-    }
-
-    public function isInterface(): bool
-    {
-        return $this->type === self::TYPE_INTERFACE;
-    }
-
-    public function isTrait(): bool
-    {
-        return $this->type === self::TYPE_TRAIT;
-    }
-
-    public function isFunction(): bool
-    {
-        return $this->type === self::TYPE_FUNCTION;
-    }
-
-    public function isConstant(): bool
-    {
-        return $this->type === self::TYPE_CONSTANT;
-    }
-
-    public function include(FullyQualifiedStructuralElementName $that): bool
-    {
-        if ($this->isNamespace()) {
-            if ($this->toString() === '\\') {
-                // Pattern likely '\\' will match with all className.
-                return true;
-            }
-
-            $explodedPattern = explode('\\', $this->toString());
-            $explodedClassName = explode('\\', $that->toString());
-            if (count($explodedClassName) < count($explodedPattern)) {
-                return false;
-            }
-
-            foreach ($explodedPattern as $index => $pattern) {
-                if (!isset($explodedClassName[$index])) {
-                    return false;
-                } elseif ($explodedClassName[$index] !== $pattern) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function toString(): string
-    {
-        return $this->elementName;
+        return new Constant("{$constantName}");
     }
 }
