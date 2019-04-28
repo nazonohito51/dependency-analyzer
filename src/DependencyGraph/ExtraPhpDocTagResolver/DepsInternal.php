@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 
-use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base as FQSEN;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 
 class DepsInternal
@@ -30,7 +31,7 @@ class DepsInternal
 
         try {
             foreach ($this->options as $option) {
-                $this->targets[] = FQSEN::createFromString($option);
+                $this->targets[] = FullyQualifiedStructuralElementName::createFromString($option);
             }
         } catch (InvalidFullyQualifiedStructureElementNameException $e) {
             throw $e;
