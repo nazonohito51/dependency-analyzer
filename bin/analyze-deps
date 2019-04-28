@@ -37,7 +37,7 @@ try {
 
 }
 
-\DependencyAnalyzer\Matcher\ClassNameMatcher::setPhpNativeClasses(array_merge(
+\DependencyAnalyzer\DependencyGraph\ClassNameMatcher::setPhpNativeClasses(array_merge(
     PHP_NATIVE_CLASSES, PHP_NATIVE_INTERFACES, PHP_NATIVE_TRAITS
 ));
 

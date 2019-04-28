@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DependencyAnalyzer\Matcher;
 
-use DependencyAnalyzer\Matcher\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 use Tests\TestCase;
 
 class ClassNameMatcherTest extends TestCase

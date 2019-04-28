@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
 use DependencyAnalyzer\Exceptions\InvalidRuleDefinition;
-use DependencyAnalyzer\Matcher\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 
 class DependencyRuleFactory
 {

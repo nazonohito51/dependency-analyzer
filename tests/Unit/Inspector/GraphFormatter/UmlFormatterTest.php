@@ -6,7 +6,7 @@ namespace Tests\Unit\DependencyAnalyzer\DependencyGraph\Detector\GraphFormatter;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\GraphFormatter\UmlFormatter;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\Matcher\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 

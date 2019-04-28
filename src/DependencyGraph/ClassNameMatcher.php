@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\Matcher;
+namespace DependencyAnalyzer\DependencyGraph;
 
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base;

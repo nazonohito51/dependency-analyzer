@@ -7,7 +7,7 @@ use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base as DependencyType;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
-use DependencyAnalyzer\Matcher\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Vertices;

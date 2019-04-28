@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
-use DependencyAnalyzer\Matcher\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 
 class Component
 {

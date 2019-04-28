@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\Matcher\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 

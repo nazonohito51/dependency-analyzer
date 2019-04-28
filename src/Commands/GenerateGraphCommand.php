@@ -7,7 +7,7 @@ use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\GraphFormatter\UmlFormatter;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\Matcher\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;

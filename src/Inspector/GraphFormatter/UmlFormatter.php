@@ -5,7 +5,7 @@ namespace DependencyAnalyzer\Inspector\GraphFormatter;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\Matcher\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 
 class UmlFormatter
 {
