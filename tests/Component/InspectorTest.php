@@ -339,23 +339,23 @@ class InspectorTest extends TestCase
                 [
                     'ControllerLayer' => [
                         'define' => [
-                            'include' => ['Controller\*'],
+                            'include' => ['\Controller\\'],
                             'exclude' => []
                         ],
                     ],
                     'ApplicationLayer' => [
                         'define' => [
-                            'include' => ['Application\*'],
+                            'include' => ['\Application\\'],
                             'exclude' => []
                         ],
                         'depender' => [
-                            'include' => ['Controller\*'],
+                            'include' => ['\Controller\\'],
                             'exclude' => [],
                         ],
                     ],
                     'DomainLayer' => [
                         'define' => [
-                            'include' => ['Domain\*'],
+                            'include' => ['\Domain\\'],
                             'exclude' => []
                         ],
                     ]
@@ -377,23 +377,23 @@ class InspectorTest extends TestCase
                 [
                     'ControllerLayer' => [
                         'define' => [
-                            'include' => ['Controller\*'],
+                            'include' => ['\Controller\\'],
                             'exclude' => []
                         ],
                     ],
                     'ApplicationLayer' => [
                         'define' => [
-                            'include' => ['Application\*'],
-                            'exclude' => ['Application\Providers\*']
+                            'include' => ['\Application\\'],
+                            'exclude' => ['\Application\Providers\\']
                         ],
                         'depender' => [
                             'include' => [],
-                            'exclude' => ['Controller\*'],
+                            'exclude' => ['\Controller\\'],
                         ],
                     ],
                     'DomainLayer' => [
                         'define' => [
-                            'include' => ['Domain\*'],
+                            'include' => ['\Domain\\'],
                             'exclude' => []
                         ],
                     ]
@@ -415,23 +415,23 @@ class InspectorTest extends TestCase
                 [
                     'ControllerLayer' => [
                         'define' => [
-                            'include' => ['Controller\*'],
+                            'include' => ['\Controller\\'],
                             'exclude' => []
                         ],
                     ],
                     'ApplicationLayer' => [
                         'define' => [
-                            'include' => ['Application\*'],
+                            'include' => ['\Application\\'],
                             'exclude' => []
                         ],
                         'depender' => [
-                            'include' => ['Controller\*'],
+                            'include' => ['\Controller\\'],
                             'exclude' => []
                         ],
                     ],
                     'DomainLayer' => [
                         'define' => [
-                            'include' => ['Domain\*'],
+                            'include' => ['\Domain\\'],
                             'exclude' => []
                         ],
                     ]

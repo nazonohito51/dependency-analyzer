@@ -3,14 +3,25 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Matcher;
 
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base;
+use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException;
+use DependencyAnalyzer\Exceptions\LogicException;
 
 class ClassNameMatcher
 {
     const PHP_NATIVE_CLASSES = '@php_native';
     protected static $nativeClasses = [];
 
+    /**
+     * @var FQSEN\Base[]
+     */
     protected $patterns = [];
+
+    /**
+     * @var FQSEN\Base[]
+     */
     protected $excludePatterns = [];
 
     public function __construct(array $patterns)
@@ -39,10 +50,17 @@ class ClassNameMatcher
 
     protected function verifyPattern(string $pattern)
     {
-        return (
-            preg_match('/^!?' . preg_quote('\\', '/') . '([^\*]*)\*?$/', $pattern, $matches) === 1 ||
-            $this->isMagicWordPattern($pattern)
-        );
+        if ($this->isMagicWordPattern($pattern)) {
+            return true;
+        }
+
+        try {
+            $this->isExcludePattern($pattern) ? FQSEN::createFromString(substr($pattern, 1)) : FQSEN::createFromString($pattern);
+        } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function addPattern(string $pattern)
@@ -60,15 +78,16 @@ class ClassNameMatcher
             return $pattern;
         }
 
-        $pattern = substr($pattern, 1);
-        $explodedTokens = $this->explodeName($pattern);
-        $endToken = $explodedTokens[count($explodedTokens) - 1];
-
-        if ($endToken === '') {
-            return $pattern . '*';
-        }
-
-        return $pattern;
+        return FQSEN::createFromString($pattern);
+//        $pattern = substr($pattern, 1);
+//        $explodedTokens = $this->explodeName($pattern);
+//        $endToken = $explodedTokens[count($explodedTokens) - 1];
+//
+//        if ($endToken === '') {
+//            return $pattern . '*';
+//        }
+//
+//        return $pattern;
     }
 
     protected function isExcludePattern(string $pattern)
@@ -84,10 +103,23 @@ class ClassNameMatcher
         ]);
     }
 
-    public function isMatch(string $className)
+    public function isMatch(string $className): bool
     {
+        try {
+            if (!substr($className, 0, 1) !== '\\') {
+                $className = '\\' . $className;
+            }
+
+            $target = FQSEN::createFromString($className);
+        } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+            return false;
+        }
+
         foreach ($this->excludePatterns as $excludePattern) {
-            if ($this->classNameBelongToPattern($className, $excludePattern)) {
+//            if ($excludePattern->include($target)) {
+//                return false;
+//            }
+            if ($this->classNameBelongToPattern($target, $excludePattern)) {
                 return false;
             }
         }
@@ -96,7 +128,10 @@ class ClassNameMatcher
             return true;
         } else {
             foreach ($this->patterns as $pattern) {
-                if ($this->classNameBelongToPattern($className, $pattern)) {
+//                if ($pattern->include($target)) {
+//                    return true;
+//                }
+                if ($this->classNameBelongToPattern($target, $pattern)) {
                     return true;
                 }
             }
@@ -105,34 +140,38 @@ class ClassNameMatcher
         return false;
     }
 
-    protected function classNameBelongToPattern(string $className, string $pattern)
+    protected function classNameBelongToPattern(Base $target, $pattern): bool
     {
-        if ($this->isMagicWordPattern($pattern)) {
-            return in_array($className, self::$nativeClasses);
+        if (is_string($pattern) && $this->isMagicWordPattern($pattern)) {
+            return in_array(substr($target->toString(), 1), self::$nativeClasses);
+        } elseif (!$pattern instanceof FQSEN\Base) {
+            throw new LogicException('Class name matching is failed, because compare with invalid pattern object.');
         }
 
-        $explodedClassName = $this->explodeName($className);
-        $explodedPattern = $this->explodeName($pattern);
+        return $pattern->include($target);
 
-        if (count($explodedPattern) === 1 && $explodedPattern[0] === '*') {
-            // Pattern likely '\\' will match with all className.
-            return true;
-        }
-        if (count($explodedClassName) < count($explodedPattern)) {
-            return false;
-        }
-
-        foreach ($explodedClassName as $index => $pattern) {
-            if (!isset($explodedPattern[$index])) {
-                return false;
-            } elseif ($explodedPattern[$index] === '*') {
-                return true;
-            } elseif ($explodedPattern[$index] !== $pattern) {
-                return false;
-            }
-        }
-
-        return true;
+//        $explodedClassName = $this->explodeName($className);
+//        $explodedPattern = $this->explodeName($pattern);
+//
+//        if (count($explodedPattern) === 1 && $explodedPattern[0] === '*') {
+//            // Pattern likely '\\' will match with all className.
+//            return true;
+//        }
+//        if (count($explodedClassName) < count($explodedPattern)) {
+//            return false;
+//        }
+//
+//        foreach ($explodedClassName as $index => $pattern) {
+//            if (!isset($explodedPattern[$index])) {
+//                return false;
+//            } elseif ($explodedPattern[$index] === '*') {
+//                return true;
+//            } elseif ($explodedPattern[$index] !== $pattern) {
+//                return false;
+//            }
+//        }
+//
+//        return true;
     }
 
     protected function explodeName(string $qualifiedName)
@@ -148,8 +187,12 @@ class ClassNameMatcher
     public function toArray()
     {
         return [
-            'include' => $this->patterns,
-            'exclude' => $this->excludePatterns
+            'include' => array_map(function (Base $fqsen) {
+                return $fqsen->toString();
+            }, $this->patterns),
+            'exclude' => array_map(function (Base $fqsen) {
+                return $fqsen->toString();
+            }, $this->excludePatterns)
         ];
     }
 }
