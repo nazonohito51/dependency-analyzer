@@ -8,35 +8,93 @@ use Tests\TestCase;
 
 class ClassNameMatcherTest extends TestCase
 {
-    public function provideIsMatch()
+    public function tearDown()
+    {
+        ClassNameMatcher::setPhpNativeClasses([]);
+    }
+
+    public function provideVerifyPattern_WhenValidPattern()
     {
         return [
-            'class1' => [['\Tests\Fixtures\ClassMatcher\SomeClass1'], 'Tests\Fixtures\ClassMatcher\SomeClass1', true],
-            'class2' => [['\Tests\Fixtures\ClassMatcher\SomeClass1'], 'Tests\Fixtures\ClassMatcher\SomeClass2', false],
-            'namespace1' => [['\Tests\Fixtures\ClassMatcher\\'], 'Tests\Fixtures\ClassMatcher\SomeClass1', true],
-            'namespace2' => [['\Tests\Fixtures\ClassMatcher\\'], 'Tests\Fixtures\DifferentNameSpace\SomeClass1', false],
-            'exclude class1' => [['!\Tests\Fixtures\ClassMatcher\SomeClass1'], 'Tests\Fixtures\ClassMatcher\SomeClass1', false],
-            'exclude class2' => [['!\Tests\Fixtures\ClassMatcher\SomeClass1'], 'Tests\Fixtures\ClassMatcher\SomeClass2', true],
-            'exclude namespace1' => [['!\Tests\Fixtures\ClassMatcher\\'], 'Tests\Fixtures\ClassMatcher\SomeClass1', false],
-            'exclude namespace2' => [['!\Tests\Fixtures\ClassMatcher\\'], 'Tests\Fixtures\DifferentNameSpace\SomeClass1', true],
-            'have multi pattern1' => [['\Tests\Fixtures\ClassMatcher\SomeClass1', '\Tests\Fixtures\ClassMatcher\SomeClass2'], 'Tests\Fixtures\ClassMatcher\SomeClass1', true],
-            'have multi pattern2' => [['\Tests\Fixtures\ClassMatcher\SomeClass1', '\Tests\Fixtures\ClassMatcher\SomeClass2'], 'Tests\Fixtures\ClassMatcher\SomeClass2', true],
-            'have multi pattern3' => [['\Tests\Fixtures\ClassMatcher\SomeClass1', '\Tests\Fixtures\ClassMatcher\SomeClass2'], 'Tests\Fixtures\ClassMatcher\SomeClass3', false],
-            'have multi pattern4' => [['\Tests\Fixtures\ClassMatcher\\', '!\Tests\Fixtures\ClassMatcher\SomeClass2'], 'Tests\Fixtures\ClassMatcher\SomeClass1', true],
-            'have multi pattern5' => [['\Tests\Fixtures\ClassMatcher\\', '!\Tests\Fixtures\ClassMatcher\SomeClass2'], 'Tests\Fixtures\ClassMatcher\SomeClass2', false],
+            [['\\Tests']],
+            [['\\Tests\\Fixtures']],
+            [['\\Tests\\Fixtures\\']],
+            [['!\\Tests']],
+            [['!\\Tests\\Fixtures']],
+            [['!\\Tests\\Fixtures\\']],
+            [['\\']],
+            [['@php_native']]
         ];
     }
 
     /**
      * @param array $patterns
-     * @param string $target
+     * @dataProvider provideVerifyPattern_WhenValidPattern
+     */
+    public function testVerifyPattern_WhenValidPattern(array $patterns)
+    {
+        $qualifiedName = new ClassNameMatcher($patterns);
+
+        $this->assertInstanceOf(ClassNameMatcher::class, $qualifiedName);
+    }
+
+    public function provideVerifyPattern_WhenInvalidPattern()
+    {
+        return [
+            [['Tests']],
+            [['Tests\\Fixtures']],
+            [['!!\\Tests']],
+            [['?\\Tests']],
+            [['@non_exist_magic_word']]
+        ];
+    }
+
+    /**
+     * @param array $patterns
+     * @expectedException \DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException
+     * @dataProvider provideVerifyPattern_WhenInvalidPattern
+     */
+    public function testVerifyPattern_WhenInvalidPattern(array $patterns)
+    {
+        new ClassNameMatcher($patterns);
+    }
+
+    public function provideIsMatch()
+    {
+        return [
+            'pattern and className is same 1' => [['\\Tests'], 'Tests', true],
+            'pattern and className is same 2' => [['\\Tests\\Fixtures\\SomeClass'], 'Tests\\Fixtures\\SomeClass', true],
+            'pattern include className 1' => [['\\Tests\\Fixtures'], 'Tests\\Fixtures\\SomeClass', false],
+            'pattern include className 2' => [['\\Tests\\Fixtures\\'], 'Tests\\Fixtures\\SomeClass', true],
+            'pattern include className 3' => [['\\'], 'Tests', true],
+            'pattern include className 4' => [['\\'], 'Tests\\Fixtures\\SomeClass', true],
+            'multi patterns 1' => [['\\Tests\\Fixtures', '\\Tests\\Fixtures\\', '\\Tests\\Component\\'], 'Tests\\Fixtures', true],
+            'multi patterns 2' => [['\\Tests\\Fixtures', '\\Tests\\Fixtures\\', '\\Tests\\Component\\'], 'Tests\\Fixtures\\SomeClass', true],
+            'multi patterns 3' => [['\\Tests\\Fixtures', '\\Tests\\Fixtures\\', '\\Tests\\Component\\'], 'Tests\\Component\\SomeClass', true],
+            'multi patterns 4' => [['\\Tests\\Fixtures', '\\Tests\\Fixtures\\', '\\Tests\\Component\\'], 'Tests\\Unit\\SomeClass', false],
+            'pattern with exclude pattern 1' => [['\\Tests\\', '!\\Tests\\Fixtures\\'], 'Tests\\Fixtures\\SomeClass', false],
+            'pattern with exclude pattern 2' => [['\\Tests\\', '!\\Tests\\Fixtures\\'], 'Tests\\Component\\SomeClass', true],
+            'have only exclude pattern 1' => [['!\\Tests\\Fixtures\\SomeClass'], 'Tests\\Fixtures\\SomeClass', false],
+            'have only exclude pattern 2' => [['!\\Tests\\Fixtures\\SomeClass'], 'Tests\\Component\\SomeClass', true],
+            'have only exclude pattern 3' => [['!\\Tests\\Fixtures\\SomeClass'], 'Tests', true],
+            'have only exclude pattern 4' => [['!\\'], 'Tests', false],
+            'incomplete pattern match' => [['\\Tests\\Inte'], 'Tests\\Component', false],
+            'magic word' => [[ClassNameMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', true],
+            'exclude magic word' => [['!' . ClassNameMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', false]
+        ];
+    }
+
+    /**
+     * @param array $patterns
+     * @param string $className
      * @param bool $expected
      * @dataProvider provideIsMatch
      */
-    public function testIsMatch(array $patterns, string $target, bool $expected)
+    public function testIsMatch(array $patterns, string $className, bool $expected)
     {
-        $matcher = new ClassNameMatcher($patterns);
+        ClassNameMatcher::setPhpNativeClasses(['SplFileObject']);
+        $classNameMatcher = new ClassNameMatcher($patterns);
 
-        $this->assertSame($expected, $matcher->isMatch($target));
+        $this->assertSame($expected, $classNameMatcher->isMatch($className));
     }
 }
