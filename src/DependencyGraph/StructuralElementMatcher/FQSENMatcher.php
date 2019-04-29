@@ -21,4 +21,9 @@ class FQSENMatcher implements Matchable
     {
         return $this->fqsen->include($target);
     }
+
+    public function getPattern(): string
+    {
+        return $this->fqsen->toString();
+    }
 }

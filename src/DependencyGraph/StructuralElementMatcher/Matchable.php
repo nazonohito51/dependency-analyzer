@@ -8,4 +8,5 @@ use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base 
 interface Matchable
 {
     public function isMatch(FQSEN $target): bool;
+    public function getPattern(): string;
 }

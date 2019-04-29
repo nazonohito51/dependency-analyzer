@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\DependencyGraph;
 
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
-use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base;
+use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher\FQSENMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher\Matchable;
+use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher\PhpNativeClassesMatcher;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException;
-use DependencyAnalyzer\Exceptions\LogicException;
 
 class StructuralElementMatcher
 {
@@ -15,12 +16,12 @@ class StructuralElementMatcher
     protected static $nativeClasses = [];
 
     /**
-     * @var FQSEN\Base[]
+     * @var Matchable[]
      */
     protected $patterns = [];
 
     /**
-     * @var FQSEN\Base[]
+     * @var Matchable[]
      */
     protected $excludePatterns = [];
 
@@ -35,20 +36,20 @@ class StructuralElementMatcher
         }
     }
 
-    public function addExcludePatterns(array $patterns)
+    public function addExcludePatterns(array $patterns): self
     {
         foreach ($patterns as $pattern) {
             if (!$this->verifyPattern($pattern)) {
                 throw new InvalidQualifiedNamePatternException($pattern);
             }
 
-            $this->excludePatterns[] = $this->formatPattern($pattern);
+            $this->excludePatterns[] = $this->createPattern($pattern);
         }
 
         return $this;
     }
 
-    protected function verifyPattern(string $pattern)
+    protected function verifyPattern(string $pattern): bool
     {
         if ($this->isMagicWordPattern($pattern)) {
             return true;
@@ -63,39 +64,30 @@ class StructuralElementMatcher
         return true;
     }
 
-    protected function addPattern(string $pattern)
+    protected function addPattern(string $pattern): void
     {
         if ($this->isExcludePattern($pattern)) {
-            $this->excludePatterns[] = $this->formatPattern(substr($pattern, 1));
+            $this->excludePatterns[] = $this->createPattern(substr($pattern, 1));
         } else {
-            $this->patterns[] = $this->formatPattern($pattern);
+            $this->patterns[] = $this->createPattern($pattern);
         }
     }
 
-    protected function formatPattern(string $pattern)
+    protected function createPattern(string $pattern): Matchable
     {
         if ($this->isMagicWordPattern($pattern)) {
-            return $pattern;
+            return new PhpNativeClassesMatcher(self::$nativeClasses);
         }
 
-        return FQSEN::createFromString($pattern);
-//        $pattern = substr($pattern, 1);
-//        $explodedTokens = $this->explodeName($pattern);
-//        $endToken = $explodedTokens[count($explodedTokens) - 1];
-//
-//        if ($endToken === '') {
-//            return $pattern . '*';
-//        }
-//
-//        return $pattern;
+        return new FQSENMatcher(FQSEN::createFromString($pattern));
     }
 
-    protected function isExcludePattern(string $pattern)
+    protected function isExcludePattern(string $pattern): bool
     {
         return preg_match('/^!/', $pattern) === 1;
     }
 
-    protected function isMagicWordPattern(string $pattern)
+    protected function isMagicWordPattern(string $pattern): bool
     {
         return in_array($pattern, [
             self::PHP_NATIVE_CLASSES,
@@ -116,10 +108,7 @@ class StructuralElementMatcher
         }
 
         foreach ($this->excludePatterns as $excludePattern) {
-//            if ($excludePattern->include($target)) {
-//                return false;
-//            }
-            if ($this->classNameBelongToPattern($target, $excludePattern)) {
+            if ($excludePattern->isMatch($target)) {
                 return false;
             }
         }
@@ -128,10 +117,7 @@ class StructuralElementMatcher
             return true;
         } else {
             foreach ($this->patterns as $pattern) {
-//                if ($pattern->include($target)) {
-//                    return true;
-//                }
-                if ($this->classNameBelongToPattern($target, $pattern)) {
+                if ($pattern->isMatch($target)) {
                     return true;
                 }
             }
@@ -140,58 +126,21 @@ class StructuralElementMatcher
         return false;
     }
 
-    protected function classNameBelongToPattern(Base $target, $pattern): bool
+    public static function setPhpNativeClasses(array $nativeClasses): void
     {
-        if (is_string($pattern) && $this->isMagicWordPattern($pattern)) {
-            return in_array(substr($target->toString(), 1), self::$nativeClasses);
-        } elseif (!$pattern instanceof FQSEN\Base) {
-            throw new LogicException('Class name matching is failed, because compare with invalid pattern object.');
-        }
-
-        return $pattern->include($target);
-
-//        $explodedClassName = $this->explodeName($className);
-//        $explodedPattern = $this->explodeName($pattern);
-//
-//        if (count($explodedPattern) === 1 && $explodedPattern[0] === '*') {
-//            // Pattern likely '\\' will match with all className.
-//            return true;
-//        }
-//        if (count($explodedClassName) < count($explodedPattern)) {
-//            return false;
-//        }
-//
-//        foreach ($explodedClassName as $index => $pattern) {
-//            if (!isset($explodedPattern[$index])) {
-//                return false;
-//            } elseif ($explodedPattern[$index] === '*') {
-//                return true;
-//            } elseif ($explodedPattern[$index] !== $pattern) {
-//                return false;
-//            }
-//        }
-//
-//        return true;
+        self::$nativeClasses = array_map(function (string $className) {
+            return substr($className, 0, 1) !== '\\' ? "\\{$className}" : $className;
+        }, $nativeClasses);
     }
 
-    protected function explodeName(string $qualifiedName)
-    {
-        return explode('\\', $qualifiedName);
-    }
-
-    public static function setPhpNativeClasses(array $nativeClasses)
-    {
-        self::$nativeClasses = $nativeClasses;
-    }
-
-    public function toArray()
+    public function toArray(): array
     {
         return [
-            'include' => array_map(function (Base $fqsen) {
-                return $fqsen->toString();
+            'include' => array_map(function (Matchable $fqsen) {
+                return $fqsen->getPattern();
             }, $this->patterns),
-            'exclude' => array_map(function (Base $fqsen) {
-                return $fqsen->toString();
+            'exclude' => array_map(function (Matchable $fqsen) {
+                return $fqsen->getPattern();
             }, $this->excludePatterns)
         ];
     }
