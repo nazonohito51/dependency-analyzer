@@ -35,8 +35,8 @@ class DependencyRuleFactory
 
         $components = [];
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
-            $depender = isset($componentDefinition['depender']) ? $this->createClassNameMatcher($componentDefinition['depender'], $componentDefines) : null;
-            $dependee = isset($componentDefinition['dependee']) ? $this->createClassNameMatcher($componentDefinition['dependee'], $componentDefines) : null;
+            $depender = isset($componentDefinition['depender']) ? $this->createMatcher($componentDefinition['depender'], $componentDefines) : null;
+            $dependee = isset($componentDefinition['dependee']) ? $this->createMatcher($componentDefinition['dependee'], $componentDefines) : null;
             $components[] = new Component(
                 $componentName,
                 new StructuralElementPatternMatcher($componentDefinition['define']),
@@ -47,7 +47,7 @@ class DependencyRuleFactory
         return new DependencyRule($ruleName, $components);
     }
 
-    protected function createClassNameMatcher(array $dependPatterns, array $componentDefines): StructuralElementPatternMatcher
+    protected function createMatcher(array $dependPatterns, array $componentDefines): StructuralElementPatternMatcher
     {
         $patterns = [];
         $excludePatterns = [];
