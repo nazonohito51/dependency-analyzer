@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\DependencyGraph;
 
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher\FQSENMatcher;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher\Matchable;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher\PhpNativeClassesMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher\FQSENMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher\Matchable;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher\PhpNativeClassesMatcher;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException;
 
-class StructuralElementMatcher
+class StructuralElementPatternMatcher
 {
     const PHP_NATIVE_CLASSES = '@php_native';
     protected static $nativeClasses = [];

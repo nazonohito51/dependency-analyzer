@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 use DependencyAnalyzer\Inspector\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Vertex;
 

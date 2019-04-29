@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
@@ -14,7 +14,7 @@ class DependencyGraphTest extends TestCase
     {
         $graph = new DependencyGraph($this->getGraph());
 
-        $newGraph = $graph->groupByPattern('MyGroup', new StructuralElementMatcher(['\v3', '\v4']));
+        $newGraph = $graph->groupByPattern('MyGroup', new StructuralElementPatternMatcher(['\v3', '\v4']));
 
         $this->assertSame([
             'MyGroup' => [

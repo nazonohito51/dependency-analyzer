@@ -7,7 +7,7 @@ use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\GraphFormatter\UmlFormatter;
 use DependencyAnalyzer\Exceptions\InvalidCommandArgumentException;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,7 +54,7 @@ class GenerateGraphCommand extends AnalyzeDependencyCommand
             }
 
             foreach (array_values($this->ruleDefinition)[0] as $componentName => $componentsDefinition) {
-                $component = new Component($componentName, new StructuralElementMatcher($componentsDefinition['define']));
+                $component = new Component($componentName, new StructuralElementPatternMatcher($componentsDefinition['define']));
                 foreach ($componentsDefinition['graph'] ?? [] as $graphOption) {
                     $component->setAttribute($graphOption, true);
                 }

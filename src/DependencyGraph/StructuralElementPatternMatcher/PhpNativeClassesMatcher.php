@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+namespace DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base as FQSEN;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher\Matchable;
 
 class PhpNativeClassesMatcher implements Matchable
 {
@@ -25,6 +26,6 @@ class PhpNativeClassesMatcher implements Matchable
 
     public function getPattern(): string
     {
-        return StructuralElementMatcher::PHP_NATIVE_CLASSES;
+        return StructuralElementPatternMatcher::PHP_NATIVE_CLASSES;
     }
 }

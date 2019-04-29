@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 
 class Component
 {
@@ -13,17 +13,17 @@ class Component
     protected $name;
 
     /**
-     * @var StructuralElementMatcher
+     * @var StructuralElementPatternMatcher
      */
     protected $matcher;
 
     /**
-     * @var StructuralElementMatcher
+     * @var StructuralElementPatternMatcher
      */
     protected $dependerMatcher;
 
     /**
-     * @var StructuralElementMatcher
+     * @var StructuralElementPatternMatcher
      */
     protected $dependeeMatcher;
 
@@ -34,11 +34,11 @@ class Component
 
     /**
      * @param string $name
-     * @param StructuralElementMatcher $pattern
-     * @param StructuralElementMatcher $dependerPatterns
-     * @param StructuralElementMatcher $dependeePatterns
+     * @param StructuralElementPatternMatcher $pattern
+     * @param StructuralElementPatternMatcher $dependerPatterns
+     * @param StructuralElementPatternMatcher $dependeePatterns
      */
-    public function __construct(string $name, StructuralElementMatcher $pattern, StructuralElementMatcher $dependerPatterns = null, StructuralElementMatcher $dependeePatterns = null)
+    public function __construct(string $name, StructuralElementPatternMatcher $pattern, StructuralElementPatternMatcher $dependerPatterns = null, StructuralElementPatternMatcher $dependeePatterns = null)
     {
         $this->name = $name;
         $this->matcher = $pattern;
@@ -51,7 +51,7 @@ class Component
         return $this->name;
     }
 
-    public function getDefineMatcher(): StructuralElementMatcher
+    public function getDefineMatcher(): StructuralElementPatternMatcher
     {
         return $this->matcher;
     }
@@ -87,7 +87,7 @@ class Component
 
     /**
      * @param string $className
-     * @param StructuralElementMatcher[] $patterns
+     * @param StructuralElementPatternMatcher[] $patterns
      * @return bool
      */
     protected function checkPatterns(string $className, array $patterns): bool

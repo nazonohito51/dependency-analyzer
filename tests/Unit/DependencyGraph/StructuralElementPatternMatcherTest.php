@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DependencyAnalyzer\DependencyGraph;
 
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 use Tests\TestCase;
 
-class StructuralElementMatcherTest extends TestCase
+class StructuralElementPatternMatcherTest extends TestCase
 {
     public function tearDown()
     {
-        StructuralElementMatcher::setPhpNativeClasses([]);
+        StructuralElementPatternMatcher::setPhpNativeClasses([]);
     }
 
     public function provideVerifyPattern_WhenValidPattern()
@@ -33,9 +33,9 @@ class StructuralElementMatcherTest extends TestCase
      */
     public function testVerifyPattern_WhenValidPattern(array $patterns)
     {
-        $qualifiedName = new StructuralElementMatcher($patterns);
+        $qualifiedName = new StructuralElementPatternMatcher($patterns);
 
-        $this->assertInstanceOf(StructuralElementMatcher::class, $qualifiedName);
+        $this->assertInstanceOf(StructuralElementPatternMatcher::class, $qualifiedName);
     }
 
     public function provideVerifyPattern_WhenInvalidPattern()
@@ -56,7 +56,7 @@ class StructuralElementMatcherTest extends TestCase
      */
     public function testVerifyPattern_WhenInvalidPattern(array $patterns)
     {
-        new StructuralElementMatcher($patterns);
+        new StructuralElementPatternMatcher($patterns);
     }
 
     public function provideIsMatch()
@@ -79,8 +79,8 @@ class StructuralElementMatcherTest extends TestCase
             'have only exclude pattern 3' => [['!\\Tests\\Fixtures\\SomeClass'], 'Tests', true],
             'have only exclude pattern 4' => [['!\\'], 'Tests', false],
             'incomplete pattern match' => [['\\Tests\\Inte'], 'Tests\\Component', false],
-            'magic word' => [[StructuralElementMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', true],
-            'exclude magic word' => [['!' . StructuralElementMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', false]
+            'magic word' => [[StructuralElementPatternMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', true],
+            'exclude magic word' => [['!' . StructuralElementPatternMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', false]
         ];
     }
 
@@ -92,8 +92,8 @@ class StructuralElementMatcherTest extends TestCase
      */
     public function testIsMatch(array $patterns, string $className, bool $expected)
     {
-        StructuralElementMatcher::setPhpNativeClasses(['SplFileObject']);
-        $classNameMatcher = new StructuralElementMatcher($patterns);
+        StructuralElementPatternMatcher::setPhpNativeClasses(['SplFileObject']);
+        $classNameMatcher = new StructuralElementPatternMatcher($patterns);
 
         $this->assertSame($expected, $classNameMatcher->isMatch($className));
     }

@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+namespace DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base as FQSEN;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher\Matchable;
 
 class FQSENMatcher implements Matchable
 {

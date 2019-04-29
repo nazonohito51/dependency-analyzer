@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace Tests\Unit\DependencyAnalyzer\Inspector\RuleViolationDetector;
 
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 use Tests\TestCase;
 
 class ComponentTest extends TestCase
 {
     public function testGetName()
     {
-        $pattern = $this->createMock(StructuralElementMatcher::class);
+        $pattern = $this->createMock(StructuralElementPatternMatcher::class);
         $component = new Component('componentName', $pattern);
 
         $this->assertSame('componentName', $component->getName());
@@ -33,7 +33,7 @@ class ComponentTest extends TestCase
     public function testIsBelongedTo(bool $return, bool $expected)
     {
         $className = 'className';
-        $pattern = $this->createMock(StructuralElementMatcher::class);
+        $pattern = $this->createMock(StructuralElementPatternMatcher::class);
         $pattern->method('isMatch')->with($className)->willReturn($return);
         $component = new Component('componentName', $pattern);
 
@@ -58,9 +58,9 @@ class ComponentTest extends TestCase
     public function testVerifyDepender(bool $matchSameComponent, bool $matchDependerPattern, bool $expected)
     {
         $className = 'className';
-        $componentPattern = $this->createMock(StructuralElementMatcher::class);
+        $componentPattern = $this->createMock(StructuralElementPatternMatcher::class);
         $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
-        $dependerPattern = $this->createMock(StructuralElementMatcher::class);
+        $dependerPattern = $this->createMock(StructuralElementPatternMatcher::class);
         $dependerPattern->method('isMatch')->with($className)->willReturn($matchDependerPattern);
         $component = new Component('componentName', $componentPattern, $dependerPattern);
 
@@ -85,9 +85,9 @@ class ComponentTest extends TestCase
     public function testVerifyDependee(bool $matchSameComponent, bool $matchDependeePattern, bool $expected)
     {
         $className = 'className';
-        $componentPattern = $this->createMock(StructuralElementMatcher::class);
+        $componentPattern = $this->createMock(StructuralElementPatternMatcher::class);
         $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
-        $dependeePattern = $this->createMock(StructuralElementMatcher::class);
+        $dependeePattern = $this->createMock(StructuralElementPatternMatcher::class);
         $dependeePattern->method('isMatch')->with($className)->willReturn($matchDependeePattern);
         $component = new Component('componentName', $componentPattern, null, $dependeePattern);
 

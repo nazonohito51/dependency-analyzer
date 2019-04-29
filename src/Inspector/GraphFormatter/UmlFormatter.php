@@ -5,7 +5,7 @@ namespace DependencyAnalyzer\Inspector\GraphFormatter;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 
 class UmlFormatter
 {
@@ -27,7 +27,7 @@ class UmlFormatter
     protected $groupedClasses = [];
 
     /**
-     * @var StructuralElementMatcher
+     * @var StructuralElementPatternMatcher
      */
     protected $excludeDefinition;
 

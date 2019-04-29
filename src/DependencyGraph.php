@@ -7,7 +7,7 @@ use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base as DependencyType;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
-use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Vertices;
@@ -56,7 +56,7 @@ class DependencyGraph implements \Countable
         return $this->graph->getEdges();
     }
 
-    public function groupByPattern(string $name, StructuralElementMatcher $pattern)
+    public function groupByPattern(string $name, StructuralElementPatternMatcher $pattern)
     {
         $graph = new Graph();
         $graph->createVertex($name);
