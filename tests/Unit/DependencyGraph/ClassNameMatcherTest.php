@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Unit\DependencyAnalyzer\Matcher;
+namespace Tests\Unit\DependencyAnalyzer\DependencyGraph;
 
 use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
 use Tests\TestCase;
