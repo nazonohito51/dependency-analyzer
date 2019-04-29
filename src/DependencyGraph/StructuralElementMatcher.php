@@ -9,7 +9,7 @@ use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameExcep
 use DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException;
 use DependencyAnalyzer\Exceptions\LogicException;
 
-class ClassNameMatcher
+class StructuralElementMatcher
 {
     const PHP_NATIVE_CLASSES = '@php_native';
     protected static $nativeClasses = [];

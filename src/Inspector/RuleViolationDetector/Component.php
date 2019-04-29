@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
-use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
 
 class Component
 {
@@ -13,17 +13,17 @@ class Component
     protected $name;
 
     /**
-     * @var ClassNameMatcher
+     * @var StructuralElementMatcher
      */
     protected $matcher;
 
     /**
-     * @var ClassNameMatcher
+     * @var StructuralElementMatcher
      */
     protected $dependerMatcher;
 
     /**
-     * @var ClassNameMatcher
+     * @var StructuralElementMatcher
      */
     protected $dependeeMatcher;
 
@@ -34,11 +34,11 @@ class Component
 
     /**
      * @param string $name
-     * @param ClassNameMatcher $pattern
-     * @param ClassNameMatcher $dependerPatterns
-     * @param ClassNameMatcher $dependeePatterns
+     * @param StructuralElementMatcher $pattern
+     * @param StructuralElementMatcher $dependerPatterns
+     * @param StructuralElementMatcher $dependeePatterns
      */
-    public function __construct(string $name, ClassNameMatcher $pattern, ClassNameMatcher $dependerPatterns = null, ClassNameMatcher $dependeePatterns = null)
+    public function __construct(string $name, StructuralElementMatcher $pattern, StructuralElementMatcher $dependerPatterns = null, StructuralElementMatcher $dependeePatterns = null)
     {
         $this->name = $name;
         $this->matcher = $pattern;
@@ -51,7 +51,7 @@ class Component
         return $this->name;
     }
 
-    public function getDefineMatcher(): ClassNameMatcher
+    public function getDefineMatcher(): StructuralElementMatcher
     {
         return $this->matcher;
     }
@@ -87,7 +87,7 @@ class Component
 
     /**
      * @param string $className
-     * @param ClassNameMatcher[] $patterns
+     * @param StructuralElementMatcher[] $patterns
      * @return bool
      */
     protected function checkPatterns(string $className, array $patterns): bool

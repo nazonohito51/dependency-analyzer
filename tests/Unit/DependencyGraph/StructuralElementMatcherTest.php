@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DependencyAnalyzer\DependencyGraph;
 
-use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
 use Tests\TestCase;
 
-class ClassNameMatcherTest extends TestCase
+class StructuralElementMatcherTest extends TestCase
 {
     public function tearDown()
     {
-        ClassNameMatcher::setPhpNativeClasses([]);
+        StructuralElementMatcher::setPhpNativeClasses([]);
     }
 
     public function provideVerifyPattern_WhenValidPattern()
@@ -33,9 +33,9 @@ class ClassNameMatcherTest extends TestCase
      */
     public function testVerifyPattern_WhenValidPattern(array $patterns)
     {
-        $qualifiedName = new ClassNameMatcher($patterns);
+        $qualifiedName = new StructuralElementMatcher($patterns);
 
-        $this->assertInstanceOf(ClassNameMatcher::class, $qualifiedName);
+        $this->assertInstanceOf(StructuralElementMatcher::class, $qualifiedName);
     }
 
     public function provideVerifyPattern_WhenInvalidPattern()
@@ -56,7 +56,7 @@ class ClassNameMatcherTest extends TestCase
      */
     public function testVerifyPattern_WhenInvalidPattern(array $patterns)
     {
-        new ClassNameMatcher($patterns);
+        new StructuralElementMatcher($patterns);
     }
 
     public function provideIsMatch()
@@ -79,8 +79,8 @@ class ClassNameMatcherTest extends TestCase
             'have only exclude pattern 3' => [['!\\Tests\\Fixtures\\SomeClass'], 'Tests', true],
             'have only exclude pattern 4' => [['!\\'], 'Tests', false],
             'incomplete pattern match' => [['\\Tests\\Inte'], 'Tests\\Component', false],
-            'magic word' => [[ClassNameMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', true],
-            'exclude magic word' => [['!' . ClassNameMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', false]
+            'magic word' => [[StructuralElementMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', true],
+            'exclude magic word' => [['!' . StructuralElementMatcher::PHP_NATIVE_CLASSES], 'SplFileObject', false]
         ];
     }
 
@@ -92,8 +92,8 @@ class ClassNameMatcherTest extends TestCase
      */
     public function testIsMatch(array $patterns, string $className, bool $expected)
     {
-        ClassNameMatcher::setPhpNativeClasses(['SplFileObject']);
-        $classNameMatcher = new ClassNameMatcher($patterns);
+        StructuralElementMatcher::setPhpNativeClasses(['SplFileObject']);
+        $classNameMatcher = new StructuralElementMatcher($patterns);
 
         $this->assertSame($expected, $classNameMatcher->isMatch($className));
     }

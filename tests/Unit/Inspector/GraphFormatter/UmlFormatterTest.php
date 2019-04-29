@@ -6,7 +6,7 @@ namespace Tests\Unit\DependencyAnalyzer\DependencyGraph\Detector\GraphFormatter;
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\Inspector\GraphFormatter\UmlFormatter;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
-use DependencyAnalyzer\DependencyGraph\ClassNameMatcher;
+use DependencyAnalyzer\DependencyGraph\StructuralElementMatcher;
 use Fhaculty\Graph\Graph;
 use Tests\TestCase;
 
@@ -234,7 +234,7 @@ EOT;
 
     public function provideFormat_WithComponent_HaveFolding()
     {
-        $matcher = $this->createMock(ClassNameMatcher::class);
+        $matcher = $this->createMock(StructuralElementMatcher::class);
         $matcher->method('isMatch')->willReturnMap([
             ['v1', true],
             ['v2', true],
@@ -255,7 +255,7 @@ EOT;
             ['folding', true],
         ]);
 
-        $matcher = $this->createMock(ClassNameMatcher::class);
+        $matcher = $this->createMock(StructuralElementMatcher::class);
         $matcher->method('isMatch')->willReturnMap([
             ['v1', false],
             ['v2', false],
