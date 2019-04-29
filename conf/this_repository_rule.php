@@ -32,12 +32,6 @@ return [
             'depender' => ['commands'],
             'graph' => ['namespace', 'folding', 'description']
         ],
-        'matchers' => [
-            'define' => ['\DependencyAnalyzer\Matcher\\'],
-            'description' => 'Matcher for class name and rule definition',
-            'depender' => ['commands', 'dependency_graph', 'inspectors'],
-            'graph' => ['namespace', 'folding', 'description']
-        ],
         'exceptions' => [
             'define' => ['\DependencyAnalyzer\Exceptions\\'],
             'dependee' => ['@php_native', 'PHPParser', 'graph'],
