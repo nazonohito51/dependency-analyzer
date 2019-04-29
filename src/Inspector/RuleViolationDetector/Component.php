@@ -32,14 +32,12 @@ class Component
      */
     protected $attributes = [];
 
-    /**
-     * @param string $name
-     * @param StructuralElementPatternMatcher $pattern
-     * @param StructuralElementPatternMatcher $dependerPatterns
-     * @param StructuralElementPatternMatcher $dependeePatterns
-     */
-    public function __construct(string $name, StructuralElementPatternMatcher $pattern, StructuralElementPatternMatcher $dependerPatterns = null, StructuralElementPatternMatcher $dependeePatterns = null)
-    {
+    public function __construct(
+        string $name,
+        StructuralElementPatternMatcher $pattern,
+        StructuralElementPatternMatcher $dependerPatterns = null,
+        StructuralElementPatternMatcher $dependeePatterns = null
+    ) {
         $this->name = $name;
         $this->matcher = $pattern;
         $this->dependerMatcher = $dependerPatterns;
