@@ -99,7 +99,7 @@ class StructuralElementPatternMatcher
     public function isMatch(string $className): bool
     {
         try {
-            if (!substr($className, 0, 1) !== '\\') {
+            if (substr($className, 0, 1) !== '\\') {
                 $className = '\\' . $className;
             }
 
