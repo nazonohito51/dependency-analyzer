@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph;
 
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
 use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher\FQSENMatcher;
 use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher\Matchable;
@@ -107,6 +108,11 @@ class StructuralElementPatternMatcher
             return false;
         }
 
+        return $this->isMatchWithFQSEN($target);
+    }
+
+    public function isMatchWithFQSEN(FQSEN\Base $target): bool
+    {
         foreach ($this->excludePatterns as $excludePattern) {
             if ($excludePattern->isMatch($target)) {
                 return false;
