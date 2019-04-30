@@ -65,20 +65,54 @@ class StructuralElementPatternMatcherTest extends TestCase
         return [
             'pattern and target is same 1' => [['\Tests'], '\Tests', true],
             'pattern and target is same 2' => [['\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass', true],
+            'pattern and target is same 3' => [['\Tests\Fixtures\SomeClass::$someProperty'], '\Tests\Fixtures\SomeClass::$someProperty', true],
+            'pattern and target is same 4' => [['\Tests\Fixtures\SomeClass::someMethod()'], '\Tests\Fixtures\SomeClass::someMethod()', true],
+            'pattern and target is same 5' => [['\Tests\Fixtures\SomeClass::SOME_CONSTANT'], '\Tests\Fixtures\SomeClass::SOME_CONSTANT', true],
+            'pattern and target is same 6' => [['\Tests\Fixtures\SomeClass::$someProperty'], '\Tests\Fixtures\SomeClass::someMethod()', false],
+            'pattern and target is same 7' => [['\Tests\Fixtures\SomeClass::someMethod()'], '\Tests\Fixtures\SomeClass::$someProperty', false],
             'pattern include target 1' => [['\Tests\Fixtures'], '\Tests\Fixtures\SomeClass', false],
             'pattern include target 2' => [['\Tests\Fixtures\\'], '\Tests\Fixtures\SomeClass', true],
-            'pattern include target 3' => [['\\'], '\Tests', true],
-            'pattern include target 4' => [['\\'], '\Tests\Fixtures\SomeClass', true],
+            'pattern include target 3' => [['\Tests\Fixtures\\'], '\Tests\Fixtures\SomeClass::$someProperty', true],
+            'pattern include target 4' => [['\Tests\Fixtures\\'], '\Tests\Fixtures\SomeClass::someMethod()', true],
+            'pattern include target 5' => [['\Tests\Fixtures\\'], '\Tests\Fixtures\SomeClass::SOME_CONSTANT', true],
+            'pattern include target 6' => [['\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass', true],
+            'pattern include target 7' => [['\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass::$someProperty', true],
+            'pattern include target 8' => [['\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass::someMethod()', true],
+            'pattern include target 9' => [['\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass::SOME_CONSTANT', true],
+            'pattern include target 10' => [['\Tests\Fixtures\SomeClass::$someProperty'], '\Tests\Fixtures\SomeClass', false],
+            'pattern include target 11' => [['\Tests\Fixtures\SomeClass::$someProperty'], '\Tests\Fixtures\SomeClass::$someProperty', true],
+            'pattern include target 12' => [['\Tests\Fixtures\SomeClass::$someProperty'], '\Tests\Fixtures\SomeClass::someMethod()', false],
+            'pattern include target 13' => [['\Tests\Fixtures\SomeClass::$someProperty'], '\Tests\Fixtures\SomeClass::SOME_CONSTANT', false],
+            'all namespace 1' => [['\\'], '\Tests', true],
+            'all namespace 2' => [['\\'], '\Tests\Fixtures\SomeClass', true],
+            'all namespace 3' => [['\\'], '\Tests\Fixtures\SomeClass::$someProperty', true],
+            'all namespace 4' => [['\\'], '\Tests\Fixtures\SomeClass::someMethod()', true],
+            'all namespace 5' => [['\\'], '\Tests\Fixtures\SomeClass::SOME_CONSTANT', true],
             'multi patterns 1' => [['\Tests\Fixtures', '\Tests\Fixtures\\', '\Tests\Component\\'], '\Tests\Fixtures', true],
             'multi patterns 2' => [['\Tests\Fixtures', '\Tests\Fixtures\\', '\Tests\Component\\'], '\Tests\Fixtures\SomeClass', true],
             'multi patterns 3' => [['\Tests\Fixtures', '\Tests\Fixtures\\', '\Tests\Component\\'], '\Tests\Component\SomeClass', true],
-            'multi patterns 4' => [['\Tests\Fixtures', '\Tests\Fixtures\\', '\Tests\Component\\'], '\Tests\Unit\SomeClass', false],
+            'multi patterns 4' => [['\Tests\Fixtures', '\Tests\Fixtures\\', '\Tests\Component\\'], '\Tests\Component\SomeClass::$someProperty', true],
+            'multi patterns 5' => [['\Tests\Fixtures', '\Tests\Fixtures\\', '\Tests\Component\\'], '\Tests\Component\SomeClass::someMethod()', true],
+            'multi patterns 6' => [['\Tests\Fixtures', '\Tests\Fixtures\\', '\Tests\Component\\'], '\Tests\Component\SomeClass::SOME_CONSTANT', true],
+            'multi patterns 7' => [['\Tests\Fixtures', '\Tests\Fixtures\\', '\Tests\Component\\'], '\Tests\Unit\SomeClass', false],
             'pattern with exclude pattern 1' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Fixtures\SomeClass', false],
-            'pattern with exclude pattern 2' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Component\SomeClass', true],
+            'pattern with exclude pattern 2' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Fixtures\SomeClass::$someProperty', false],
+            'pattern with exclude pattern 3' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Fixtures\SomeClass::someMethod()', false],
+            'pattern with exclude pattern 4' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Fixtures\SomeClass::SOME_CONSTANT', false],
+            'pattern with exclude pattern 5' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Component\SomeClass', true],
+            'pattern with exclude pattern 6' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Component\SomeClass::$someProperty', true],
+            'pattern with exclude pattern 7' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Component\SomeClass::someMethod()', true],
+            'pattern with exclude pattern 8' => [['\Tests\\', '!\Tests\Fixtures\\'], '\Tests\Component\SomeClass::SOME_CONSTANT', true],
             'have only exclude pattern 1' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass', false],
-            'have only exclude pattern 2' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Component\SomeClass', true],
-            'have only exclude pattern 3' => [['!\Tests\Fixtures\SomeClass'], '\Tests', true],
-            'have only exclude pattern 4' => [['!\\'], '\Tests', false],
+            'have only exclude pattern 2' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass::$someProperty', false],
+            'have only exclude pattern 3' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass::someMethod()', false],
+            'have only exclude pattern 4' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Fixtures\SomeClass::SOME_CONSTANT', false],
+            'have only exclude pattern 5' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Component\SomeClass', true],
+            'have only exclude pattern 6' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Component\SomeClass::$someProperty', true],
+            'have only exclude pattern 7' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Component\SomeClass::someMethod()', true],
+            'have only exclude pattern 8' => [['!\Tests\Fixtures\SomeClass'], '\Tests\Component\SomeClass::SOME_CONSTANT', true],
+            'have only exclude pattern 9' => [['!\Tests\Fixtures\SomeClass'], '\Tests', true],
+            'have only exclude pattern 10' => [['!\\'], '\Tests', false],
             'incomplete pattern match' => [['\Tests\Inte'], '\Tests\Component', false],
             'magic word' => [[StructuralElementPatternMatcher::PHP_NATIVE_CLASSES], '\SplFileObject', true],
             'exclude magic word' => [['!' . StructuralElementPatternMatcher::PHP_NATIVE_CLASSES], '\SplFileObject', false]
@@ -98,38 +132,4 @@ class StructuralElementPatternMatcherTest extends TestCase
 
         $this->assertSame($expected, $classNameMatcher->isMatch($className));
     }
-
-//    public function provideIsMatchWithFQSEN()
-//    {
-//        return [
-//            'namespace with class' => [],
-//            'namespace with method' => [],
-//            'namespace with property' => [],
-//            'namespace with class constant' => [],
-//            'class with class' => [],
-//            'class with method' => [],
-//            'class with property' => [],
-//            'class with class constant' => [],
-//            'method with class' => [],
-//            'method with method' => [],
-//            'method with property' => [],
-//            'method with class constant' => [],
-//            'property with class' => [],
-//            'property with method' => [],
-//            'property with property' => [],
-//            'property with class constant' => [],
-//            'class constant with class' => [],
-//            'class constant with method' => [],
-//            'class constant with property' => [],
-//            'class constant with class constant' => [],
-//            'multiple patterns' => [],
-//        ];
-//    }
-//
-//    public function testIsMatchWithFQSEN(FullyQualifiedStructuralElementName\Base $target, array $patterns, bool $expected)
-//    {
-//        $classNameMatcher = new StructuralElementPatternMatcher(['\Tests\Fixtures\\']);
-//
-//        $this->assertSame($expected, $classNameMatcher->isMatchWithFQSEN($target));
-//    }
 }
