@@ -68,7 +68,6 @@ class Component
         }
 
         return $this->dependerMatcher->isMatch($className);
-//        return $this->checkPatterns($className, $this->dependerPatterns);
     }
 
     public function verifyDependee(string $className): bool
@@ -80,7 +79,6 @@ class Component
         }
 
         return $this->dependeeMatcher->isMatch($className);
-//        return $this->checkPatterns($className, $this->dependeePatterns);
     }
 
     /**
