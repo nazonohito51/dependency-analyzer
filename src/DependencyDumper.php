@@ -6,7 +6,7 @@ namespace DependencyAnalyzer;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
 use DependencyAnalyzer\DependencyDumper\NullObserver;
 use DependencyAnalyzer\DependencyDumper\ObserverInterface;
-use DependencyAnalyzer\Exceptions\AnalysedFileException;
+use DependencyAnalyzer\Exceptions\AnalyzedFileException;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Parser\Parser;
@@ -94,8 +94,8 @@ class DependencyDumper
 
                 try {
                     $this->dumpFile($file);
-                } catch (AnalysedFileException $e) {
-                    $this->notifyAnalysedFileException($e);
+                } catch (AnalyzedFileException $e) {
+                    $this->notifyAnalyzedFileException($e);
                 }
             }
         }
@@ -116,9 +116,9 @@ class DependencyDumper
                 \Closure::fromCallable($this->collectNodeVisitor)  // type hint of processNodes() is \Closure...
             );
         } catch (ShouldNotHappenException $e) {
-            throw new AnalysedFileException($file, 'analysing file is failed, because unexpected error', 0, $e);
-        } catch (AnalysedCodeException $e) {
-            throw new AnalysedFileException($file, 'analysing file is failed, because unexpected error', 0, $e);
+            throw new AnalyzedFileException($file, 'analysing file is failed, because unexpected error', 0, $e);
+        } catch (AnalyzedCodeException $e) {
+            throw new AnalyzedFileException($file, 'analysing file is failed, because unexpected error', 0, $e);
         }
     }
 
@@ -127,7 +127,7 @@ class DependencyDumper
         try {
             $fileFinderResult = $this->fileFinder->findFiles($paths);
         } catch (\PHPStan\File\PathNotFoundException $e) {
-            throw new AnalysedFileException($e->getPath(), 'path was not found.', 0, $e);
+            throw new AnalyzedFileException($e->getPath(), 'path was not found.', 0, $e);
         }
 
         return $fileFinderResult->getFiles();
@@ -164,7 +164,7 @@ class DependencyDumper
         self::getObserver()->update($file);
     }
 
-    protected function notifyAnalysedFileException(AnalysedFileException $e): void
+    protected function notifyAnalyzedFileException(AnalyzedFileException $e): void
     {
         self::getObserver()->notifyAnalyzeFileError($e);
     }

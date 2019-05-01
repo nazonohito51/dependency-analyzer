@@ -180,7 +180,7 @@ class DependencyResolver
                 //   }
                 $this->resolvePropertyProperty($node, $scope);
             }
-        } catch (AnalysedCodeException $e) {
+        } catch (AnalyzedCodeException $e) {
             throw new ResolveDependencyException($node, 'resolving node dependency is failed.', 0, $e);
         } catch (ShouldNotHappenException $e) {
             throw new ResolveDependencyException($node, 'resolving node dependency is failed.', 0, $e);

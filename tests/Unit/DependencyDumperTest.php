@@ -5,8 +5,6 @@ namespace Tests\Unit\DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyDumper\CollectDependenciesVisitor;
-use DependencyAnalyzer\DependencyGraph;
-use DependencyAnalyzer\DependencyGraph\Formatter\DependencyGraphFactory;
 use PhpParser\Node;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\DependencyDumper;
 
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
-use DependencyAnalyzer\Exceptions\AnalysedFileException;
+use DependencyAnalyzer\Exceptions\AnalyzedFileException;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 
@@ -25,7 +25,7 @@ class NullObserver implements ObserverInterface
         return;
     }
 
-    public function notifyAnalyzeFileError(AnalysedFileException $e): void
+    public function notifyAnalyzeFileError(AnalyzedFileException $e): void
     {
         return;
     }

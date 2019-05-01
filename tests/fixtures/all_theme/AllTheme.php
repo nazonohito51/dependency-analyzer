@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures\AllTheme;
 
-// Dependency analyzer will not analyse 'use' statements.
+// Dependency analyzer will not analyze 'use' statements.
 use Tests\Fixtures\AllTheme\Foundations\NonExistClass;
 use Tests\Fixtures\AllTheme\Foundations\ParentClass;
 use Tests\Fixtures\AllTheme\Foundations\SomeClass1;
