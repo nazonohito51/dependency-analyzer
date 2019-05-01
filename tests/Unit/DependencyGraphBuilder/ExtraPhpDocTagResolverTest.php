@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Unit\DependencyAnalyzer\DependencyGraph;
+namespace Tests\Unit\DependencyAnalyzer\DependencyGraphBuilder;
 
-use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
+use DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;

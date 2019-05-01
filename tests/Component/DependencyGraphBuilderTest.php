@@ -12,7 +12,7 @@ use DependencyAnalyzer\DependencyGraph\DependencyTypes\NewObject;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\PropertyFetch;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\SomeDependency;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\UseTrait;
-use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
+use DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraphBuilder;
 use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
 use Fhaculty\Graph\Graph;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace DependencyAnalyzer;
 
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base as DependencyType;
-use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
 use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
@@ -134,7 +133,7 @@ class DependencyGraph implements \Countable
         $classes = [];
         foreach ($this->getClasses() as $class) {
             /** @var Vertex $class */
-            if (!empty($classNames = $class->getAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS))) {
+            if (!empty($classNames = $class->getAttribute('@canOnlyUsedBy'))) {
                 $classes[$class->getId()] = $classNames;
             }
         }

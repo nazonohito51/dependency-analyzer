@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DependencyAnalyzer\DependencyGraph;
+namespace DependencyAnalyzer\DependencyGraphBuilder;
 
 use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver\DepsInternal;

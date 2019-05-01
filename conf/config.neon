@@ -6,4 +6,4 @@ services:
 	-
 		class: DependencyAnalyzer\DependencyGraphBuilder
 	-
-		class: DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver
+		class: DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver
