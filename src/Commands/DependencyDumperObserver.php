@@ -75,9 +75,9 @@ class DependencyDumperObserver implements ObserverInterface
         }
     }
 
-    public function notifyResolvePhpDocError(string $file, FullyQualifiedStructuralElementName $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void
+    public function notifyResolvePhpDocError(string $file, string $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void
     {
-        $this->output->writeln("Error: resolving phpdoc is failed, {$fqsen->toString()} in {$file}. Because element name is invalid: {$e->getInvalidElementName()}");
+        $this->output->writeln("Error: resolving phpdoc is failed, {$fqsen} in {$file}. Because element name is invalid: {$e->getInvalidElementName()}");
         $this->output->writeln('Skip analysing this phpdoc, therefore result of analyse of this file is incomplete.');
     }
 }

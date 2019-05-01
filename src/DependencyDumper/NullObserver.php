@@ -35,7 +35,7 @@ class NullObserver implements ObserverInterface
         return;
     }
 
-    public function notifyResolvePhpDocError(string $file, FullyQualifiedStructuralElementName $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void
+    public function notifyResolvePhpDocError(string $file, string $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void
     {
         return;
     }

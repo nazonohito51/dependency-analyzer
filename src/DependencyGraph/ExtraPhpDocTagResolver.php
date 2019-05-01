@@ -60,7 +60,7 @@ class ExtraPhpDocTagResolver
             } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                 DependencyDumper::getObserver()->notifyResolvePhpDocError(
                     $reflectionClass->getFileName(),
-                    FQSEN::createClass($reflectionClass->getName()),
+                    $reflectionClass->getName(),
                     $e
                 );
             }
@@ -76,7 +76,7 @@ class ExtraPhpDocTagResolver
                 } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                     DependencyDumper::getObserver()->notifyResolvePhpDocError(
                         $reflectionClass->getFileName(),
-                        FQSEN::createClass($reflectionClass->getName()),
+                        $reflectionClass->getName(),
                         $e
                     );
                 }
@@ -93,7 +93,7 @@ class ExtraPhpDocTagResolver
                 } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                     DependencyDumper::getObserver()->notifyResolvePhpDocError(
                         $reflectionClass->getFileName(),
-                        FQSEN::createClass($reflectionClass->getName()),
+                        $reflectionClass->getName(),
                         $e
                     );
                 }
@@ -110,7 +110,7 @@ class ExtraPhpDocTagResolver
                 } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                     DependencyDumper::getObserver()->notifyResolvePhpDocError(
                         $reflectionClass->getFileName(),
-                        FQSEN::createClass($reflectionClass->getName()),
+                        $reflectionClass->getName(),
                         $e
                     );
                 }

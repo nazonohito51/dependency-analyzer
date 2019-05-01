@@ -16,5 +16,5 @@ interface ObserverInterface
     public function update(string $currentFile): void;
     public function notifyAnalyzeFileError(AnalysedFileException $e): void;
     public function notifyResolveDependencyError(string $file, ResolveDependencyException $e): void;
-    public function notifyResolvePhpDocError(string $file, FullyQualifiedStructuralElementName $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void;
+    public function notifyResolvePhpDocError(string $file, string $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void;
 }
