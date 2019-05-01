@@ -42,7 +42,6 @@ class DependencyRule
     public function isSatisfyBy(DependencyGraph $graph): VerifyDependencyResponse
     {
         $response = new VerifyDependencyResponse($this->getRuleName());
-//        $errors = [];
 
         foreach ($graph->getDependencyArrows() as $edge) {
             $depender = $edge->getVertexStart();
@@ -62,7 +61,6 @@ class DependencyRule
                             $this->getComponent($dependee)->getName(),
                             $dependee->getId()
                         );
-//                        $errors[] = "{$depender->getId()}({$this->getComponentName($depender)}) must not depend on {$dependee->getId()}({$this->getComponentName($dependee)}).";
                     }
                 }
 
@@ -74,14 +72,12 @@ class DependencyRule
                             $this->getComponent($dependee)->getName(),
                             $dependee->getId()
                         );
-//                        $errors[] = "{$depender->getId()}({$this->getComponentName($depender)}) must not depend on {$dependee->getId()}({$this->getComponentName($dependee)}).";
                     }
                 }
             }
         }
 
         return $response;
-//        return $errors;
     }
 
     protected function getComponentName(Vertex $vertex): ?string
