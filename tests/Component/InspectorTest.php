@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\Component;
 
 use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\MethodCall;
 use DependencyAnalyzer\Inspector\RuleViolationDetector;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory;
 use DependencyAnalyzer\Inspector\Responses\VerifyDependencyResponse;
@@ -18,14 +19,14 @@ class InspectorTest extends TestCase
             'depender(valid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\\Controller\\'],
+                        'define' => ['\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\\Application\\'],
-                        'depender' => ['\\Controller\\'],
+                        'define' => ['\Application\\'],
+                        'depender' => ['\Controller\\'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\\Domain\\'],
+                        'define' => ['\Domain\\'],
                     ]
                 ],
                 []
@@ -33,14 +34,14 @@ class InspectorTest extends TestCase
             'depender(invalid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\\Controller\\'],
+                        'define' => ['\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\\Application\\'],
-                        'depender' => ['\\Domain\\'],
+                        'define' => ['\Application\\'],
+                        'depender' => ['\Domain\\'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\\Domain\\'],
+                        'define' => ['\Domain\\'],
                     ]
                 ],
                 [[
@@ -53,14 +54,14 @@ class InspectorTest extends TestCase
             'dependee(valid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\\Controller\\'],
+                        'define' => ['\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\\Application\\'],
-                        'dependee' => ['\\Domain\\'],
+                        'define' => ['\Application\\'],
+                        'dependee' => ['\Domain\\'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\\Domain\\'],
+                        'define' => ['\Domain\\'],
                     ]
                 ],
                 []
@@ -68,14 +69,14 @@ class InspectorTest extends TestCase
             'dependee(invalid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\\Controller\\'],
+                        'define' => ['\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\\Application\\'],
-                        'dependee' => ['\\Controller\\'],
+                        'define' => ['\Application\\'],
+                        'dependee' => ['\Controller\\'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\\Domain\\'],
+                        'define' => ['\Domain\\'],
                     ]
                 ],
                 [[
@@ -88,11 +89,11 @@ class InspectorTest extends TestCase
             'have other component(valid)' => [
                 [
                     'Target' => [
-                        'define' => ['\\Application\\Dir\\Dir\\Class3'],
-                        'depender' => ['\\Application\\Class1', '\\Application\\Dir\\Class2']
+                        'define' => ['\Application\Dir\Dir\Class3'],
+                        'depender' => ['\Application\Class1', '\Application\Dir\Class2']
                     ],
                     'other' => [
-                        'define' => ['\\', '!\\Application\\Dir\\Dir\\Class3'],
+                        'define' => ['\\', '!\Application\Dir\Dir\Class3'],
                     ]
                 ],
                 []
@@ -100,11 +101,11 @@ class InspectorTest extends TestCase
             'have other component(invalid)' => [
                 [
                     'Target' => [
-                        'define' => ['\\Application\\Dir\\Dir\\Class3'],
-                        'depender' => ['\\Application\\Dir\\Class2']
+                        'define' => ['\Application\Dir\Dir\Class3'],
+                        'depender' => ['\Application\Dir\Class2']
                     ],
                     'other' => [
-                        'define' => ['\\', '!\\Application\\Dir\\Dir\\Class3'],
+                        'define' => ['\\', '!\Application\Dir\Dir\Class3'],
                     ]
                 ],
                 [[
@@ -117,14 +118,14 @@ class InspectorTest extends TestCase
             'have component name string(valid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\\Controller\\'],
+                        'define' => ['\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\\Application\\'],
+                        'define' => ['\Application\\'],
                         'depender' => ['ControllerLayer'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\\Domain\\'],
+                        'define' => ['\Domain\\'],
                     ]
                 ],
                 []
@@ -132,14 +133,14 @@ class InspectorTest extends TestCase
             'have component name string(invalid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\\Controller\\'],
+                        'define' => ['\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\\Application\\'],
+                        'define' => ['\Application\\'],
                         'depender' => ['DomainLayer'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\\Domain\\'],
+                        'define' => ['\Domain\\'],
                     ]
                 ],
                 [[
@@ -152,14 +153,14 @@ class InspectorTest extends TestCase
             'exclude component name string(valid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\\Controller\\'],
+                        'define' => ['\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\\Application\\'],
+                        'define' => ['\Application\\'],
                         'depender' => ['!DomainLayer'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\\Domain\\'],
+                        'define' => ['\Domain\\'],
                     ]
                 ],
                 []
@@ -167,14 +168,14 @@ class InspectorTest extends TestCase
             'exclude component name string(invalid)' => [
                 [
                     'ControllerLayer' => [
-                        'define' => ['\\Controller\\'],
+                        'define' => ['\Controller\\'],
                     ],
                     'ApplicationLayer' => [
-                        'define' => ['\\Application\\'],
+                        'define' => ['\Application\\'],
                         'depender' => ['!ControllerLayer'],
                     ],
                     'DomainLayer' => [
-                        'define' => ['\\Domain\\'],
+                        'define' => ['\Domain\\'],
                     ]
                 ],
                 [[
@@ -255,6 +256,7 @@ class InspectorTest extends TestCase
         $carbon = $graph->createVertex('Carbon\Carbon');
 
         $controller1->createEdgeTo($controller2);
+//            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new MethodCall('someMethod', 'someMethod')]);
         $controller1->createEdgeTo($controller3);
         $controller2->createEdgeTo($controller3);
         $controller2->createEdgeTo($application1);
@@ -268,6 +270,8 @@ class InspectorTest extends TestCase
         $domain1->createEdgeTo($domain3);
         $domain2->createEdgeTo($domain3);
         $domain3->createEdgeTo($carbon);
+
+//        $types = $edge->getAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY) ?? [];
 
         return new DependencyGraph($graph);
     }
