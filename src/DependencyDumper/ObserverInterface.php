@@ -8,7 +8,7 @@ use DependencyAnalyzer\Exceptions\AnalysedFileException;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 
-interface ObserverInterface
+interface ObserverInterface extends \DependencyAnalyzer\DependencyGraphBuilder\ObserverInterface
 {
     public function start(int $max): void;
     public function end(): void;
@@ -16,5 +16,4 @@ interface ObserverInterface
     public function update(string $currentFile): void;
     public function notifyAnalyzeFileError(AnalysedFileException $e): void;
     public function notifyResolveDependencyError(string $file, ResolveDependencyException $e): void;
-    public function notifyResolvePhpDocError(string $file, string $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void;
 }
