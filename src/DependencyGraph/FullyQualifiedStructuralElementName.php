@@ -132,42 +132,42 @@ class FullyQualifiedStructuralElementName
         return new Namespace_($namespaceName);
     }
 
-    public static function createClass(string $className): Base
+    public static function createClass(string $className): Class_
     {
         return new Class_($className);
     }
 
-    public static function createMethod(string $className, string $functionName): Base
+    public static function createMethod(string $className, string $functionName): Method
     {
         return new Method("{$className}::{$functionName}()");
     }
 
-    public static function createProperty(string $className, string $propertyName): Base
+    public static function createProperty(string $className, string $propertyName): Property
     {
         return new Property("{$className}::\${$propertyName}");
     }
 
-    public static function createClassConstant(string $className, string $constantName): Base
+    public static function createClassConstant(string $className, string $constantName): ClassConstant
     {
         return new ClassConstant("{$className}::{$constantName}");
     }
 
-    public static function createInterface(string $interfaceName): Base
+    public static function createInterface(string $interfaceName): Interface_
     {
         return new Interface_($interfaceName);
     }
 
-    public static function createTrait(string $traitName): Base
+    public static function createTrait(string $traitName): Trait_
     {
         return new Trait_($traitName);
     }
 
-    public static function createFunction(string $functionName): Base
+    public static function createFunction(string $functionName): Function_
     {
         return new Function_("{$functionName}()");
     }
 
-    public static function createConstant(string $constantName): Base
+    public static function createConstant(string $constantName): Constant
     {
         return new Constant("{$constantName}");
     }
