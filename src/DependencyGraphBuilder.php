@@ -13,6 +13,7 @@ use DependencyAnalyzer\DependencyGraph\DependencyTypes\PropertyFetch;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\SomeDependency;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\UseTrait;
 use DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver;
+use DependencyAnalyzer\DependencyGraphBuilder\ObserverInterface;
 use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
 use DependencyAnalyzer\Exceptions\LogicException;
 use Fhaculty\Graph\Graph;
@@ -35,6 +36,11 @@ class DependencyGraphBuilder
     {
         $this->graph = new Graph;
         $this->extraPhpDocTagResolver = $extraPhpDocTagResolver;
+    }
+
+    public function setObserver(ObserverInterface $observer): void
+    {
+        $this->extraPhpDocTagResolver->setObserver($observer);
     }
 
     protected function getVertex(ReflectionClass $class): Vertex

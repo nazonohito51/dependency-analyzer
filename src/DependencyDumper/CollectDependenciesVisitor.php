@@ -73,8 +73,8 @@ class CollectDependenciesVisitor
         }
     }
 
-    public function createDependencyGraph(): DependencyGraph
+    public function getDependencyGraphBuilder(): DependencyGraphBuilder
     {
-        return $this->dependencyGraphBuilder->build();
+        return $this->dependencyGraphBuilder;
     }
 }

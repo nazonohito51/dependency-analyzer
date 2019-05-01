@@ -101,7 +101,7 @@ class DependencyDumper
         }
         $this->notifyDumpEnd();
 
-        return $this->collectNodeVisitor->createDependencyGraph();
+        return $this->collectNodeVisitor->getDependencyGraphBuilder()->build();
     }
 
     protected function dumpFile(string $file): void
@@ -117,7 +117,7 @@ class DependencyDumper
             );
         } catch (ShouldNotHappenException $e) {
             throw new AnalyzedFileException($file, 'analysing file is failed, because unexpected error', 0, $e);
-        } catch (AnalyzedCodeException $e) {
+        } catch (AnalysedCodeException $e) {
             throw new AnalyzedFileException($file, 'analysing file is failed, because unexpected error', 0, $e);
         }
     }
@@ -136,6 +136,7 @@ class DependencyDumper
     public function setObserver(ObserverInterface $observer = null): self
     {
         self::$observer = $observer;
+        $this->collectNodeVisitor->getDependencyGraphBuilder()->setObserver($observer);
 
         return $this;
     }
