@@ -34,4 +34,19 @@ class Class_ extends Base
     {
         return explode('\\', substr($this->toString(), 1));
     }
+
+    public function createMethodFQSEN(string $methodName): Method
+    {
+        return FullyQualifiedStructuralElementName::createMethod($this->toString(), $methodName);
+    }
+
+    public function createPropertyFQSEN(string $propertyName): Property
+    {
+        return FullyQualifiedStructuralElementName::createProperty($this->toString(), $propertyName);
+    }
+
+    public function createClassConstantFQSEN(string $constantName): ClassConstant
+    {
+        return FullyQualifiedStructuralElementName::createClassConstant($this->toString(), $constantName);
+    }
 }
