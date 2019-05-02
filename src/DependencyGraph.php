@@ -77,8 +77,8 @@ class DependencyGraph implements \Countable
         }
 
         foreach ($this->getDependencyArrows() as $dependencyArrow) {
-            $start = $pattern->isMatch($dependencyArrow->getDependerClass()->toString()) ? $name : $dependencyArrow->getDependerClass()->toString();
-            $end = $pattern->isMatch($dependencyArrow->getDependeeClass()->toString()) ? $name : $dependencyArrow->getDependeeClass()->toString();
+            $start = $pattern->isMatch($dependencyArrow->getDependerName()) ? $name : $dependencyArrow->getDependerName();
+            $end = $pattern->isMatch($dependencyArrow->getDependeeName()) ? $name : $dependencyArrow->getDependeeName();
 
             if ($start !== $end && !$graph->getVertex($start)->hasEdgeTo($graph->getVertex($end))) {
                 $graph->getVertex($start)->createEdgeTo($graph->getVertex($end));

@@ -101,7 +101,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
         foreach ($graph->getClassesHaveOnlyUsedTag() as $class => $classesInPhpDoc) {
             $ruleDefinitions['phpdoc in ' . $class] = [
                 'phpdoc' => [
-                    'define' => ["\\{$class}"],
+                    'define' => [$class],
                     'depender' => $classesInPhpDoc
                 ],
                 'other' => [
