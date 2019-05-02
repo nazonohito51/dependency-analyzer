@@ -38,7 +38,7 @@ class DepsInternal
         }
     }
 
-    public function getEqden(): FQSEN
+    public function getEqsen(): FQSEN
     {
         return $this->fqden;
     }
