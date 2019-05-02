@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base as FQSEN;
 use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 
 class Component
@@ -16,6 +17,11 @@ class Component
      * @var StructuralElementPatternMatcher
      */
     protected $matcher;
+
+    /**
+     * @var StructuralElementPatternMatcher
+     */
+    protected $publicMatcher;
 
     /**
      * @var StructuralElementPatternMatcher
@@ -36,10 +42,12 @@ class Component
         string $name,
         StructuralElementPatternMatcher $pattern,
         StructuralElementPatternMatcher $dependerPatterns = null,
-        StructuralElementPatternMatcher $dependeePatterns = null
+        StructuralElementPatternMatcher $dependeePatterns = null,
+        StructuralElementPatternMatcher $publicPattern = null
     ) {
         $this->name = $name;
         $this->matcher = $pattern;
+        $this->publicMatcher = $publicPattern;
         $this->dependerMatcher = $dependerPatterns;
         $this->dependeeMatcher = $dependeePatterns;
     }
@@ -59,15 +67,16 @@ class Component
         return $this->matcher->isMatch($className);
     }
 
-    public function verifyDepender(string $className): bool
+    public function verifyDepender(FQSEN $depender, FQSEN $dependee): bool
     {
-        if ($this->isBelongedTo($className)) {
-            return true;
-        } elseif (is_null($this->dependerMatcher)) {
+        if ($this->isBelongedTo($depender->toString())) {
             return true;
         }
 
-        return $this->dependerMatcher->isMatch($className);
+        return (
+            (is_null($this->publicMatcher) ? true : $this->publicMatcher->isMatchWithFQSEN($dependee)) &&
+            (is_null($this->dependerMatcher) ? true : $this->dependerMatcher->isMatchWithFQSEN($depender))
+        );
     }
 
     public function verifyDependee(string $className): bool

@@ -5,6 +5,8 @@ namespace Tests\Component;
 
 use DependencyAnalyzer\DependencyGraph;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\MethodCall;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\PropertyFetch;
+use DependencyAnalyzer\DependencyGraph\DependencyTypes\SomeDependency;
 use DependencyAnalyzer\Inspector\RuleViolationDetector;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory;
 use DependencyAnalyzer\Inspector\Responses\VerifyDependencyResponse;
@@ -46,9 +48,9 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'ControllerLayer',
-                    'depender' => '\Controller\Dir\Class2',
+                    'depender' => '\Controller\Dir\Class2::callerMethod()',
                     'dependeeComponent' => 'ApplicationLayer',
-                    'dependee' => '\Application\Class1',
+                    'dependee' => '\Application\Class1::calleeMethod()',
                 ]]
             ],
             'dependee(valid)' => [
@@ -81,9 +83,9 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'ApplicationLayer',
-                    'depender' => '\Application\Dir\Class2',
+                    'depender' => '\Application\Dir\Class2::callerMethod()',
                     'dependeeComponent' => 'DomainLayer',
-                    'dependee' => '\Domain\Class1',
+                    'dependee' => '\Domain\Class1::$calleeProperty',
                 ]]
             ],
             'have other component(valid)' => [
@@ -145,9 +147,9 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'ControllerLayer',
-                    'depender' => '\Controller\Dir\Class2',
+                    'depender' => '\Controller\Dir\Class2::callerMethod()',
                     'dependeeComponent' => 'ApplicationLayer',
-                    'dependee' => '\Application\Class1',
+                    'dependee' => '\Application\Class1::calleeMethod()',
                 ]]
             ],
             'exclude component name string(valid)' => [
@@ -180,10 +182,104 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'ControllerLayer',
-                    'depender' => '\Controller\Dir\Class2',
+                    'depender' => '\Controller\Dir\Class2::callerMethod()',
                     'dependeeComponent' => 'ApplicationLayer',
-                    'dependee' => '\Application\Class1',
+                    'dependee' => '\Application\Class1::calleeMethod()',
                 ]]
+            ],
+            'restrict depender to property/method/class_constant(valid)' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\'],
+                        'depender' => ['\Controller\Dir\Class2::callerMethod()'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                        'depender' => ['\Application\Dir\Class2::callerMethod()'],
+                    ]
+                ],
+                []
+            ],
+            'restrict depender to property/method/class_constant(invalid)' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\'],
+                        'depender' => ['\Controller\Dir\Class2::$callerProperty'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                        'depender' => ['\Application\Dir\Class2::otherMethod()'],
+                    ]
+                ],
+                [
+                    [
+                        'dependerComponent' => 'ControllerLayer',
+                        'depender' => '\Controller\Dir\Class2::callerMethod()',
+                        'dependeeComponent' => 'ApplicationLayer',
+                        'dependee' => '\Application\Class1::calleeMethod()'
+                    ],
+                    [
+                        'dependerComponent' => 'ApplicationLayer',
+                        'depender' => '\Application\Dir\Class2::callerMethod()',
+                        'dependeeComponent' => 'DomainLayer',
+                        'dependee' => '\Domain\Class1::$calleeProperty'
+                    ]
+                ]
+            ],
+            'have public(valid)' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\'],
+                        'public' => ['\Application\Class1'],
+                        'depender' => ['ControllerLayer'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                        'public' => ['\Domain\Class1'],
+                        'depender' => ['ApplicationLayer'],
+                    ]
+                ],
+                []
+            ],
+            'have public(invalid)' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\'],
+                        'public' => ['\Application\Dir\Class2'],
+                        'depender' => ['ControllerLayer'],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                        'public' => ['\Domain\Dir\Class2'],
+                        'depender' => ['ApplicationLayer'],
+                    ]
+                ],
+                [
+                    [
+                        'dependerComponent' => 'ControllerLayer',
+                        'depender' => '\Controller\Dir\Class2::callerMethod()',
+                        'dependeeComponent' => 'ApplicationLayer',
+                        'dependee' => '\Application\Class1::calleeMethod()'
+                    ],
+                    [
+                        'dependerComponent' => 'ApplicationLayer',
+                        'depender' => '\Application\Dir\Class2::callerMethod()',
+                        'dependeeComponent' => 'DomainLayer',
+                        'dependee' => '\Domain\Class1::$calleeProperty'
+                    ]
+                ]
             ]
 //            'exclude analysis list(valid)' => [
 //                [
@@ -255,21 +351,34 @@ class InspectorTest extends TestCase
         $domain3 = $graph->createVertex('Domain\Dir\Dir\Class3');
         $carbon = $graph->createVertex('Carbon\Carbon');
 
-        $controller1->createEdgeTo($controller2);
-//            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new MethodCall('someMethod', 'someMethod')]);
-        $controller1->createEdgeTo($controller3);
-        $controller2->createEdgeTo($controller3);
-        $controller2->createEdgeTo($application1);
-        $controller3->createEdgeTo($carbon);
-        $application1->createEdgeTo($application2);
-        $application1->createEdgeTo($application3);
-        $application2->createEdgeTo($application3);
-        $application2->createEdgeTo($domain1);
-        $application3->createEdgeTo($carbon);
-        $domain1->createEdgeTo($domain2);
-        $domain1->createEdgeTo($domain3);
-        $domain2->createEdgeTo($domain3);
-        $domain3->createEdgeTo($carbon);
+        $controller1->createEdgeTo($controller2)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $controller1->createEdgeTo($controller3)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $controller2->createEdgeTo($controller3)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $controller2->createEdgeTo($application1)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new MethodCall('calleeMethod', 'callerMethod')]);
+        $controller3->createEdgeTo($carbon)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $application1->createEdgeTo($application2)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $application1->createEdgeTo($application3)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $application2->createEdgeTo($application3)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $application2->createEdgeTo($domain1)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new PropertyFetch('calleeProperty', 'callerMethod')]);
+        $application3->createEdgeTo($carbon)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $domain1->createEdgeTo($domain2)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $domain1->createEdgeTo($domain3)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $domain2->createEdgeTo($domain3)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
+        $domain3->createEdgeTo($carbon)
+            ->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
 
 //        $types = $edge->getAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY) ?? [];
 

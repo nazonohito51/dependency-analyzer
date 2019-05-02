@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DependencyAnalyzer\Inspector\RuleViolationDetector;
 
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 use DependencyAnalyzer\Inspector\RuleViolationDetector\Component;
 use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 use Tests\TestCase;
@@ -43,28 +44,33 @@ class ComponentTest extends TestCase
     public function provideVerifyDepender()
     {
         return [
-            [true, false, true],
-            [false, true, true],
-            [false, false, false],
+            [true, false, false, true],
+            [false, true, true, true],
+            [false, false, true, false],
+            [false, true, false, false],
         ];
     }
 
     /**
      * @param bool $matchSameComponent
      * @param bool $matchDependerPattern
+     * @param bool $matchPublicPattern
      * @param bool $expected
      * @dataProvider provideVerifyDepender
      */
-    public function testVerifyDepender(bool $matchSameComponent, bool $matchDependerPattern, bool $expected)
+    public function testVerifyDepender(bool $matchSameComponent, bool $matchDependerPattern, bool $matchPublicPattern, bool $expected)
     {
-        $className = 'className';
+        $depender = FullyQualifiedStructuralElementName::createClass('someClass1');
+        $dependee = FullyQualifiedStructuralElementName::createMethod('someClass2', 'someMethod');
         $componentPattern = $this->createMock(StructuralElementPatternMatcher::class);
-        $componentPattern->method('isMatch')->with($className)->willReturn($matchSameComponent);
+        $componentPattern->method('isMatch')->with($depender->toString())->willReturn($matchSameComponent);
         $dependerPattern = $this->createMock(StructuralElementPatternMatcher::class);
-        $dependerPattern->method('isMatch')->with($className)->willReturn($matchDependerPattern);
-        $component = new Component('componentName', $componentPattern, $dependerPattern);
+        $dependerPattern->method('isMatchWithFQSEN')->with($depender)->willReturn($matchDependerPattern);
+        $publicPattern = $this->createMock(StructuralElementPatternMatcher::class);
+        $publicPattern->method('isMatchWithFQSEN')->with($dependee)->willReturn($matchPublicPattern);
+        $component = new Component('componentName', $componentPattern, $dependerPattern, null, $publicPattern);
 
-        $this->assertSame($expected, $component->verifyDepender($className));
+        $this->assertSame($expected, $component->verifyDepender($depender, $dependee));
     }
 
     public function provideVerifyDependee()

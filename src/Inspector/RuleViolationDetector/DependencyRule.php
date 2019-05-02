@@ -44,35 +44,41 @@ class DependencyRule
     {
         $response = new VerifyDependencyResponse($this->getRuleName());
 
-        foreach ($graph->getDependencyArrows() as $edge) {
-            $depender = $edge->getDependerClass();
-            $dependee = $edge->getDependeeClass();
+        foreach ($graph->getDependencyArrows() as $dependencyArrow) {
+            foreach ($dependencyArrow->getDependencies() as $dependency) {
+                /** @var DependencyGraph\FullyQualifiedStructuralElementName\Base $dependerFQSEN */
+                $dependerFQSEN = $dependency[0];
+                /** @var DependencyGraph\FullyQualifiedStructuralElementName\Base $dependeeFQSEN */
+                $dependeeFQSEN = $dependency[1];
+//                $depender = $dependencyArrow->getDependerClass();
+//                $dependee = $dependencyArrow->getDependeeClass();
 
-            // TODO: add exclude rule
-            if (is_null($this->getComponentName($depender)) || is_null($this->getComponentName($dependee))) {
-                continue;
-            }
-
-            foreach ($this->components as $component) {
-                if ($component->isBelongedTo($dependee->toString())) {
-                    if (!$component->verifyDepender($depender->toString())) {
-                        $response->addRuleViolation(
-                            $this->getComponent($depender)->getName(),
-                            $depender->toString(),
-                            $this->getComponent($dependee)->getName(),
-                            $dependee->toString()
-                        );
-                    }
+                // TODO: add exclude rule
+                if (is_null($this->getComponentName($dependerFQSEN)) || is_null($this->getComponentName($dependeeFQSEN))) {
+                    continue;
                 }
 
-                if ($component->isBelongedTo($depender->toString())) {
-                    if (!$component->verifyDependee($dependee->toString())) {
-                        $response->addRuleViolation(
-                            $this->getComponent($depender)->getName(),
-                            $depender->toString(),
-                            $this->getComponent($dependee)->getName(),
-                            $dependee->toString()
-                        );
+                foreach ($this->components as $component) {
+                    if ($component->isBelongedTo($dependeeFQSEN->toString())) {
+                        if (!$component->verifyDepender($dependerFQSEN, $dependeeFQSEN)) {
+                            $response->addRuleViolation(
+                                $this->getComponent($dependerFQSEN)->getName(),
+                                $dependerFQSEN->toString(),
+                                $this->getComponent($dependeeFQSEN)->getName(),
+                                $dependeeFQSEN->toString()
+                            );
+                        }
+                    }
+
+                    if ($component->isBelongedTo($dependerFQSEN->toString())) {
+                        if (!$component->verifyDependee($dependeeFQSEN->toString())) {
+                            $response->addRuleViolation(
+                                $this->getComponent($dependerFQSEN)->getName(),
+                                $dependerFQSEN->toString(),
+                                $this->getComponent($dependeeFQSEN)->getName(),
+                                $dependeeFQSEN->toString()
+                            );
+                        }
                     }
                 }
             }

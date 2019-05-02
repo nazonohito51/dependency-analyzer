@@ -37,11 +37,13 @@ class DependencyRuleFactory
         foreach ($ruleDefinition as $componentName => $componentDefinition) {
             $depender = isset($componentDefinition['depender']) ? $this->createMatcher($componentDefinition['depender'], $componentDefines) : null;
             $dependee = isset($componentDefinition['dependee']) ? $this->createMatcher($componentDefinition['dependee'], $componentDefines) : null;
+            $public = isset($componentDefinition['public']) ? $this->createMatcher($componentDefinition['public'], $componentDefines) : null;
             $components[] = new Component(
                 $componentName,
                 new StructuralElementPatternMatcher($componentDefinition['define']),
                 $depender,
-                $dependee
+                $dependee,
+                $public
             );
         }
         return new DependencyRule($ruleName, $components);
