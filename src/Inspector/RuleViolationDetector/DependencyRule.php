@@ -54,7 +54,9 @@ class DependencyRule
 //                $dependee = $dependencyArrow->getDependeeClass();
 
                 // TODO: add exclude rule
-                if (is_null($this->getComponentName($dependerFQSEN)) || is_null($this->getComponentName($dependeeFQSEN))) {
+                $dependerComponent = $this->getComponent($dependerFQSEN);
+                $dependeeComponent = $this->getComponent($dependeeFQSEN);
+                if (is_null($dependerComponent) || is_null($dependeeComponent) || $dependerComponent === $dependeeComponent) {
                     continue;
                 }
 
@@ -62,9 +64,9 @@ class DependencyRule
                     if ($component->isBelongedTo($dependeeFQSEN->toString())) {
                         if (!$component->verifyDepender($dependerFQSEN, $dependeeFQSEN)) {
                             $response->addRuleViolation(
-                                $this->getComponent($dependerFQSEN)->getName(),
+                                $dependerComponent->getName(),
                                 $dependerFQSEN->toString(),
-                                $this->getComponent($dependeeFQSEN)->getName(),
+                                $dependeeComponent->getName(),
                                 $dependeeFQSEN->toString()
                             );
                         }
@@ -73,9 +75,9 @@ class DependencyRule
                     if ($component->isBelongedTo($dependerFQSEN->toString())) {
                         if (!$component->verifyDependee($dependeeFQSEN->toString())) {
                             $response->addRuleViolation(
-                                $this->getComponent($dependerFQSEN)->getName(),
+                                $dependerComponent->getName(),
                                 $dependerFQSEN->toString(),
-                                $this->getComponent($dependeeFQSEN)->getName(),
+                                $dependeeComponent->getName(),
                                 $dependeeFQSEN->toString()
                             );
                         }
