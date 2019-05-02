@@ -129,46 +129,58 @@ class FullyQualifiedStructuralElementName
 
     public static function createNamespace(string $namespaceName): Base
     {
-        return new Namespace_($namespaceName);
+        return new Namespace_(self::formatName($namespaceName));
     }
 
     public static function createClass(string $className): Class_
     {
-        return new Class_($className);
+        return new Class_(self::formatName($className));
     }
 
-    public static function createMethod(string $className, string $functionName): Method
+    public static function createMethod(string $className, string $methodName): Method
     {
-        return new Method("{$className}::{$functionName}()");
+        $className = self::formatName($className);
+        return new Method("{$className}::{$methodName}()");
     }
 
     public static function createProperty(string $className, string $propertyName): Property
     {
+        $className = self::formatName($className);
         return new Property("{$className}::\${$propertyName}");
     }
 
     public static function createClassConstant(string $className, string $constantName): ClassConstant
     {
+        $className = self::formatName($className);
         return new ClassConstant("{$className}::{$constantName}");
     }
 
     public static function createInterface(string $interfaceName): Interface_
     {
+        $interfaceName = self::formatName($interfaceName);
         return new Interface_($interfaceName);
     }
 
     public static function createTrait(string $traitName): Trait_
     {
+        $traitName = self::formatName($traitName);
         return new Trait_($traitName);
     }
 
     public static function createFunction(string $functionName): Function_
     {
+        $functionName = self::formatName($functionName);
         return new Function_("{$functionName}()");
     }
 
     public static function createConstant(string $constantName): Constant
     {
+        $constantName = self::formatName($constantName);
         return new Constant("{$constantName}");
+    }
+
+    protected static function formatName(string $className): string
+    {
+        return substr($className, 0, 1) === '\\' ? $className : "\\{$className}";
     }
 }

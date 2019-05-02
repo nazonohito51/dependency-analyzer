@@ -16,9 +16,9 @@ class UmlFormatterTest extends TestCase
     {
         // TODO: remove dependency on graph
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
-        $v3 = $graph->createVertex('v3');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
+        $v3 = $graph->createVertex('\v3');
         $v1->createEdgeTo($v2);
         $v1->createEdgeTo($v3);
         $v2->createEdgeTo($v3);
@@ -26,47 +26,47 @@ class UmlFormatterTest extends TestCase
 
         $expectedWithoutRule = <<<EOT
 @startuml
-class v1 {
+class \v1 {
 }
-class v2 {
+class \v2 {
 }
-class v3 {
+class \v3 {
 }
-v1 --> v2
-v1 --> v3
-v2 --> v3
+\v1 --> \v2
+\v1 --> \v3
+\v2 --> \v3
 @enduml
 EOT;
 
         $expectedWithRule = <<<EOT
 @startuml
 namespace Namespace1 {
-class v1 {
+class \v1 {
 }
-class v2 {
+class \v2 {
 }
 }
 namespace Namespace2 {
-class v3 {
+class \v3 {
 }
 }
-Namespace1.v1 --> Namespace1.v2
-Namespace1.v1 --> Namespace2.v3
-Namespace1.v2 --> Namespace2.v3
+Namespace1.\v1 --> Namespace1.\v2
+Namespace1.\v1 --> Namespace2.\v3
+Namespace1.\v2 --> Namespace2.\v3
 @enduml
 EOT;
 
         $expectedWithExcludeRule = <<<EOT
 @startuml
 namespace Namespace1 {
-class v1 {
+class \v1 {
 }
 }
 namespace Namespace2 {
-class v3 {
+class \v3 {
 }
 }
-Namespace1.v1 --> Namespace2.v3
+Namespace1.\v1 --> Namespace2.\v3
 @enduml
 EOT;
 
@@ -77,10 +77,10 @@ class MyGroup {
 }
 }
 namespace Namespace2 {
-class v3 {
+class \v3 {
 }
 }
-Namespace1.MyGroup --> Namespace2.v3
+Namespace1.MyGroup --> Namespace2.\v3
 @enduml
 EOT;
 
@@ -128,15 +128,15 @@ EOT;
     {
         $expected = <<<EOT
 @startuml
-class v1 {
+class \\v1 {
 }
-class v2 {
+class \\v2 {
 }
-class v3 {
+class \\v3 {
 }
-v1 --> v2
-v1 --> v3
-v2 --> v3
+\\v1 --> \\v2
+\\v1 --> \\v3
+\\v2 --> \\v3
 @enduml
 EOT;
 
@@ -150,30 +150,30 @@ EOT;
         $component1 = $this->createMock(Component::class);
         $component1->method('getName')->willReturn('MyComponent1');
         $component1->method('isBelongedTo')->willReturnMap([
-            ['v1', true],
-            ['v2', true],
-            ['v3', false],
+            ['\v1', true],
+            ['\v2', true],
+            ['\v3', false],
         ]);
 
         $component2 = $this->createMock(Component::class);
         $component2->method('getName')->willReturn('MyComponent2');
         $component2->method('isBelongedTo')->willReturnMap([
-            ['v1', false],
-            ['v2', false],
-            ['v3', true],
+            ['\v1', false],
+            ['\v2', false],
+            ['\v3', true],
         ]);
 
         $expected = <<<EOT
 @startuml
-class v1 {
+class \\v1 {
 }
-class v2 {
+class \\v2 {
 }
-class v3 {
+class \\v3 {
 }
-v1 --> v2
-v1 --> v3
-v2 --> v3
+\\v1 --> \\v2
+\\v1 --> \\v3
+\\v2 --> \\v3
 @enduml
 EOT;
 
@@ -188,9 +188,9 @@ EOT;
         $component1 = $this->createMock(Component::class);
         $component1->method('getName')->willReturn('MyComponent1');
         $component1->method('isBelongedTo')->willReturnMap([
-            ['v1', true],
-            ['v2', true],
-            ['v3', false],
+            ['\v1', true],
+            ['\v2', true],
+            ['\v3', false],
         ]);
         $component1->method('getAttribute')->willReturnMap([
             ['namespace', true],
@@ -200,9 +200,9 @@ EOT;
         $component2 = $this->createMock(Component::class);
         $component2->method('getName')->willReturn('MyComponent2');
         $component2->method('isBelongedTo')->willReturnMap([
-            ['v1', false],
-            ['v2', false],
-            ['v3', true],
+            ['\v1', false],
+            ['\v2', false],
+            ['\v3', true],
         ]);
         $component2->method('getAttribute')->willReturnMap([
             ['namespace', true],
@@ -212,18 +212,18 @@ EOT;
         $expected = <<<EOT
 @startuml
 namespace MyComponent1 {
-class v1 {
+class \\v1 {
 }
-class v2 {
+class \\v2 {
 }
 }
 namespace MyComponent2 {
-class v3 {
+class \\v3 {
 }
 }
-MyComponent1.v1 --> MyComponent1.v2
-MyComponent1.v1 --> MyComponent2.v3
-MyComponent1.v2 --> MyComponent2.v3
+MyComponent1.\\v1 --> MyComponent1.\\v2
+MyComponent1.\\v1 --> MyComponent2.\\v3
+MyComponent1.\\v2 --> MyComponent2.\\v3
 @enduml
 EOT;
 
@@ -236,18 +236,18 @@ EOT;
     {
         $matcher = $this->createMock(StructuralElementPatternMatcher::class);
         $matcher->method('isMatch')->willReturnMap([
-            ['v1', true],
-            ['v2', true],
-            ['v3', false],
+            ['\v1', true],
+            ['\v2', true],
+            ['\v3', false],
             ['MyComponent1', false],
         ]);
         $component1 = $this->createMock(Component::class);
         $component1->method('getName')->willReturn('MyComponent1');
         $component1->method('getDefineMatcher')->willReturn($matcher);
         $component1->method('isBelongedTo')->willReturnMap([
-            ['v1', true],
-            ['v2', true],
-            ['v3', false],
+            ['\v1', true],
+            ['\v2', true],
+            ['\v3', false],
             ['MyComponent1', false]
         ]);
         $component1->method('getAttribute')->willReturnMap([
@@ -257,18 +257,18 @@ EOT;
 
         $matcher = $this->createMock(StructuralElementPatternMatcher::class);
         $matcher->method('isMatch')->willReturnMap([
-            ['v1', false],
-            ['v2', false],
-            ['v3', true],
+            ['\v1', false],
+            ['\v2', false],
+            ['\v3', true],
             ['MyComponent1', false],
         ]);
         $component2 = $this->createMock(Component::class);
         $component2->method('getName')->willReturn('MyComponent2');
         $component2->method('getDefineMatcher')->willReturn($matcher);
         $component2->method('isBelongedTo')->willReturnMap([
-            ['v1', false],
-            ['v2', false],
-            ['v3', true],
+            ['\v1', false],
+            ['\v2', false],
+            ['\v3', true],
             ['MyComponent1', false]
         ]);
         $component2->method('getAttribute')->willReturnMap([
@@ -280,9 +280,9 @@ EOT;
 @startuml
 class MyComponent1 {
 }
-class v3 {
+class \\v3 {
 }
-MyComponent1 --> v3
+MyComponent1 --> \\v3
 @enduml
 EOT;
 
@@ -308,9 +308,9 @@ EOT;
     {
         // TODO: remove dependency on graph
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
-        $v3 = $graph->createVertex('v3');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
+        $v3 = $graph->createVertex('\v3');
         $v1->createEdgeTo($v2);
         $v1->createEdgeTo($v3);
         $v2->createEdgeTo($v3);

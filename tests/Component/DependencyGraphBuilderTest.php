@@ -32,9 +32,9 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
-        $v3 = $graph->createVertex('v3');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
+        $v3 = $graph->createVertex('\v3');
         $e1 = $v1->createEdgeTo($v2);
         $e2 = $v2->createEdgeTo($v3);
         $v1->setAttribute('reflection', $nativeClassReflection1);
@@ -61,9 +61,9 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
-        $v3 = $graph->createVertex('v3');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
+        $v3 = $graph->createVertex('\v3');
         $e1 = $v1->createEdgeTo($v2);
         $e2 = $v1->createEdgeTo($v3);
         $v1->setAttribute('reflection', $nativeClassReflection1);
@@ -90,8 +90,8 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@canOnlyUsedBy', []);
@@ -113,8 +113,8 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@canOnlyUsedBy', []);
@@ -136,8 +136,8 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@canOnlyUsedBy', []);
@@ -159,8 +159,8 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@canOnlyUsedBy', []);
@@ -182,8 +182,8 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('v2');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\v2');
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@canOnlyUsedBy', []);
@@ -205,8 +205,8 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('interface1');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\interface1');
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@canOnlyUsedBy', []);
@@ -228,8 +228,8 @@ class DependencyGraphBuilderTest extends TestCase
         $dependencyGraph = $builder->build();
 
         $graph = new Graph();
-        $v1 = $graph->createVertex('v1');
-        $v2 = $graph->createVertex('trait1');
+        $v1 = $graph->createVertex('\v1');
+        $v2 = $graph->createVertex('\trait1');
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@canOnlyUsedBy', []);

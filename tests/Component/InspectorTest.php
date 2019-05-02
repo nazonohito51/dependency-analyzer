@@ -46,9 +46,9 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'ControllerLayer',
-                    'depender' => 'Controller\Dir\Class2',
+                    'depender' => '\Controller\Dir\Class2',
                     'dependeeComponent' => 'ApplicationLayer',
-                    'dependee' => 'Application\Class1',
+                    'dependee' => '\Application\Class1',
                 ]]
             ],
             'dependee(valid)' => [
@@ -81,9 +81,9 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'ApplicationLayer',
-                    'depender' => 'Application\Dir\Class2',
+                    'depender' => '\Application\Dir\Class2',
                     'dependeeComponent' => 'DomainLayer',
-                    'dependee' => 'Domain\Class1',
+                    'dependee' => '\Domain\Class1',
                 ]]
             ],
             'have other component(valid)' => [
@@ -110,9 +110,9 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'other',
-                    'depender' => 'Application\Class1',
+                    'depender' => '\Application\Class1',
                     'dependeeComponent' => 'Target',
-                    'dependee' => 'Application\Dir\Dir\Class3',
+                    'dependee' => '\Application\Dir\Dir\Class3',
                 ]]
             ],
             'have component name string(valid)' => [
@@ -145,9 +145,9 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'ControllerLayer',
-                    'depender' => 'Controller\Dir\Class2',
+                    'depender' => '\Controller\Dir\Class2',
                     'dependeeComponent' => 'ApplicationLayer',
-                    'dependee' => 'Application\Class1',
+                    'dependee' => '\Application\Class1',
                 ]]
             ],
             'exclude component name string(valid)' => [
@@ -180,9 +180,9 @@ class InspectorTest extends TestCase
                 ],
                 [[
                     'dependerComponent' => 'ControllerLayer',
-                    'depender' => 'Controller\Dir\Class2',
+                    'depender' => '\Controller\Dir\Class2',
                     'dependeeComponent' => 'ApplicationLayer',
-                    'dependee' => 'Application\Class1',
+                    'dependee' => '\Application\Class1',
                 ]]
             ]
 //            'exclude analysis list(valid)' => [

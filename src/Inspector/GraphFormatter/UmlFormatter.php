@@ -133,14 +133,14 @@ class UmlFormatter
 //            }
 //        }
 
-        foreach ($this->graph->getDependencyArrows() as $edge) {
-            $depender = $edge->getDependerClass();
-            $dependee = $edge->getDependeeClass();
+        foreach ($this->graph->getDependencyArrows() as $arrow) {
+            $dependerName = $arrow->getDependerName();
+            $dependeeName = $arrow->getDependeeName();
 
-            if ($this->isExcludeClass($depender->toString()) || $this->isExcludeClass($dependee->toString())) {
+            if ($this->isExcludeClass($dependerName) || $this->isExcludeClass($dependeeName)) {
                 continue;
             }
-            $output .= "{$this->searchGroupedClasses($depender->toString())} --> {$this->searchGroupedClasses($dependee->toString())}" . PHP_EOL;
+            $output .= "{$this->searchGroupedClasses($dependerName)} --> {$this->searchGroupedClasses($dependeeName)}" . PHP_EOL;
         }
 
         $output .= '@enduml';

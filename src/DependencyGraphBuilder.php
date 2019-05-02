@@ -12,6 +12,7 @@ use DependencyAnalyzer\DependencyGraph\DependencyTypes\NewObject;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\PropertyFetch;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\SomeDependency;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\UseTrait;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 use DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraphBuilder\ObserverInterface;
 use DependencyAnalyzer\DependencyGraphBuilder\UnknownReflectionClass;
@@ -45,11 +46,12 @@ class DependencyGraphBuilder
 
     protected function getVertex(ReflectionClass $class): Vertex
     {
-        if ($this->graph->hasVertex($class->getName())) {
-            return $this->graph->getVertex($class->getName());
+        $vertexId = FullyQualifiedStructuralElementName::createClass($class->getName())->toString();
+        if ($this->graph->hasVertex($vertexId)) {
+            return $this->graph->getVertex($vertexId);
         }
 
-        $vertex = $this->graph->createVertex($class->getName());
+        $vertex = $this->graph->createVertex($vertexId);
         $vertex->setAttribute('reflection', $class);
         $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class));
         $vertex->setAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL, $this->extraPhpDocTagResolver->resolveDepsInternalTag($class));
@@ -59,8 +61,9 @@ class DependencyGraphBuilder
 
     protected function getUnknownClassVertex(string $className): Vertex
     {
-        if ($this->graph->hasVertex($className)) {
-            $vertex = $this->graph->getVertex($className);
+        $vertexId = FullyQualifiedStructuralElementName::createClass($className)->toString();
+        if ($this->graph->hasVertex($vertexId)) {
+            $vertex = $this->graph->getVertex($vertexId);
             if (!$vertex->getAttribute('reflection') instanceof UnknownReflectionClass) {
                 throw new LogicException("{$className} is not UnknownClassReflection");
             }
@@ -68,7 +71,7 @@ class DependencyGraphBuilder
             return $vertex;
         }
 
-        $vertex = $this->graph->createVertex($className);
+        $vertex = $this->graph->createVertex($vertexId);
         $vertex->setAttribute('reflection', new UnknownReflectionClass($className));
         $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, []);
         $vertex->setAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL, []);

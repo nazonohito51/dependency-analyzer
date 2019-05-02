@@ -25,14 +25,24 @@ class DependencyArrow
         $this->edge = $edge;
     }
 
+    public function getDependerName(): string
+    {
+        return $this->edge->getVertexStart()->getId();
+    }
+
+    public function getDependeeName(): string
+    {
+        return $this->edge->getVertexEnd()->getId();
+    }
+
     public function getDependerClass(): Class_
     {
-        return FQSEN::createClass($this->edge->getVertexStart()->getId());
+        return FQSEN::createClass($this->getDependerName());
     }
 
     public function getDependeeClass(): Class_
     {
-        return FQSEN::createClass($this->edge->getVertexEnd()->getId());
+        return FQSEN::createClass($this->getDependeeName());
     }
 
     public function getDependencies(): array
