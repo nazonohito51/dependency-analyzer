@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
+use DependencyAnalyzer\DependencyGraph\DependencyArrow;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base as DependencyType;
 use DependencyAnalyzer\DependencyGraph\Path;
 use DependencyAnalyzer\Exceptions\InvalidEdgeOnDependencyGraphException;
@@ -50,9 +51,18 @@ class DependencyGraph implements \Countable
         return $this->graph->getVertices();
     }
 
-    public function getDependencyArrows()
+    /**
+     * @return DependencyArrow[]
+     */
+    public function getDependencyArrows(): array
     {
-        return $this->graph->getEdges();
+        $ret = [];
+
+        foreach ($this->graph->getEdges() as $edge) {
+            $ret[] = new DependencyArrow($edge);
+        }
+
+        return $ret;
     }
 
     public function groupByPattern(string $name, StructuralElementPatternMatcher $pattern)
@@ -67,9 +77,8 @@ class DependencyGraph implements \Countable
         }
 
         foreach ($this->getDependencyArrows() as $dependencyArrow) {
-            /** @var Directed $dependencyArrow */
-            $start = $pattern->isMatch($dependencyArrow->getVertexStart()->getId()) ? $name : $dependencyArrow->getVertexStart()->getId();
-            $end = $pattern->isMatch($dependencyArrow->getVertexEnd()->getId()) ? $name : $dependencyArrow->getVertexEnd()->getId();
+            $start = $pattern->isMatch($dependencyArrow->getDependerClass()->toString()) ? $name : $dependencyArrow->getDependerClass()->toString();
+            $end = $pattern->isMatch($dependencyArrow->getDependeeClass()->toString()) ? $name : $dependencyArrow->getDependeeClass()->toString();
 
             if ($start !== $end && !$graph->getVertex($start)->hasEdgeTo($graph->getVertex($end))) {
                 $graph->getVertex($start)->createEdgeTo($graph->getVertex($end));

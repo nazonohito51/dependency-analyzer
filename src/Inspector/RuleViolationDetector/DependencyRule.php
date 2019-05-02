@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
 use DependencyAnalyzer\DependencyGraph;
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base as FQSEN;
 use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
 use DependencyAnalyzer\Inspector\Responses\VerifyDependencyResponse;
 use Fhaculty\Graph\Vertex;
@@ -44,8 +45,8 @@ class DependencyRule
         $response = new VerifyDependencyResponse($this->getRuleName());
 
         foreach ($graph->getDependencyArrows() as $edge) {
-            $depender = $edge->getVertexStart();
-            $dependee = $edge->getVertexEnd();
+            $depender = $edge->getDependerClass();
+            $dependee = $edge->getDependeeClass();
 
             // TODO: add exclude rule
             if (is_null($this->getComponentName($depender)) || is_null($this->getComponentName($dependee))) {
@@ -53,24 +54,24 @@ class DependencyRule
             }
 
             foreach ($this->components as $component) {
-                if ($component->isBelongedTo($dependee->getId())) {
-                    if (!$component->verifyDepender($depender->getId())) {
+                if ($component->isBelongedTo($dependee->toString())) {
+                    if (!$component->verifyDepender($depender->toString())) {
                         $response->addRuleViolation(
                             $this->getComponent($depender)->getName(),
-                            $depender->getId(),
+                            $depender->toString(),
                             $this->getComponent($dependee)->getName(),
-                            $dependee->getId()
+                            $dependee->toString()
                         );
                     }
                 }
 
-                if ($component->isBelongedTo($depender->getId())) {
-                    if (!$component->verifyDependee($dependee->getId())) {
+                if ($component->isBelongedTo($depender->toString())) {
+                    if (!$component->verifyDependee($dependee->toString())) {
                         $response->addRuleViolation(
                             $this->getComponent($depender)->getName(),
-                            $depender->getId(),
+                            $depender->toString(),
                             $this->getComponent($dependee)->getName(),
-                            $dependee->getId()
+                            $dependee->toString()
                         );
                     }
                 }
@@ -80,15 +81,15 @@ class DependencyRule
         return $response;
     }
 
-    protected function getComponentName(Vertex $vertex): ?string
+    protected function getComponentName(FQSEN $fqsen): ?string
     {
-        return $this->getComponent($vertex) ? $this->getComponent($vertex)->getName() : null;
+        return $this->getComponent($fqsen) ? $this->getComponent($fqsen)->getName() : null;
     }
 
-    protected function getComponent(Vertex $vertex): ?Component
+    protected function getComponent(FQSEN $fqsen): ?Component
     {
         foreach ($this->components as $component) {
-            if ($component->isBelongedTo($vertex->getId())) {
+            if ($component->isBelongedTo($fqsen->toString())) {
                 return $component;
             }
         }
