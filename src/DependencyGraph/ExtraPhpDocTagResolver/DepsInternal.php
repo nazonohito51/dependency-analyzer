@@ -24,6 +24,11 @@ class DepsInternal
      */
     protected $targets = [];
 
+    /**
+     * DepsInternal constructor.
+     * @param FQSEN $fqsen
+     * @param string[] $options
+     */
     public function __construct(FQSEN $fqsen, array $options = [])
     {
         $this->fqsen = $fqsen;
@@ -49,5 +54,10 @@ class DepsInternal
     public function getTargets(): array
     {
         return $this->targets;
+    }
+
+    public function getTargetsAsString(): array
+    {
+        return $this->options;
     }
 }

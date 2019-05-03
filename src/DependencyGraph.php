@@ -145,18 +145,6 @@ class DependencyGraph implements \Countable
         }
     }
 
-    public function getClassesHaveOnlyUsedTag(): array
-    {
-        $classes = [];
-        foreach ($this->getClasses() as $class) {
-            if (!empty($classNames = $class->getCanOnlyUsedByTag())) {
-                $classes[$class->getName()] = $classNames;
-            }
-        }
-
-        return $classes;
-    }
-
     public function toArray()
     {
         $ret = [];

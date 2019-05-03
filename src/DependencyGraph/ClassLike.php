@@ -30,14 +30,6 @@ class ClassLike
     }
 
     /**
-     * @return string[]
-     */
-    public function getCanOnlyUsedByTag(): array
-    {
-        return $this->vertex->getAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS);
-    }
-
-    /**
      * @return DepsInternal[]
      */
     public function getDepsInternalTag(): array

@@ -98,18 +98,29 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
     protected function createRuleDefinitionFromPhpDoc(DependencyGraph $graph): array
     {
         $ruleDefinitions = [];
-        foreach ($graph->getClassesHaveOnlyUsedTag() as $class => $classesInPhpDoc) {
-            $ruleDefinitions['phpdoc in ' . $class] = [
-                'phpdoc' => [
-                    'define' => [$class],
-                    'depender' => $classesInPhpDoc
-                ],
-                'other' => [
-                    'define' => array_map(function (string $className) {
-                        return "!{$className}";
-                    }, $classesInPhpDoc),
-                ]
-            ];
+
+        foreach ($graph->getClasses() as $class) {
+            if (!empty($depsInternals = $class->getDepsInternalTag())) {
+                $definePattern = [];
+                $extraPatterns = [];
+                foreach ($depsInternals as $depsInternal) {
+                    $calleeName = $depsInternal->getFqsen()->toString();
+                    if (!in_array($calleeName, $definePattern)) {
+                        $definePattern[] = $calleeName;
+                    }
+                    $extraPatterns[$calleeName] = $depsInternal->getTargetsAsString();
+                }
+                $ruleDefinitions['phpdoc in ' . $class->getName()] = [
+                    'phpdoc' => [
+                        'define' => $definePattern,
+                        'depender' => ['!\\'],
+                        'extra' => $extraPatterns
+                    ],
+                    'other' => [
+                        'define' => ['!' . $class->getName()],
+                    ]
+                ];
+            }
         }
 
         return $ruleDefinitions;

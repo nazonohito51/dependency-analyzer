@@ -145,24 +145,25 @@ class ExtraPhpDocTagResolver
         $reflectionClass->getDocComment();
     }
 
-    public function resolveCanOnlyUsedByTag(\ReflectionClass $classReflection): array
+    /**
+     * @param \ReflectionClass $reflectionClass
+     * @return DepsInternal[]
+     */
+    public function resolveCanOnlyUsedByTag(\ReflectionClass $reflectionClass): array
     {
-        if ($phpdoc = $classReflection->getDocComment()) {
-            return $this->resolve($phpdoc, self::ONLY_USED_BY_TAGS);
+        $ret = [];
+        if ($this->haveTag($reflectionClass, self::ONLY_USED_BY_TAGS)) {
+            try {
+                $ret[] = new DepsInternal(
+                    FQSEN::createClass($reflectionClass->getName()),
+                    $this->resolve($reflectionClass->getDocComment(), self::ONLY_USED_BY_TAGS)
+                );
+            } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+                $this->notifyError($reflectionClass->getFileName(), $reflectionClass->getName(), $e);
+            }
         }
 
-        return [];
-//        $ret = [];
-//        if ($phpdoc = $classReflection->getNativeReflection()->getDocComment()) {
-//            $ret['class_must_have_special_chars_of_method'] = $this->resolve($phpdoc, self::ONLY_USED_BY_TAGS);
-//        }
-//
-//        foreach ($classReflection->getNativeReflection()->getMethods() as $reflectionMethod) {
-//            $phpdoc = $reflectionMethod->getDocComment();  // /**\n  * Hogefuga
-//            $ret[$reflectionMethod->getName()] = $this->resolve($phpdoc, self::ONLY_USED_BY_TAGS);
-//        }
-//
-//        return [];
+        return $ret;
     }
 
     /**

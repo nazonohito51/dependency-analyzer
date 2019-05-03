@@ -53,8 +53,10 @@ class DependencyGraphBuilder
 
         $vertex = $this->graph->createVertex($vertexId);
         $vertex->setAttribute('reflection', $class);
-        $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class));
-        $vertex->setAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL, $this->extraPhpDocTagResolver->resolveDepsInternalTag($class));
+        $vertex->setAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL, array_merge(
+            $this->extraPhpDocTagResolver->resolveDepsInternalTag($class),
+            $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class)
+        ));
 
         return $vertex;
     }
@@ -73,7 +75,6 @@ class DependencyGraphBuilder
 
         $vertex = $this->graph->createVertex($vertexId);
         $vertex->setAttribute('reflection', new UnknownReflectionClass($className));
-        $vertex->setAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS, []);
         $vertex->setAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL, []);
 
         return $vertex;

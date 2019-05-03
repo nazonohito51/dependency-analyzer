@@ -164,6 +164,15 @@ class Component
         if (!is_null($this->dependeeMatcher)) {
             $ret['dependee'] = $this->dependeeMatcher->toArray();
         }
+        if (!is_null($this->publicMatcher)) {
+            $ret['public'] = $this->publicMatcher->toArray();
+        }
+        if (!empty($this->extraPatterns)) {
+            $ret['extra'] = [];
+            foreach ($this->extraPatterns as $callee => $callerPattern) {
+                $ret['extra'][$callee] = $callerPattern->toArray();
+            }
+        }
 
         return $ret;
     }
