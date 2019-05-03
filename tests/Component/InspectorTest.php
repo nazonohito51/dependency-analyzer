@@ -280,6 +280,63 @@ class InspectorTest extends TestCase
                         'dependee' => '\Domain\Class1::$calleeProperty'
                     ]
                 ]
+            ],
+            'have extra(valid)' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\'],
+                        'depender' => ['!\\'],
+                        'extra' => [
+                            '\Application\Class1::calleeMethod()' => ['\Controller\Dir\Class2']
+                        ],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                        'depender' => ['!\\'],
+                        'extra' => [
+                            '\Domain\Class1::$calleeProperty' => ['\Application\Dir\Class2']
+                        ],
+                    ]
+                ],
+                []
+            ],
+            'have extra(invalid)' => [
+                [
+                    'ControllerLayer' => [
+                        'define' => ['\Controller\\'],
+                    ],
+                    'ApplicationLayer' => [
+                        'define' => ['\Application\\'],
+                        'depender' => ['!\\'],
+                        'extra' => [
+                            '\Application\Class1::$calleeProperty' => ['\Controller\Dir\Class2']
+                        ],
+                    ],
+                    'DomainLayer' => [
+                        'define' => ['\Domain\\'],
+                        'depender' => ['!\\'],
+                        'extra' => [
+                            '\Domain\Class1::calleeMethod()' => ['\Application\Dir\Class2']
+                        ],
+                    ]
+                ],
+                [
+                    [
+                        'dependerComponent' => 'ControllerLayer',
+                        'depender' => '\Controller\Dir\Class2::callerMethod()',
+                        'dependeeComponent' => 'ApplicationLayer',
+                        'dependee' => '\Application\Class1::calleeMethod()'
+                    ],
+                    [
+                        'dependerComponent' => 'ApplicationLayer',
+                        'depender' => '\Application\Dir\Class2::callerMethod()',
+                        'dependeeComponent' => 'DomainLayer',
+                        'dependee' => '\Domain\Class1::$calleeProperty'
+                    ]
+                ]
             ]
 //            'exclude analysis list(valid)' => [
 //                [

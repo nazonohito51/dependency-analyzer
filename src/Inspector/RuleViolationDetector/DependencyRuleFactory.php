@@ -38,12 +38,19 @@ class DependencyRuleFactory
             $depender = isset($componentDefinition['depender']) ? $this->createMatcher($componentDefinition['depender'], $componentDefines) : null;
             $dependee = isset($componentDefinition['dependee']) ? $this->createMatcher($componentDefinition['dependee'], $componentDefines) : null;
             $public = isset($componentDefinition['public']) ? $this->createMatcher($componentDefinition['public'], $componentDefines) : null;
+            $extras = [];
+            if (isset($componentDefinition['extra'])) {
+                foreach ($componentDefinition['extra'] as $callee => $callerPattern) {
+                    $extras[$callee] = $this->createMatcher($callerPattern, $componentDefines);
+                }
+            }
             $components[] = new Component(
                 $componentName,
                 new StructuralElementPatternMatcher($componentDefinition['define']),
                 $depender,
                 $dependee,
-                $public
+                $public,
+                $extras
             );
         }
         return new DependencyRule($ruleName, $components);
