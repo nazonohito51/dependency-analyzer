@@ -42,7 +42,7 @@ class ClassLike
      */
     public function getDepsInternalTag(): array
     {
-        return $this->vertex->getAttribute(ExtraPhpDocTagResolver::ONLY_USED_BY_TAGS);
+        return $this->vertex->getAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL);
     }
 
     public function __toString(): string
