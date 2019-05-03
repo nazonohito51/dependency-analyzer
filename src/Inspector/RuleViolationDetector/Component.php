@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\Inspector\RuleViolationDetector;
 
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base as FQSEN;
 use DependencyAnalyzer\DependencyGraph\StructuralElementPatternMatcher;
+use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
+use DependencyAnalyzer\Exceptions\InvalidQualifiedNamePatternException;
 
 class Component
 {
@@ -38,18 +41,35 @@ class Component
      */
     protected $attributes = [];
 
+    /**
+     * @var StructuralElementPatternMatcher[]
+     */
+    protected $extraPatterns = [];
+
     public function __construct(
         string $name,
         StructuralElementPatternMatcher $pattern,
         StructuralElementPatternMatcher $dependerPatterns = null,
         StructuralElementPatternMatcher $dependeePatterns = null,
-        StructuralElementPatternMatcher $publicPattern = null
+        StructuralElementPatternMatcher $publicPattern = null,
+        array $extraPatterns = null
     ) {
         $this->name = $name;
         $this->matcher = $pattern;
-        $this->publicMatcher = $publicPattern;
         $this->dependerMatcher = $dependerPatterns;
         $this->dependeeMatcher = $dependeePatterns;
+        $this->publicMatcher = $publicPattern;
+
+        if (!is_null($extraPatterns)) {
+            try {
+                foreach ($extraPatterns as $callee => $callerPattern) {
+                    FullyQualifiedStructuralElementName::createFromString($callee);
+                }
+            } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+                throw new InvalidQualifiedNamePatternException($callee);
+            }
+            $this->extraPatterns = $extraPatterns;
+        }
     }
 
     public function getName(): string
@@ -71,6 +91,10 @@ class Component
     {
         if ($this->isBelongedTo($depender->toString())) {
             return true;
+        }
+
+        if (!is_null($extraPattern = $this->getExtraPattern($dependee))) {
+            return $extraPattern->isMatchWithFQSEN($depender);
         }
 
         return (
@@ -104,6 +128,18 @@ class Component
         }
 
         return false;
+    }
+
+    protected function getExtraPattern(FQSEN $dependee): ?StructuralElementPatternMatcher
+    {
+        foreach ($this->extraPatterns as $callee => $callerPattern) {
+            $calleeFQSEN = FullyQualifiedStructuralElementName::createFromString($callee);
+            if ($calleeFQSEN->include($dependee)) {
+                return $this->extraPatterns[$callee];
+            }
+        }
+
+        return null;
     }
 
     public function setAttribute(string $key, $name): void
