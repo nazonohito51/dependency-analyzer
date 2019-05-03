@@ -183,8 +183,8 @@ class UmlFormatter
         $classNames = [];
 
         foreach ($graph->getClasses() as $class) {
-            $key = $this->getBelongToComponent($class->getId(), $components);
-            $classNames[$key][] = $class->getId();
+            $key = $this->getBelongToComponent($class->getName(), $components);
+            $classNames[$key][] = $class->getName();
 //            $classNames[] = $class->getId();
         }
 //        sort($classNames);

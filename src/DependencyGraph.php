@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer;
 
+use DependencyAnalyzer\DependencyGraph\ClassLike;
 use DependencyAnalyzer\DependencyGraph\DependencyArrow;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\Base as DependencyType;
 use DependencyAnalyzer\DependencyGraph\Path;
@@ -46,9 +47,17 @@ class DependencyGraph implements \Countable
         return $this->graph;
     }
 
-    public function getClasses()
+    /**
+     * @return ClassLike[]
+     */
+    public function getClasses(): array
     {
-        return $this->graph->getVertices();
+        $ret = [];
+        foreach ($this->graph->getVertices() as $vertex) {
+            $ret[] = new ClassLike($vertex);
+        }
+
+        return $ret;
     }
 
     /**
@@ -70,9 +79,8 @@ class DependencyGraph implements \Countable
         $graph = new Graph();
         $graph->createVertex($name);
         foreach ($this->getClasses() as $class) {
-            /** @var Vertex $class */
-            if (!$pattern->isMatch($class->getId())) {
-                $graph->createVertex($class->getId());
+            if (!$pattern->isMatch($class->getName())) {
+                $graph->createVertex($class->getName());
             }
         }
 
@@ -141,9 +149,8 @@ class DependencyGraph implements \Countable
     {
         $classes = [];
         foreach ($this->getClasses() as $class) {
-            /** @var Vertex $class */
-            if (!empty($classNames = $class->getAttribute('@canOnlyUsedBy'))) {
-                $classes[$class->getId()] = $classNames;
+            if (!empty($classNames = $class->getCanOnlyUsedByTag())) {
+                $classes[$class->getName()] = $classNames;
             }
         }
 
