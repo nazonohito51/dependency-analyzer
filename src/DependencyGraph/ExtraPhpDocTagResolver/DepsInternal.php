@@ -12,7 +12,7 @@ class DepsInternal
     /**
      * @var FQSEN
      */
-    protected $fqden;
+    protected $fqsen;
 
     /**
      * @var array
@@ -24,9 +24,9 @@ class DepsInternal
      */
     protected $targets = [];
 
-    public function __construct(FQSEN $fqden, array $options = [])
+    public function __construct(FQSEN $fqsen, array $options = [])
     {
-        $this->fqden = $fqden;
+        $this->fqsen = $fqsen;
         $this->options = $options;
 
         try {
@@ -38,9 +38,9 @@ class DepsInternal
         }
     }
 
-    public function getEqsen(): FQSEN
+    public function getFqsen(): FQSEN
     {
-        return $this->fqden;
+        return $this->fqsen;
     }
 
     /**
