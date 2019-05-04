@@ -80,7 +80,7 @@ class DependencyArrow
                     $this->getDependerClass()->createMethodFQSEN($dependencyType->getCaller()) :
                     $this->getDependerClass();
 
-                $ret[] = [$callerFQSEN, $this->getDependeeClass()];
+                $ret[] = [$callerFQSEN, $this->getDependeeClass()->createMethodFQSEN('__construct')];
             } else {
                 $ret[] = [$this->getDependerClass(), $this->getDependeeClass()];
             }
