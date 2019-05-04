@@ -7,6 +7,14 @@ use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 
 class Namespace_ extends Base
 {
+    public function __construct(string $elementName)
+    {
+        if (substr($elementName, -1) !== '\\') {
+            $elementName .= '\\';
+        }
+        parent::__construct($elementName);
+    }
+
     public function getType(): string
     {
         return FullyQualifiedStructuralElementName::TYPE_NAMESPACE;
