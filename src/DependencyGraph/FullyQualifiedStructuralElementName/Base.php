@@ -7,8 +7,8 @@ abstract class Base
 {
     abstract public function getType(): string;
     abstract public function include(Base $that): bool;
-    abstract public function getFullyQualifiedNamespaceName(): array;
-    abstract public function getFullyQualifiedClassName(): ?array;
+    abstract public function getFullyQualifiedNamespaceNameAsArray(): array;
+    abstract public function getFullyQualifiedClassNameAsArray(): ?array;
 
     /**
      * @var string

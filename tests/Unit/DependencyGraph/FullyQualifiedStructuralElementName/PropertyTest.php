@@ -50,7 +50,7 @@ class PropertyTest extends TestCase
         $this->assertSame($expected, $sut->include($target));
     }
 
-    public function provideGetFullyQualifiedNamespaceName()
+    public function provideGetFullyQualifiedNamespaceNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass::$propertyName', ['Tests', 'Fixtures', 'FullyQualifiedStructuralElementName']],
@@ -61,16 +61,16 @@ class PropertyTest extends TestCase
     /**
      * @param string $propertyName
      * @param array $expected
-     * @dataProvider provideGetFullyQualifiedNamespaceName
+     * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
     public function testGetFullyQualifiedNamespaceName(string $propertyName, array $expected)
     {
         $sut = new Property($propertyName);
 
-        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceNameAsArray());
     }
 
-    public function provideGetFullyQualifiedClassName()
+    public function provideGetFullyQualifiedClassNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass::$someProperty', ['Tests', 'Fixtures', 'FullyQualifiedStructuralElementName', 'SomeClass']],
@@ -81,12 +81,12 @@ class PropertyTest extends TestCase
     /**
      * @param string $propertyName
      * @param array $expected
-     * @dataProvider provideGetFullyQualifiedClassName
+     * @dataProvider provideGetFullyQualifiedClassNameAsArray
      */
     public function testGetFullyQualifiedClassName(string $propertyName, array $expected)
     {
         $sut = new Property($propertyName);
 
-        $this->assertSame($expected, $sut->getFullyQualifiedClassName());
+        $this->assertSame($expected, $sut->getFullyQualifiedClassNameAsArray());
     }
 }

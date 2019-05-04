@@ -54,7 +54,7 @@ class Namespace_Test extends TestCase
         $this->assertSame($expected, $sut->include($target));
     }
 
-    public function provideGetFullyQualifiedNamespaceName()
+    public function provideGetFullyQualifiedNamespaceNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\\', ['Tests', 'Fixtures', 'FullyQualifiedStructuralElementName']],
@@ -66,16 +66,16 @@ class Namespace_Test extends TestCase
     /**
      * @param string $namespaceName
      * @param array $expected
-     * @dataProvider provideGetFullyQualifiedNamespaceName
+     * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
     public function testGetFullyQualifiedNamespaceName(string $namespaceName, array $expected)
     {
         $sut = new Namespace_($namespaceName);
 
-        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceNameAsArray());
     }
 
-    public function provideGetFullyQualifiedClassName()
+    public function provideGetFullyQualifiedClassNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\\'],
@@ -86,12 +86,12 @@ class Namespace_Test extends TestCase
 
     /**
      * @param string $namespaceName
-     * @dataProvider provideGetFullyQualifiedClassName
+     * @dataProvider provideGetFullyQualifiedClassNameAsArray
      */
     public function testGetFullyQualifiedClassName(string $namespaceName)
     {
         $sut = new Namespace_($namespaceName);
 
-        $this->assertNull($sut->getFullyQualifiedClassName());
+        $this->assertNull($sut->getFullyQualifiedClassNameAsArray());
     }
 }

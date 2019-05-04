@@ -19,12 +19,12 @@ class Namespace_ extends Base
             return true;
         } elseif ($this->isSame($that)) {
             return true;
-        } elseif (count($this->getFullyQualifiedNamespaceName()) > count($this->getFullyQualifiedNamespaceName())) {
+        } elseif (count($this->getFullyQualifiedNamespaceNameAsArray()) > count($this->getFullyQualifiedNamespaceNameAsArray())) {
             return false;
         }
 
-        $namesOfThat = $that->getFullyQualifiedNamespaceName();
-        foreach ($this->getFullyQualifiedNamespaceName() as $index => $name) {
+        $namesOfThat = $that->getFullyQualifiedNamespaceNameAsArray();
+        foreach ($this->getFullyQualifiedNamespaceNameAsArray() as $index => $name) {
             if (!isset($namesOfThat[$index]) || $namesOfThat[$index] !== $name) {
                 return false;
             }
@@ -38,7 +38,7 @@ class Namespace_ extends Base
         return true;
     }
 
-    public function getFullyQualifiedNamespaceName(): array
+    public function getFullyQualifiedNamespaceNameAsArray(): array
     {
         if ($this->toString() === '\\') {
             return [];
@@ -47,7 +47,7 @@ class Namespace_ extends Base
         return explode('\\', trim($this->toString(), '\\'));
     }
 
-    public function getFullyQualifiedClassName(): ?array
+    public function getFullyQualifiedClassNameAsArray(): ?array
     {
         return null;
     }

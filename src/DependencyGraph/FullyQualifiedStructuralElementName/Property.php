@@ -22,15 +22,15 @@ class Property extends Base
         return true;
     }
 
-    public function getFullyQualifiedNamespaceName(): array
+    public function getFullyQualifiedNamespaceNameAsArray(): array
     {
-        $names = $this->getFullyQualifiedClassName();
+        $names = $this->getFullyQualifiedClassNameAsArray();
         array_pop($names);
 
         return $names;
     }
 
-    public function getFullyQualifiedClassName(): ?array
+    public function getFullyQualifiedClassNameAsArray(): ?array
     {
         list($fqcn, $property) = explode('::', $this->toString(), 2);
         return explode('\\', substr($fqcn, 1));

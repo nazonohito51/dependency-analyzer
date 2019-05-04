@@ -49,7 +49,7 @@ class Interface_Test extends TestCase
         $this->assertSame($expected, $sut->include($target));
     }
 
-    public function provideGetFullyQualifiedNamespaceName()
+    public function provideGetFullyQualifiedNamespaceNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeInterface', ['Tests', 'Fixtures', 'FullyQualifiedStructuralElementName']],
@@ -60,16 +60,16 @@ class Interface_Test extends TestCase
     /**
      * @param string $interfaceName
      * @param array $expected
-     * @dataProvider provideGetFullyQualifiedNamespaceName
+     * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
     public function testGetFullyQualifiedNamespaceName(string $interfaceName, array $expected)
     {
         $sut = new Interface_($interfaceName);
 
-        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceNameAsArray());
     }
 
-    public function provideGetFullyQualifiedClassName()
+    public function provideGetFullyQualifiedClassNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeInterface', ['Tests', 'Fixtures', 'FullyQualifiedStructuralElementName', 'SomeInterface']],
@@ -80,12 +80,12 @@ class Interface_Test extends TestCase
     /**
      * @param string $className
      * @param array $expected
-     * @dataProvider provideGetFullyQualifiedClassName
+     * @dataProvider provideGetFullyQualifiedClassNameAsArray
      */
-    public function testGetFullyQualifiedClassName(string $className, array $expected)
+    public function testGetFullyQualifiedClassNameAsArray(string $className, array $expected)
     {
         $sut = new Interface_($className);
 
-        $this->assertSame($expected, $sut->getFullyQualifiedClassName());
+        $this->assertSame($expected, $sut->getFullyQualifiedClassNameAsArray());
     }
 }

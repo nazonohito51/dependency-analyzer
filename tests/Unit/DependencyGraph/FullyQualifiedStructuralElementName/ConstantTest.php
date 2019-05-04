@@ -49,7 +49,7 @@ class ConstantTest extends TestCase
         $this->assertSame($expected, $sut->include($target));
     }
 
-    public function provideGetFullyQualifiedNamespaceName()
+    public function provideGetFullyQualifiedNamespaceNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SOME_CONSTANT', ['Tests', 'Fixtures', 'FullyQualifiedStructuralElementName']],
@@ -60,16 +60,16 @@ class ConstantTest extends TestCase
     /**
      * @param string $constantName
      * @param array $expected
-     * @dataProvider provideGetFullyQualifiedNamespaceName
+     * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
     public function testGetFullyQualifiedNamespaceName(string $constantName, array $expected)
     {
         $sut = new Constant($constantName);
 
-        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceNameAsArray());
     }
 
-    public function provideGetFullyQualifiedClassName()
+    public function provideGetFullyQualifiedClassNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SOME_CONSTANT'],
@@ -79,12 +79,12 @@ class ConstantTest extends TestCase
 
     /**
      * @param string $className
-     * @dataProvider provideGetFullyQualifiedClassName
+     * @dataProvider provideGetFullyQualifiedClassNameAsArray
      */
     public function testGetFullyQualifiedClassName(string $className)
     {
         $sut = new Constant($className);
 
-        $this->assertNull($sut->getFullyQualifiedClassName());
+        $this->assertNull($sut->getFullyQualifiedClassNameAsArray());
     }
 }

@@ -14,7 +14,7 @@ class Class_ extends Base
 
     public function include(Base $that): bool
     {
-        return $this->getFullyQualifiedClassName() === $that->getFullyQualifiedClassName();
+        return $this->getFullyQualifiedClassNameAsArray() === $that->getFullyQualifiedClassNameAsArray();
     }
 
     public function isClass(): bool
@@ -22,15 +22,15 @@ class Class_ extends Base
         return true;
     }
 
-    public function getFullyQualifiedNamespaceName(): array
+    public function getFullyQualifiedNamespaceNameAsArray(): array
     {
-        $names = $this->getFullyQualifiedClassName();
+        $names = $this->getFullyQualifiedClassNameAsArray();
         array_pop($names);
 
         return $names;
     }
 
-    public function getFullyQualifiedClassName(): ?array
+    public function getFullyQualifiedClassNameAsArray(): ?array
     {
         return explode('\\', substr($this->toString(), 1));
     }

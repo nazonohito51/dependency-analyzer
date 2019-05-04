@@ -49,7 +49,7 @@ class Trait_Test extends TestCase
         $this->assertSame($expected, $sut->include($target));
     }
 
-    public function provideGetFullyQualifiedNamespaceName()
+    public function provideGetFullyQualifiedNamespaceNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeTrait', ['Tests', 'Fixtures', 'FullyQualifiedStructuralElementName']],
@@ -60,16 +60,16 @@ class Trait_Test extends TestCase
     /**
      * @param string $traitName
      * @param array $expected
-     * @dataProvider provideGetFullyQualifiedNamespaceName
+     * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
     public function testGetFullyQualifiedNamespaceName(string $traitName, array $expected)
     {
         $sut = new Class_($traitName);
 
-        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceNameAsArray());
     }
 
-    public function provideGetFullyQualifiedClassName()
+    public function provideGetFullyQualifiedClassNameAsArray()
     {
         return [
             ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeTrait', ['Tests', 'Fixtures', 'FullyQualifiedStructuralElementName', 'SomeTrait']],
@@ -80,12 +80,12 @@ class Trait_Test extends TestCase
     /**
      * @param string $traitName
      * @param array $expected
-     * @dataProvider provideGetFullyQualifiedClassName
+     * @dataProvider provideGetFullyQualifiedClassNameAsArray
      */
     public function testGetFullyQualifiedClassName(string $traitName, array $expected)
     {
         $sut = new Class_($traitName);
 
-        $this->assertSame($expected, $sut->getFullyQualifiedClassName());
+        $this->assertSame($expected, $sut->getFullyQualifiedClassNameAsArray());
     }
 }

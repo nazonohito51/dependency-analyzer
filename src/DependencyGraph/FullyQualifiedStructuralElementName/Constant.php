@@ -22,7 +22,7 @@ class Constant extends Base
         return true;
     }
 
-    public function getFullyQualifiedNamespaceName(): array
+    public function getFullyQualifiedNamespaceNameAsArray(): array
     {
         $names = explode('\\', substr($this->toString(), 1));
         array_pop($names);
@@ -30,7 +30,7 @@ class Constant extends Base
         return $names;
     }
 
-    public function getFullyQualifiedClassName(): ?array
+    public function getFullyQualifiedClassNameAsArray(): ?array
     {
         return null;
     }
