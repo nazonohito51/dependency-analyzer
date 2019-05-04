@@ -32,6 +32,10 @@ class DependencyGraph implements \Countable
      */
     private $graph;
 
+    /**
+     * @param Graph $graph
+     * @deps-internal \DependencyAnalyzer\DependencyGraphBuilder
+     */
     public function __construct(Graph $graph)
     {
         foreach ($graph->getEdges() as $edge) {

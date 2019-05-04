@@ -20,6 +20,7 @@ abstract class Base
     /**
      * @param string $elementName
      * @deps-internal \DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName
+     * @deps-internal \DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\
      */
     public function __construct(string $elementName)
     {

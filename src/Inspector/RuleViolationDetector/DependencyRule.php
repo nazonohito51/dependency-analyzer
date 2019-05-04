@@ -29,6 +29,11 @@ class DependencyRule
      */
     private $ruleName;
 
+    /**
+     * @param string $ruleName
+     * @param array $components
+     * @deps-internal \DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory
+     */
     public function __construct(string $ruleName, array $components)
     {
         $this->ruleName = $ruleName;

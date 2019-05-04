@@ -7,6 +7,10 @@ use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 
 class Namespace_ extends Base
 {
+    /**
+     * @param string $elementName
+     * @inheritDoc
+     */
     public function __construct(string $elementName)
     {
         if (substr($elementName, -1) !== '\\') {
