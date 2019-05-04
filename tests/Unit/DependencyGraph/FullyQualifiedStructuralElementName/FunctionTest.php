@@ -62,7 +62,7 @@ class Function_Test extends TestCase
      * @param array $expected
      * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
-    public function testGetFullyQualifiedNamespaceName(string $functionName, array $expected)
+    public function testGetFullyQualifiedNamespaceNameAsArray(string $functionName, array $expected)
     {
         $sut = new Function_($functionName);
 

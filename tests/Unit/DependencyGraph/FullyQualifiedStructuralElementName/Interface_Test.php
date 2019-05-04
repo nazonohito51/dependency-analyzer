@@ -62,7 +62,7 @@ class Interface_Test extends TestCase
      * @param array $expected
      * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
-    public function testGetFullyQualifiedNamespaceName(string $interfaceName, array $expected)
+    public function testGetFullyQualifiedNamespaceNameAsArray(string $interfaceName, array $expected)
     {
         $sut = new Interface_($interfaceName);
 

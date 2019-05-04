@@ -63,7 +63,7 @@ class MethodTest extends TestCase
      * @param array $expected
      * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
-    public function testGetFullyQualifiedNamespaceName(string $methodName, array $expected)
+    public function testGetFullyQualifiedNamespaceNameAsArray(string $methodName, array $expected)
     {
         $sut = new Method($methodName);
 

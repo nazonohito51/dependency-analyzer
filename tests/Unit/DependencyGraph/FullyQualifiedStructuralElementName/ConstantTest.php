@@ -62,7 +62,7 @@ class ConstantTest extends TestCase
      * @param array $expected
      * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
-    public function testGetFullyQualifiedNamespaceName(string $constantName, array $expected)
+    public function testGetFullyQualifiedNamespaceNameAsArray(string $constantName, array $expected)
     {
         $sut = new Constant($constantName);
 

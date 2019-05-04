@@ -62,7 +62,7 @@ class Trait_Test extends TestCase
      * @param array $expected
      * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
-    public function testGetFullyQualifiedNamespaceName(string $traitName, array $expected)
+    public function testGetFullyQualifiedNamespaceNameAsArray(string $traitName, array $expected)
     {
         $sut = new Class_($traitName);
 

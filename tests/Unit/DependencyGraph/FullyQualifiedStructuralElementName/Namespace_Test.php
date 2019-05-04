@@ -68,7 +68,7 @@ class Namespace_Test extends TestCase
      * @param array $expected
      * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
-    public function testGetFullyQualifiedNamespaceName(string $namespaceName, array $expected)
+    public function testGetFullyQualifiedNamespaceNameAsArray(string $namespaceName, array $expected)
     {
         $sut = new Namespace_($namespaceName);
 

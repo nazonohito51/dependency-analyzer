@@ -63,7 +63,7 @@ class PropertyTest extends TestCase
      * @param array $expected
      * @dataProvider provideGetFullyQualifiedNamespaceNameAsArray
      */
-    public function testGetFullyQualifiedNamespaceName(string $propertyName, array $expected)
+    public function testGetFullyQualifiedNamespaceNameAsArray(string $propertyName, array $expected)
     {
         $sut = new Property($propertyName);
 
