@@ -5,18 +5,21 @@ return [
         'commands' => [
             'define' => ['\DependencyAnalyzer\Commands\\'],
             'description' => 'CLI application commands. Control CLI input/output.',
+            'public' => [],
             'depender' => ['!\DependencyAnalyzer\\'],
             'graph' => ['namespace', 'folding', 'description']
         ],
         'dependency_dumper' => [
             'define' => ['\DependencyAnalyzer\DependencyDumper', '\DependencyAnalyzer\DependencyDumper\\'],
             'description' => ['Analyze repository, and build DependencyGraph'],
+            'public' => ['\DependencyAnalyzer\DependencyDumper', '\DependencyAnalyzer\DependencyDumper\ObserverInterface'],
             'depender' => ['commands'],
             'graph' => ['namespace', 'folding', 'description']
         ],
         'graph_builder' => [
             'define' => ['\DependencyAnalyzer\DependencyGraphBuilder', '\DependencyAnalyzer\DependencyGraphBuilder\\'],
             'description' => ['Build DependencyGraph'],
+            'public' => ['\DependencyAnalyzer\DependencyGraphBuilder', '\DependencyAnalyzer\DependencyGraphBuilder\ObserverInterface'],
             'depender' => ['dependency_dumper'],
             'graph' => ['namespace', 'folding', 'description']
         ],
