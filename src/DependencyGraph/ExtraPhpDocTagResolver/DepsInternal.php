@@ -25,9 +25,9 @@ class DepsInternal
     protected $targets = [];
 
     /**
-     * DepsInternal constructor.
      * @param FQSEN $fqsen
      * @param string[] $options
+     * @deps-internal \DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver
      */
     public function __construct(FQSEN $fqsen, array $options = [])
     {

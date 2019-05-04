@@ -23,7 +23,7 @@ use PHPStan\Type\ClosureType;
 use PHPStan\Type\TypeWithClassName;
 
 /**
- * @canOnlyUsedBy \DependencyAnalyzer\DependencyDumper\
+ * @deps-internal \DependencyAnalyzer\DependencyDumper\
  */
 class DependencyResolver
 {

@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @canOnlyUsedBy \DependencyAnalyzer\Commands\
+ * @deps-internal \DependencyAnalyzer\Commands\
  */
 abstract class AnalyzeDependencyCommand extends Command
 {

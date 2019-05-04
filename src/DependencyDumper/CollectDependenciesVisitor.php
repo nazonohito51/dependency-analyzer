@@ -10,7 +10,7 @@ use DependencyAnalyzer\Exceptions\ResolveDependencyException;
 use PHPStan\Analyser\Scope;
 
 /**
- * @canOnlyUsedBy \DependencyAnalyzer\DependencyDumper
+ * @deps-internal \DependencyAnalyzer\DependencyDumper
  */
 class CollectDependenciesVisitor
 {
