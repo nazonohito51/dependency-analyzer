@@ -27,7 +27,7 @@ class DependencyArrowTest extends TestCase
             [[new MethodCall('calleeMethod', 'callerMethod')], ['\SomeDepender::callerMethod()', '\SomeDependee::calleeMethod()']],
             [[new PropertyFetch('calleeProperty', 'callerMethod')], ['\SomeDepender::callerMethod()', '\SomeDependee::$calleeProperty']],
             [[new ConstantFetch('CALLEE_CONSTANT', 'callerMethod')], ['\SomeDepender::callerMethod()', '\SomeDependee::CALLEE_CONSTANT']],
-            [[new NewObject('callerMethod')], ['\SomeDepender::callerMethod()', '\SomeDependee']],
+            [[new NewObject('callerMethod')], ['\SomeDepender::callerMethod()', '\SomeDependee::__construct()']],
             [[new ExtendsClass()], ['\SomeDepender', '\SomeDependee']],
             [[new ImplementsClass()], ['\SomeDepender', '\SomeDependee']],
             [[new UseTrait()], ['\SomeDepender', '\SomeDependee']],
