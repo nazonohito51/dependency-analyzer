@@ -15,7 +15,6 @@ use PHPStan\Reflection\ClassReflection;
 
 class ExtraPhpDocTagResolver
 {
-    const DEPS_INTERNAL = '@deps-internal';
     const ONLY_USED_BY_TAGS = '@canOnlyUsedBy';
     const DEPENDER_TAGS = '@dependee';
     const DEPENDEE_TAGS = '@dependee';
@@ -68,11 +67,11 @@ class ExtraPhpDocTagResolver
     {
         $ret = [];
 
-        if ($this->haveTag($reflectionClass, self::DEPS_INTERNAL)) {
+        if ($this->haveTag($reflectionClass, DepsInternal::TAG_NAME)) {
             try {
                 $ret[] = new DepsInternal(
                     FQSEN::createClass($reflectionClass->getName()),
-                    $this->resolve($reflectionClass->getDocComment(), self::DEPS_INTERNAL)
+                    $this->resolve($reflectionClass->getDocComment(), DepsInternal::TAG_NAME)
                 );
             } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                 $this->notifyError($reflectionClass->getFileName(), $reflectionClass->getName(), $e);
@@ -80,11 +79,11 @@ class ExtraPhpDocTagResolver
         }
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-            if ($this->haveTag($reflectionProperty, self::DEPS_INTERNAL)) {
+            if ($this->haveTag($reflectionProperty, DepsInternal::TAG_NAME)) {
                 try {
                     $ret[] = new DepsInternal(
                         FQSEN::createProperty($reflectionClass->getName(), $reflectionProperty->getName()),
-                        $this->resolve($reflectionProperty->getDocComment(), self::DEPS_INTERNAL)
+                        $this->resolve($reflectionProperty->getDocComment(), DepsInternal::TAG_NAME)
                     );
                 } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                     $this->notifyError($reflectionClass->getFileName(), $reflectionClass->getName(), $e);
@@ -93,11 +92,11 @@ class ExtraPhpDocTagResolver
         }
 
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
-            if ($this->haveTag($reflectionMethod, self::DEPS_INTERNAL)) {
+            if ($this->haveTag($reflectionMethod, DepsInternal::TAG_NAME)) {
                 try {
                     $ret[] = new DepsInternal(
                         FQSEN::createMethod($reflectionClass->getName(), $reflectionMethod->getName()),
-                        $this->resolve($reflectionMethod->getDocComment(), self::DEPS_INTERNAL)
+                        $this->resolve($reflectionMethod->getDocComment(), DepsInternal::TAG_NAME)
                     );
                 } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                     $this->notifyError($reflectionClass->getFileName(), $reflectionClass->getName(), $e);
@@ -106,11 +105,11 @@ class ExtraPhpDocTagResolver
         }
 
         foreach ($reflectionClass->getReflectionConstants() as $reflectionClassConstant) {
-            if ($this->haveTag($reflectionClassConstant, self::DEPS_INTERNAL)) {
+            if ($this->haveTag($reflectionClassConstant, DepsInternal::TAG_NAME)) {
                 try {
                     $ret[] = new DepsInternal(
                         FQSEN::createClassConstant($reflectionClass->getName(), $reflectionClassConstant->getName()),
-                        $this->resolve($reflectionClassConstant->getDocComment(), self::DEPS_INTERNAL)
+                        $this->resolve($reflectionClassConstant->getDocComment(), DepsInternal::TAG_NAME)
                     );
                 } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                     $this->notifyError($reflectionClass->getFileName(), $reflectionClass->getName(), $e);

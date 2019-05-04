@@ -9,6 +9,8 @@ use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameExcep
 
 class DepsInternal
 {
+    const TAG_NAME = '@deps-internal';
+
     /**
      * @var FQSEN
      */

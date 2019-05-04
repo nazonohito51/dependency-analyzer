@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\DependencyGraph;
 
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver\DepsInternal;
-use DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver;
 use Fhaculty\Graph\Vertex;
 
 class ClassLike
@@ -34,7 +33,7 @@ class ClassLike
      */
     public function getDepsInternalTag(): array
     {
-        return $this->vertex->getAttribute(ExtraPhpDocTagResolver::DEPS_INTERNAL);
+        return $this->vertex->getAttribute(DepsInternal::TAG_NAME);
     }
 
     public function __toString(): string
