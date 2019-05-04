@@ -116,9 +116,9 @@ class DependencyDumper
                 \Closure::fromCallable($this->collectNodeVisitor)  // type hint of processNodes() is \Closure...
             );
         } catch (ShouldNotHappenException $e) {
-            throw new AnalyzedFileException($file, 'analysing file is failed, because unexpected error', 0, $e);
+            throw new AnalyzedFileException($file, 'analyzing file is failed, because unexpected error', 0, $e);
         } catch (AnalysedCodeException $e) {
-            throw new AnalyzedFileException($file, 'analysing file is failed, because unexpected error', 0, $e);
+            throw new AnalyzedFileException($file, 'analyzing file is failed, because unexpected error', 0, $e);
         }
     }
 

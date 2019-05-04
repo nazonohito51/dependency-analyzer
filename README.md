@@ -9,7 +9,7 @@ Analyze/Verify dependency map for php.
 ## Description
 Dependency analyzer help you to keep cleaning your architecture.
 
-If you start to managing dependencies between classes likely [Clean Architecture](http://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) or Layered Architecture, you will aware inspecting dependency between classes by eye is very difficult in PHP.
+If you start to managing dependencies between classes likely [Clean Architecture](http://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) or Layered Architecture, you will aware inspecting dependency between classes by eyes is very difficult in PHP.
 This library analyze dependencies in your repository, and take some way of using it to you.(Example: Create UML graph, Verify by your rule, Detect cycle path)
 
 ## Basic Usages

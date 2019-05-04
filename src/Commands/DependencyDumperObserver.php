@@ -52,7 +52,7 @@ class DependencyDumperObserver implements ObserverInterface
 
     public function notifyAnalyzeFileError(AnalyzedFileException $e): void
     {
-        $this->output->writeln("Error: analysing file is failed. file is {$e->getAnalyzedFile()}.");
+        $this->output->writeln("Error: analyzing file is failed. file is {$e->getAnalyzedFile()}.");
 
         if ($this->output->isVerbose()) {
             $this->output->writeln("exception: {$e->getMessage()} at {$e->getFile()}:{$e->getLine()}");
@@ -65,7 +65,7 @@ class DependencyDumperObserver implements ObserverInterface
     public function notifyResolveDependencyError(string $file, ResolveDependencyException $e): void
     {
         $this->output->writeln("Error: resolving dependency is failed, node_type:{$e->getNodeType()} in {$file}:{$e->getNodeLine()}");
-        $this->output->writeln('Skip analysing this file, therefore result of analyze of this file is incomplete.');
+        $this->output->writeln('Skip analyzing this file, therefore result of analyze of this file is incomplete.');
 
         if ($this->output->isVerbose()) {
             $this->output->writeln("exception: {$e->getMessage()} at {$e->getFile()}:{$e->getLine()}");
@@ -78,6 +78,6 @@ class DependencyDumperObserver implements ObserverInterface
     public function notifyResolvePhpDocError(string $file, string $fqsen, InvalidFullyQualifiedStructureElementNameException $e): void
     {
         $this->output->writeln("Error: resolving phpdoc is failed, {$fqsen} in {$file}. Because element name is invalid: {$e->getInvalidElementName()}");
-        $this->output->writeln('Skip analysing this phpdoc, therefore result of analyze of this file is incomplete.');
+        $this->output->writeln('Skip analyzing this phpdoc, therefore result of analyze of this file is incomplete.');
     }
 }
