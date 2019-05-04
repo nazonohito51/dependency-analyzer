@@ -210,4 +210,49 @@ class FullyQualifiedStructuralElementNameTest extends TestCase
     {
         FQSEN::createFromString($elementString);
     }
+
+    public function provideCreateFromReflection()
+    {
+        $reflectionClass = $this->createMock(\ReflectionClass::class);
+        $reflectionClass->method('getName')->willReturn('\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass');
+
+        $reflectionClass1 = $this->createMock(\ReflectionClass::class);
+        $reflectionClass1->method('getName')->willReturn('\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass');
+        $reflectionMethod = $this->createMock(\ReflectionMethod::class);
+        $reflectionMethod->method('getName')->willReturn('someMethod');
+        $reflectionMethod->method('getDeclaringClass')->willReturn($reflectionClass1);
+
+        $reflectionClass2 = $this->createMock(\ReflectionClass::class);
+        $reflectionClass2->method('getName')->willReturn('\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass');
+        $reflectionProperty = $this->createMock(\ReflectionProperty::class);
+        $reflectionProperty->method('getName')->willReturn('someProperty');
+        $reflectionProperty->method('getDeclaringClass')->willReturn($reflectionClass2);
+
+        $reflectionClass3 = $this->createMock(\ReflectionClass::class);
+        $reflectionClass3->method('getName')->willReturn('\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass');
+        $reflectionClassConstant = $this->createMock(\ReflectionClassConstant::class);
+        $reflectionClassConstant->method('getName')->willReturn('SOME_CONSTANT');
+        $reflectionClassConstant->method('getDeclaringClass')->willReturn($reflectionClass3);
+
+        return [
+            [$reflectionClass, FQSEN\Class_::class, '\Tests\Fixtures\FullyQualifiedStructuralElementName\\SomeClass'],
+            [$reflectionMethod, FQSEN\Method::class, '\Tests\Fixtures\FullyQualifiedStructuralElementName\\SomeClass::someMethod()'],
+            [$reflectionProperty, FQSEN\Property::class, '\Tests\Fixtures\FullyQualifiedStructuralElementName\\SomeClass::$someProperty'],
+            [$reflectionClassConstant, FQSEN\ClassConstant::class, '\Tests\Fixtures\FullyQualifiedStructuralElementName\\SomeClass::SOME_CONSTANT'],
+        ];
+    }
+
+    /**
+     * @param $reflection
+     * @param string $expectedClass
+     * @param string $expectedString
+     * @dataProvider provideCreateFromReflection
+     */
+    public function testCreateFromReflection($reflection, string $expectedClass, string $expectedString)
+    {
+        $fqsen = FQSEN::createFromReflection($reflection);
+
+        $this->assertInstanceOf($expectedClass, $fqsen);
+        $this->assertSame($expectedString, $fqsen->toString());
+    }
 }

@@ -14,6 +14,7 @@ use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Names
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Property;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Trait_;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
+use DependencyAnalyzer\Exceptions\InvalidReflectionException;
 
 class FullyQualifiedStructuralElementName
 {
@@ -177,6 +178,27 @@ class FullyQualifiedStructuralElementName
     {
         $constantName = self::formatName($constantName);
         return new Constant("{$constantName}");
+    }
+
+    /**
+     * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty|\ReflectionClassConstant|\ReflectionFunction $reflection
+     * @return Base
+     */
+    public static function createFromReflection($reflection): Base
+    {
+        if ($reflection instanceof \ReflectionClass) {
+            return self::createClass($reflection->getName());
+        } elseif ($reflection instanceof \ReflectionMethod) {
+            return self::createMethod($reflection->getDeclaringClass()->getName(), $reflection->getName());
+        } elseif ($reflection instanceof \ReflectionProperty) {
+            return self::createProperty($reflection->getDeclaringClass()->getName(), $reflection->getName());
+        } elseif ($reflection instanceof \ReflectionClassConstant) {
+            return self::createClassConstant($reflection->getDeclaringClass()->getName(), $reflection->getName());
+        } elseif ($reflection instanceof \ReflectionFunction) {
+            return self::createFunction($reflection->getName());
+        }
+
+        throw new InvalidReflectionException($reflection);
     }
 
     protected static function formatName(string $className): string
