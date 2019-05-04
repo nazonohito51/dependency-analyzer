@@ -39,10 +39,13 @@ class DependencyGraphBuilderTest extends TestCase
         $e2 = $v2->createEdgeTo($v3);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $v3->setAttribute('reflection', $nativeClassReflection3);
         $v3->setAttribute('@deps-internal', []);
+        $v3->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
         $e2->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
@@ -65,10 +68,13 @@ class DependencyGraphBuilderTest extends TestCase
         $e2 = $v1->createEdgeTo($v3);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', new UnknownReflectionClass('v2'));
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $v3->setAttribute('reflection', new UnknownReflectionClass('v3'));
         $v3->setAttribute('@deps-internal', []);
+        $v3->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
         $e2->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new SomeDependency()]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
@@ -89,8 +95,10 @@ class DependencyGraphBuilderTest extends TestCase
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new NewObject('someV1Method')]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
     }
@@ -110,8 +118,10 @@ class DependencyGraphBuilderTest extends TestCase
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new MethodCall('someV2Method', 'someV1Method')]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
     }
@@ -131,8 +141,10 @@ class DependencyGraphBuilderTest extends TestCase
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new PropertyFetch('someV2Property', 'someV1Method')]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
     }
@@ -152,8 +164,10 @@ class DependencyGraphBuilderTest extends TestCase
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new ConstantFetch('someV2Constant', 'someV1Method')]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
     }
@@ -173,8 +187,10 @@ class DependencyGraphBuilderTest extends TestCase
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new ExtendsClass()]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
     }
@@ -194,8 +210,10 @@ class DependencyGraphBuilderTest extends TestCase
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new ImplementsClass()]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
     }
@@ -215,8 +233,10 @@ class DependencyGraphBuilderTest extends TestCase
         $e1 = $v1->createEdgeTo($v2);
         $v1->setAttribute('reflection', $nativeClassReflection1);
         $v1->setAttribute('@deps-internal', []);
+        $v1->setAttribute('@internal', []);
         $v2->setAttribute('reflection', $nativeClassReflection2);
         $v2->setAttribute('@deps-internal', []);
+        $v2->setAttribute('@internal', []);
         $e1->setAttribute(DependencyGraph::DEPENDENCY_TYPE_KEY, [new UseTrait()]);
         $this->assertGraphEquals($graph, $dependencyGraph->getGraph());
     }

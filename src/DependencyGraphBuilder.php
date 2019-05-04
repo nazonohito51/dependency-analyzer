@@ -13,6 +13,7 @@ use DependencyAnalyzer\DependencyGraph\DependencyTypes\PropertyFetch;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\SomeDependency;
 use DependencyAnalyzer\DependencyGraph\DependencyTypes\UseTrait;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTags\DepsInternal;
+use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTags\Internal;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 use DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver;
 use DependencyAnalyzer\DependencyGraphBuilder\ObserverInterface;
@@ -58,6 +59,7 @@ class DependencyGraphBuilder
             $this->extraPhpDocTagResolver->resolveDepsInternalTag($class),
             $this->extraPhpDocTagResolver->resolveCanOnlyUsedByTag($class)
         ));
+        $vertex->setAttribute(Internal::getTagName(), $this->extraPhpDocTagResolver->resolveInternalTag($class));
 
         return $vertex;
     }
@@ -77,6 +79,7 @@ class DependencyGraphBuilder
         $vertex = $this->graph->createVertex($vertexId);
         $vertex->setAttribute('reflection', new UnknownReflectionClass($className));
         $vertex->setAttribute(DepsInternal::getTagName(), []);
+        $vertex->setAttribute(Internal::getTagName(), []);
 
         return $vertex;
     }

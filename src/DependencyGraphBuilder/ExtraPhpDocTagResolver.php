@@ -5,6 +5,7 @@ namespace DependencyAnalyzer\DependencyGraphBuilder;
 
 use DependencyAnalyzer\DependencyDumper;
 use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTags\DepsInternal;
+use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTags\Internal;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
@@ -74,6 +75,25 @@ class ExtraPhpDocTagResolver
         return $ret;
     }
 
+    /**
+     * @param \ReflectionClass $reflectionClass
+     * @return Internal[]
+     */
+    public function resolveInternalTag(\ReflectionClass $reflectionClass): array
+    {
+        $ret = [];
+
+        foreach ($this->collectReflectionsHavingTag($reflectionClass, Internal::getTagName()) as $reflection) {
+            try {
+                $ret[] = new Internal(FQSEN::createFromReflection($reflection));
+            } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+                $this->notifyError($reflectionClass->getFileName(), $reflectionClass->getName(), $e);
+            }
+        }
+
+        return $ret;
+    }
+
     protected function collectReflectionsHavingTag(\ReflectionClass $reflectionClass, string $tagName): array
     {
         $ret = [];
@@ -98,22 +118,6 @@ class ExtraPhpDocTagResolver
         }
 
         return $ret;
-    }
-
-    protected function resolveInternalTag(\ReflectionClass $reflectionClass)
-    {
-        $phpDocs = [];
-
-        $phpDocs[] = $reflectionClass->getDocComment();
-        foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-            $phpDocs[] = $reflectionProperty->getDocComment();
-        }
-        foreach ($reflectionClass->getMethods() as $reflectionMethod) {
-            $phpDocs[] = $reflectionMethod->getDocComment();
-        }
-        foreach ($reflectionClass->getReflectionConstants() as $reflectionClassConstant) {
-            $phpDocs[] = $reflectionClassConstant->getDocComment();
-        }
     }
 
 
