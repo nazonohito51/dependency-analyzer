@@ -127,7 +127,7 @@ class FullyQualifiedStructuralElementName
         return preg_match('/^[a-zA-Z\_][0-9a-zA-Z\_]+$/', $element) === 1;
     }
 
-    public static function createNamespace(string $namespaceName): Base
+    public static function createNamespace(string $namespaceName): Namespace_
     {
         return new Namespace_(self::formatName($namespaceName));
     }
