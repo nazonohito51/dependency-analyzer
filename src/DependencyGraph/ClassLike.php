@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph;
 
-use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver\DepsInternal;
+use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTags\DepsInternal;
 use Fhaculty\Graph\Vertex;
 
 class ClassLike

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DependencyAnalyzer\DependencyGraphBuilder;
 
 use DependencyAnalyzer\DependencyDumper;
-use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTagResolver\DepsInternal;
+use DependencyAnalyzer\DependencyGraph\ExtraPhpDocTags\DepsInternal;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName as FQSEN;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
