@@ -88,4 +88,25 @@ class Interface_Test extends TestCase
 
         $this->assertSame($expected, $sut->getFullyQualifiedClassNameAsArray());
     }
+
+    public function provideGetFullyQualifiedNamespaceName()
+    {
+        return [
+            ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeInterface', '\Tests\Fixtures\FullyQualifiedStructuralElementName\\'],
+            ['\SomeInterface', '\\']
+        ];
+    }
+
+    /**
+     * @param string $className
+     * @param string $expected
+     * @dataProvider provideGetFullyQualifiedNamespaceName
+     */
+    public function testGetFullyQualifiedNamespaceName(string $className, string $expected)
+    {
+        $sut = new Interface_($className);
+
+        $this->assertInstanceOf(Namespace_::class, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName()->toString());
+    }
 }

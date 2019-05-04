@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 
+use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
+
 abstract class Base
 {
     abstract public function getType(): string;
@@ -77,5 +79,10 @@ abstract class Base
     public function isSame(Base $that): bool
     {
         return $this->getType() === $that->getType() && $this->toString() === $that->toString();
+    }
+
+    public function getFullyQualifiedNamespaceName(): Namespace_
+    {
+        return FullyQualifiedStructuralElementName::createNamespace(implode('\\', $this->getFullyQualifiedNamespaceNameAsArray()));
     }
 }

@@ -87,4 +87,25 @@ class ConstantTest extends TestCase
 
         $this->assertNull($sut->getFullyQualifiedClassNameAsArray());
     }
+
+    public function provideGetFullyQualifiedNamespaceName()
+    {
+        return [
+            ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SOME_CONSTANT', '\Tests\Fixtures\FullyQualifiedStructuralElementName\\'],
+            ['\SOME_CONSTANT', '\\']
+        ];
+    }
+
+    /**
+     * @param string $className
+     * @param string $expected
+     * @dataProvider provideGetFullyQualifiedNamespaceName
+     */
+    public function testGetFullyQualifiedNamespaceName(string $className, string $expected)
+    {
+        $sut = new Constant($className);
+
+        $this->assertInstanceOf(Namespace_::class, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName()->toString());
+    }
 }

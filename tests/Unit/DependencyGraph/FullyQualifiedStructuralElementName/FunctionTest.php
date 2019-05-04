@@ -87,4 +87,25 @@ class Function_Test extends TestCase
 
         $this->assertNull($sut->getFullyQualifiedClassNameAsArray());
     }
+
+    public function provideGetFullyQualifiedNamespaceName()
+    {
+        return [
+            ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeFunction()', '\Tests\Fixtures\FullyQualifiedStructuralElementName\\'],
+            ['\SomeFunction()', '\\']
+        ];
+    }
+
+    /**
+     * @param string $className
+     * @param string $expected
+     * @dataProvider provideGetFullyQualifiedNamespaceName
+     */
+    public function testGetFullyQualifiedNamespaceName(string $className, string $expected)
+    {
+        $sut = new Function_($className);
+
+        $this->assertInstanceOf(Namespace_::class, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName()->toString());
+    }
 }

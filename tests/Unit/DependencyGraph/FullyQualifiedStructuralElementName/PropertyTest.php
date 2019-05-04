@@ -89,4 +89,25 @@ class PropertyTest extends TestCase
 
         $this->assertSame($expected, $sut->getFullyQualifiedClassNameAsArray());
     }
+
+    public function provideGetFullyQualifiedNamespaceName()
+    {
+        return [
+            ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeClass::$propertyName', '\Tests\Fixtures\FullyQualifiedStructuralElementName\\'],
+            ['\SomeClass::$propertyName', '\\']
+        ];
+    }
+
+    /**
+     * @param string $className
+     * @param string $expected
+     * @dataProvider provideGetFullyQualifiedNamespaceName
+     */
+    public function testGetFullyQualifiedNamespaceName(string $className, string $expected)
+    {
+        $sut = new Property($className);
+
+        $this->assertInstanceOf(Namespace_::class, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName()->toString());
+    }
 }

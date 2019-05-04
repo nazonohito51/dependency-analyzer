@@ -88,4 +88,25 @@ class Trait_Test extends TestCase
 
         $this->assertSame($expected, $sut->getFullyQualifiedClassNameAsArray());
     }
+
+    public function provideGetFullyQualifiedNamespaceName()
+    {
+        return [
+            ['\Tests\Fixtures\FullyQualifiedStructuralElementName\SomeTrait', '\Tests\Fixtures\FullyQualifiedStructuralElementName\\'],
+            ['\SomeTrait', '\\']
+        ];
+    }
+
+    /**
+     * @param string $className
+     * @param string $expected
+     * @dataProvider provideGetFullyQualifiedNamespaceName
+     */
+    public function testGetFullyQualifiedNamespaceName(string $className, string $expected)
+    {
+        $sut = new Class_($className);
+
+        $this->assertInstanceOf(Namespace_::class, $sut->getFullyQualifiedNamespaceName());
+        $this->assertSame($expected, $sut->getFullyQualifiedNamespaceName()->toString());
+    }
 }
