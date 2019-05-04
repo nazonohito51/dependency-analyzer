@@ -33,7 +33,7 @@ class ClassLike
      */
     public function getDepsInternalTag(): array
     {
-        return $this->vertex->getAttribute(DepsInternal::TAG_NAME);
+        return $this->vertex->getAttribute(DepsInternal::getTagName());
     }
 
     public function __toString(): string

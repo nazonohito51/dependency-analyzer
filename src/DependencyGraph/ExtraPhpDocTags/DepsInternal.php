@@ -7,14 +7,9 @@ use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName;
 use DependencyAnalyzer\DependencyGraph\FullyQualifiedStructuralElementName\Base as FQSEN;
 use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameException;
 
-class DepsInternal
+class DepsInternal extends Base
 {
-    const TAG_NAME = '@deps-internal';
-
-    /**
-     * @var FQSEN
-     */
-    protected $fqsen;
+    protected const TAG_NAME = '@deps-internal';
 
     /**
      * @var array
@@ -29,11 +24,11 @@ class DepsInternal
     /**
      * @param FQSEN $fqsen
      * @param string[] $options
-     * @deps-internal \DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver
+     * @inheritDoc
      */
     public function __construct(FQSEN $fqsen, array $options = [])
     {
-        $this->fqsen = $fqsen;
+        parent::__construct($fqsen);
         $this->options = $options;
 
         try {
@@ -45,9 +40,9 @@ class DepsInternal
         }
     }
 
-    public function getFqsen(): FQSEN
+    public static function getTagName(): string
     {
-        return $this->fqsen;
+        return self::TAG_NAME;
     }
 
     /**
@@ -58,6 +53,9 @@ class DepsInternal
         return $this->targets;
     }
 
+    /**
+     * @return string[]
+     */
     public function getTargetsAsString(): array
     {
         return $this->options;
