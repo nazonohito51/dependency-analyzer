@@ -34,7 +34,7 @@ class DependencyGraph implements \Countable
 
     /**
      * @param Graph $graph
-     * @deps-internal \DependencyAnalyzer\DependencyGraphBuilder
+     * @da-internal \DependencyAnalyzer\DependencyGraphBuilder
      */
     public function __construct(Graph $graph)
     {

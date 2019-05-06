@@ -9,7 +9,7 @@ use DependencyAnalyzer\Exceptions\InvalidFullyQualifiedStructureElementNameExcep
 
 class DepsInternal extends Base
 {
-    protected const TAG_NAME = '@deps-internal';
+    protected const TAG_NAME = '@da-internal';
 
     /**
      * @var array

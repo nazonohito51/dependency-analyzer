@@ -14,8 +14,8 @@ abstract class Base
 
     /**
      * @param FQSEN $fqsen
-     * @deps-internal \DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver
-     * @deps-internal \DependencyAnalyzer\DependencyGraph\ExtraPhpDocTags\
+     * @da-internal \DependencyAnalyzer\DependencyGraphBuilder\ExtraPhpDocTagResolver
+     * @da-internal \DependencyAnalyzer\DependencyGraph\ExtraPhpDocTags\
      */
     public function __construct(FQSEN $fqsen)
     {

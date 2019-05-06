@@ -143,8 +143,8 @@ class DependencyDumper
 
     /**
      * @return ObserverInterface
-     * @deps-internal \DependencyAnalyzer\DependencyDumper
-     * @deps-internal \DependencyAnalyzer\DependencyDumper\
+     * @da-internal \DependencyAnalyzer\DependencyDumper
+     * @da-internal \DependencyAnalyzer\DependencyDumper\
      */
     public static function getObserver(): ObserverInterface
     {

@@ -32,7 +32,7 @@ class DependencyRule
     /**
      * @param string $ruleName
      * @param array $components
-     * @deps-internal \DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory
+     * @da-internal \DependencyAnalyzer\Inspector\RuleViolationDetector\DependencyRuleFactory
      */
     public function __construct(string $ruleName, array $components)
     {
