@@ -14,7 +14,7 @@ This library analyze dependencies in your repository, and take some way of using
 
 ## Basic Usages
 This library have several functions.
-If you have error when use them, see [Trouble Shooting](#trouble-shooting).
+If you have error when use them, see [Trouble Shooting](https://github.com/nazonohito51/dependency-analyzer/wiki/Trouble-shooting).
 
 ### Create dependency graph
 
@@ -182,88 +182,6 @@ Dependency is created by below php syntaxes.
 
 This library analyze those syntaxes by using [PHPStan](https://github.com/phpstan/phpstan), and create dependency graph.
 If you want to know detail, [see example](https://github.com/nazonohito51/dependency-analyzer/blob/master/tests/fixtures/all_theme/AllTheme.php).
-
-## Trouble shooting
-### Error has occurred when analyze repository
-Every command have verbose option. So use it, check error detail.
-
-`-v`: Display description of exceptions.
-`-vv`: Display detail of exception with stack trace.
-
-### Error has occurred when resolving dependency
-PHPStan need autoloader (likely `vendor/autoload.php` ) of repository.
-So, current working directory is must repository root.
-
-### Rule violation was not detected
-#### Define rule by phpdoc(`@canOnlyUsedBy`)
-There are two possible causes.
-
-The first possibility is that the dependency is not analyzed correctly.
-Output a graph, and check that the analysis result is what you expected.
-If it is different, the target code is that can not be statically analyzed, or a bug of this library.
-
-```bash
-php vendor/bin/analyze-deps graph --output ./graph.puml ./some/analyze/dir1 ./some/analyze/dir2
-```
-
-The second possibility is that this library can not collect phpdoc(`@canOnlyUsedBy`).
-Use verify command with `-v` option.
-You can check the final rule definition.
-
-```bash
-php vendor/bin/analyze-deps verify -v ./some/analyze/dir1 ./some/analyze/dir2
-```
-
-
-If you do not find a rule definition like below, this library have failed to collect phpdoc.
-Please adjust the position of phpdoc, or check typo.
-
-```bash
-Defined rules:
-array (
-  'phpdoc in Your\\Class\\Name\\Have\\Phpdoc' => 
-  array (
-    'phpdoc' => 
-    array (
-      'define' => 
-      array (
-        'include' => 
-        array (
-          0 => 'Your\\Class\\Name\\Have\\Phpdoc',
-        ),
-        'exclude' => 
-        array (
-        ),
-      ),
-      'depender' => 
-      array (
-        'include' => 
-        array (
-          0 => 'Your\\Definition1\\In\\Phpdoc',
-          1 => 'Your\\Definition2\\In\\Phpdoc',
-        ),
-        'exclude' => 
-        array (
-        ),
-      ),
-    ),
-    'other' => 
-    array (
-      'define' => 
-      array (
-        'include' => 
-        array (
-        ),
-        'exclude' => 
-        array (
-          0 => 'Your\\Definition1\\In\\Phpdoc',
-          1 => 'Your\\Definition2\\In\\Phpdoc',
-        ),
-      ),
-    ),
-  ),
-)
-```
 
 ## Advanced Usages
 ### Create dependency graph
