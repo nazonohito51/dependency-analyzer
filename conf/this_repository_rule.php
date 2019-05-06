@@ -47,7 +47,7 @@ return [
         ],
         'PHPStan' => [
             'define' => ['\PHPStan\\'],
-            'depender' => ['dependency_dumper', 'graph_builder', 'dependency_graph'],
+            'depender' => ['dependency_dumper', 'graph_builder'],
             'graph' => ['folding']
         ],
         'PHPParser' => [
