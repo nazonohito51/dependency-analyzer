@@ -93,7 +93,7 @@ You can restrict depener of class by writing `@da-internal`.
 namespace Acme\Domain\Entities;
 
 /**
- * Don't touch this class in \App\
+ * Don't touch this class in \App\.
  * @da-internal !\App\
  */
 class User
