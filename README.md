@@ -80,7 +80,7 @@ layer dependency rule
 +------------------------------------+------------------+----+---------------------------+--------------+
 ```
 
-More detail about rule file, [see wiki]().
+More detail about rule file, [see wiki](https://github.com/nazonohito51/dependency-analyzer/wiki/Detail-of-rule-file).
 More example about rule file, [see this repository rule file](https://github.com/nazonohito51/dependency-analyzer/blob/master/conf/this_repository_rule.php).
 
 ### Verify your dependency rule by phpdoc
@@ -135,6 +135,8 @@ phpdoc in \Acme\Domain\Entities\User
 | \Acme\Application\UseCases\CreateUserInteractor::handle() | other     | -> | \Acme\Domain\Entities\User::getPassword() | phpdoc    |
 +-----------------------------------------------------------+-----------+----+-------------------------------------------+-----------+
 ```
+
+More detail about phpdoc, [see wiki](https://github.com/nazonohito51/dependency-analyzer/wiki/More-detail-of-phpdoc).
 
 ### Detect cycle dependency
 
