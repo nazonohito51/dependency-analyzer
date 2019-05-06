@@ -93,8 +93,12 @@ class Component
             return true;
         }
 
-        if (!is_null($extraPattern = $this->getExtraPattern($dependee))) {
-            return $extraPattern->isMatchWithFQSEN($depender);
+        if (!empty($extraPatterns = $this->getExtraPatterns($dependee))) {
+            $ret = true;
+            foreach ($extraPatterns as $extraPattern) {
+                $ret = $ret && $extraPattern->isMatchWithFQSEN($depender);
+            }
+            return $ret;
         }
 
         return (
@@ -130,16 +134,21 @@ class Component
         return false;
     }
 
-    protected function getExtraPattern(FQSEN $dependee): ?StructuralElementPatternMatcher
+    /**
+     * @param FQSEN $dependee
+     * @return StructuralElementPatternMatcher[]
+     */
+    protected function getExtraPatterns(FQSEN $dependee): array
     {
+        $ret = [];
         foreach ($this->extraPatterns as $callee => $callerPattern) {
             $calleeFQSEN = FullyQualifiedStructuralElementName::createFromString($callee);
             if ($calleeFQSEN->include($dependee)) {
-                return $this->extraPatterns[$callee];
+                $ret[] = $this->extraPatterns[$callee];
             }
         }
 
-        return null;
+        return $ret;
     }
 
     public function setAttribute(string $key, $name): void
