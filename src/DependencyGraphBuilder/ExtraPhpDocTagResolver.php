@@ -82,16 +82,34 @@ class ExtraPhpDocTagResolver
     public function resolveInternalTag(\ReflectionClass $reflectionClass): array
     {
         $ret = [];
+        $package = $this->resolvePackageTag($reflectionClass) ??
+            FQSEN::createFromReflection($reflectionClass)->getFullyQualifiedNamespaceName()->toString();
 
         foreach ($this->collectReflectionsHavingTag($reflectionClass, Internal::getTagName()) as $reflection) {
             try {
-                $ret[] = new Internal(FQSEN::createFromReflection($reflection));
+                $ret[] = new Internal(FQSEN::createFromReflection($reflection), $package);
             } catch (InvalidFullyQualifiedStructureElementNameException $e) {
                 $this->notifyError($reflectionClass->getFileName(), $reflectionClass->getName(), $e);
             }
         }
 
         return $ret;
+    }
+
+    public function resolvePackageTag(\ReflectionClass $reflectionClass): ?string
+    {
+        if ($this->haveTag($reflectionClass, '@package')) {
+            try {
+                $ret[] = new DepsInternal(
+                    FQSEN::createClass($reflectionClass->getName()),
+                    $this->resolve($reflectionClass->getDocComment(), '@package')
+                );
+            } catch (InvalidFullyQualifiedStructureElementNameException $e) {
+                $this->notifyError($reflectionClass->getFileName(), $reflectionClass->getName(), $e);
+            }
+        }
+
+        return null;
     }
 
     protected function collectReflectionsHavingTag(\ReflectionClass $reflectionClass, string $tagName): array
