@@ -41,15 +41,15 @@ First, you can define your rule by php file, like below:
 return [
     'layer dependency rule' => [                // name of your rule
         'domain_layer' => [                     // component name
-            'define' => ['\Acme\Domain'],       // component definition by namespace
+            'define' => ['\Acme\Domain\\'],     // component definition by FQSEN
             'depender' => ['application_layer'] // rule of component dependency, for depender
         ],
         'application_layer' => [
-            'define' => ['\Acme\Application'],
+            'define' => ['\Acme\Application\\'],
             'depender' => ['controller_layer']
         ],
         'controller_layer' => [
-            'define' => ['\App', '!\App\Providers']
+            'define' => ['\App\\', '!\App\Providers\\']
         ]
     ],
 //    'some more rules' => [
