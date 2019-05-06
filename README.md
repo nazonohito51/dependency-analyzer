@@ -80,40 +80,61 @@ layer dependency rule
 +------------------------------------+------------------+----+---------------------------+--------------+
 ```
 
-And, you can use phpdoc too.
-You can restrict depener of class by writing `@canOnlyUsedBy`.
+More detail about rule file, [see wiki]().
+More example about rule file, [see this repository rule file](https://github.com/nazonohito51/dependency-analyzer/blob/master/conf/this_repository_rule.php).
+
+### Verify your dependency rule by phpdoc
+
+In verify dependency, you can use phpdoc too.
+You can restrict depener of class by writing `@da-internal`.
 
 ```php
 <?php
-namespace Acme\Domain\ValueObjects;
+namespace Acme\Domain\Entities;
 
 /**
- * @canOnlyUsedBy \Acme\Domain\Entities\User
- * @canOnlyUsedBy \Acme\Application\Responses\GetUserResponse
+ * Don't touch this class in \App\
+ * @da-internal !\App\
  */
-class UserName
+class User
 {
-    // ...
+    /**
+     * Don't use `new User();` in places other than Repository.
+     * @da-internal \Acme\Domain\Repositories\
+     */
+    public function __construct()
+    {
+        // ...
+    }
+
+    /**
+     * Don't touch password in places other than authenticate functions.
+     * @da-internal \Acme\Application\Authenticator
+     * @da-internal \Acme\Application\UseCases\UpdatePasswordInteractor
+     */
+    public function getPassword()
+    {
+        // ...
+    }
 }
 ```
 
-Then, you can verify your repository. (command is same as above)
+Then, you can verify your repository. (command is same as [Verify your dependency rule](#verify-your-dependency-rule))
 Of course, you can use rule file and phpdoc at same time.
-In the process of analyse, this library collect `@canOnlyUsedBy`, and verify your repository.
+In the process of analyzing repository, this library collect phpdoc, and verify your repository.
 If there is rule violation, notify you of them.
 
 ```bash
-phpdoc in Acme\Domain\ValueObjects\UserName
-+------------------------------------------------+-----------+----+-----------------------------------+-----------+
-| depender                                       | component |    | dependee                          | component |
-+------------------------------------------------+-----------+----+-----------------------------------+-----------+
-| Acme\Application\Repositories\UserRepository   | other     | -> | Acme\Domain\ValueObjects\UserName | phpdoc    |
-| Acme\Application\Responses\CreateUserResponse  | other     | -> | Acme\Domain\ValueObjects\UserName | phpdoc    |
-| Acme\Application\UseCases\CreateUserInteractor | other     | -> | Acme\Domain\ValueObjects\UserName | phpdoc    |
-+------------------------------------------------+-----------+----+-----------------------------------+-----------+
+phpdoc in \Acme\Domain\Entities\User
++-----------------------------------------------------------+-----------+----+-------------------------------------------+-----------+
+| depender                                                  | component |    | dependee                                  | component |
++-----------------------------------------------------------+-----------+----+-------------------------------------------+-----------+
+| \App\Http\Controllers\UserController                      | other     | -> | \Acme\Domain\Entities\User                | phpdoc    |
+| \App\Http\Controllers\UserController::show()              | other     | -> | \Acme\Domain\Entities\User::getId()       | phpdoc    |
+| \App\UseCaseRequests\GetUserRequest::__construct()        | other     | -> | \Acme\Domain\Entities\User::__construct() | phpdoc    |
+| \Acme\Application\UseCases\CreateUserInteractor::handle() | other     | -> | \Acme\Domain\Entities\User::getPassword() | phpdoc    |
++-----------------------------------------------------------+-----------+----+-------------------------------------------+-----------+
 ```
-
-More example about rule file, [see this repository rule file](https://github.com/nazonohito51/dependency-analyzer/blob/master/conf/this_repository_rule.php).
 
 ### Detect cycle dependency
 
@@ -163,7 +184,7 @@ This library analyze those syntaxes by using [PHPStan](https://github.com/phpsta
 If you want to know detail, [see example](https://github.com/nazonohito51/dependency-analyzer/blob/master/tests/fixtures/all_theme/AllTheme.php).
 
 ## Trouble shooting
-### Error has occurred when analyse repository
+### Error has occurred when analyze repository
 Every command have verbose option. So use it, check error detail.
 
 `-v`: Display description of exceptions.
@@ -272,6 +293,6 @@ TBD...
   - [x] only !\Hoge\Fuga
 - [ ] Graph format(another puml)
 - [ ] original rule logic
-  - [ ] remove dependency to vertex, edge
+  - [x] remove dependency to vertex, edge
 - [ ] Improve performance by using cache
-- [ ] Analyze per class member(property/method/constant)
+- [x] Analyze per class member(property/method/constant)
