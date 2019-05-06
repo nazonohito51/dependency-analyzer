@@ -14,26 +14,21 @@ class DepsInternal extends Base
     /**
      * @var array
      */
-    protected $options;
-
-    /**
-     * @var FQSEN[]
-     */
-    protected $targets = [];
+    protected $targets;
 
     /**
      * @param FQSEN $fqsen
-     * @param string[] $options
+     * @param string[] $targets
      * @inheritDoc
      */
-    public function __construct(FQSEN $fqsen, array $options = [])
+    public function __construct(FQSEN $fqsen, array $targets = [])
     {
         parent::__construct($fqsen);
-        $this->options = $options;
+        $this->targets = $targets;
 
         try {
-            foreach ($this->options as $option) {
-                $this->targets[] = FullyQualifiedStructuralElementName::createFromString($option);
+            foreach ($this->targets as $target) {
+                FullyQualifiedStructuralElementName::createFromString(substr($target, 0, 1) === '!' ? substr($target, 1) : $target);
             }
         } catch (InvalidFullyQualifiedStructureElementNameException $e) {
             throw $e;
@@ -46,18 +41,10 @@ class DepsInternal extends Base
     }
 
     /**
-     * @return FQSEN[]
+     * @return string[]
      */
     public function getTargets(): array
     {
         return $this->targets;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getTargetsAsString(): array
-    {
-        return $this->options;
     }
 }

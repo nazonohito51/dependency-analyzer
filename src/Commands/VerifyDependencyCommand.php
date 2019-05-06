@@ -108,7 +108,7 @@ class VerifyDependencyCommand extends AnalyzeDependencyCommand
                     if (!in_array($calleeName, $definePattern)) {
                         $definePattern[] = $calleeName;
                     }
-                    $extraPatterns[$calleeName] = $depsInternal->getTargetsAsString();
+                    $extraPatterns[$calleeName] = $depsInternal->getTargets();
                 }
                 $ruleDefinitions['phpdoc in ' . $class->getName()] = [
                     'phpdoc' => [

@@ -34,7 +34,7 @@ class DepsInternal
      */
     private function haveDoc() {}
     /**
-     * @da-internal \Tests\Fixture\ExtraPhpDocs\SomeClassForMethod
+     * @da-internal !\Tests\Fixture\ExtraPhpDocs\SomeClassForMethod
      */
     private function haveDocWithOption() {}
 }
