@@ -5,6 +5,7 @@ namespace DependencyAnalyzer\DependencyDumper;
 
 use DependencyAnalyzer\DependencyGraphBuilder;
 use DependencyAnalyzer\Exceptions\ResolveDependencyException;
+use PhpParser\Node\Identifier;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
@@ -399,15 +400,17 @@ class DependencyResolver
 
     protected function resolveMethodCall(\PhpParser\Node\Expr\MethodCall $node, Scope $scope)
     {
-        $classNames = $scope->getType($node->var)->getReferencedClasses();
-        foreach ($classNames as $className) {
-            if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($className)) {
-                $this->dependencyGraphBuilder->addMethodCall(
-                    $this->depender,
-                    $dependee->getNativeReflection(),
-                    $node->name->toString(),
-                    $scope->getFunctionName()
-                );
+        if ($node instanceof Identifier) {
+            $classNames = $scope->getType($node->var)->getReferencedClasses();
+            foreach ($classNames as $className) {
+                if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($className)) {
+                    $this->dependencyGraphBuilder->addMethodCall(
+                        $this->depender,
+                        $dependee->getNativeReflection(),
+                        $node->name->toString(),
+                        $scope->getFunctionName()
+                    );
+                }
             }
         }
 
@@ -419,15 +422,17 @@ class DependencyResolver
 
     protected function resolvePropertyFetch(\PhpParser\Node\Expr\PropertyFetch $node, Scope $scope)
     {
-        $classNames = $scope->getType($node->var)->getReferencedClasses();
-        foreach ($classNames as $className) {
-            if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($className)) {
-                $this->dependencyGraphBuilder->addPropertyFetch(
-                    $this->depender,
-                    $dependee->getNativeReflection(),
-                    $node->name->toString(),
-                    $scope->getFunctionName()
-                );
+        if ($node->name instanceof Identifier) {
+            $classNames = $scope->getType($node->var)->getReferencedClasses();
+            foreach ($classNames as $className) {
+                if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($className)) {
+                    $this->dependencyGraphBuilder->addPropertyFetch(
+                        $this->depender,
+                        $dependee->getNativeReflection(),
+                        $node->name->toString(),
+                        $scope->getFunctionName()
+                    );
+                }
             }
         }
 
