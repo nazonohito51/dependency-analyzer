@@ -444,14 +444,16 @@ class DependencyResolver
 
     protected function resolveStaticCall(\PhpParser\Node\Expr\StaticCall $node, Scope $scope)
     {
-        if ($node->class instanceof \PhpParser\Node\Name) {
-            if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($scope->resolveName($node->class))) {
-                $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunctionName());
-            }
-        } else {
-            foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
-                if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($referencedClass)) {
+        if ($node->name instanceof Identifier) {
+            if ($node->class instanceof \PhpParser\Node\Name) {
+                if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($scope->resolveName($node->class))) {
                     $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunctionName());
+                }
+            } else {
+                foreach ($scope->getType($node->class)->getReferencedClasses() as $referencedClass) {
+                    if ($dependee = $this->resolveClassReflectionOrAddUnkownDependency($referencedClass)) {
+                        $this->dependencyGraphBuilder->addMethodCall($this->depender, $dependee->getNativeReflection(), $node->name->toString(), $scope->getFunctionName());
+                    }
                 }
             }
         }
