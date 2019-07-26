@@ -33,7 +33,7 @@ abstract class AnalyzeDependencyCommand extends Command
             ->setDefinition([
                 new InputArgument('paths', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Target directory of analyze'),
                 new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for the run (ex: 500k, 500M, 5G)'),
-                new InputOption('exclude', null, InputOption::VALUE_REQUIRED | InputArgument::IS_ARRAY, 'Exclude directory of analyze'),
+                new InputOption('exclude', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Exclude directory of analyze'),
             ]);
     }
 
@@ -46,7 +46,7 @@ abstract class AnalyzeDependencyCommand extends Command
         $dependencyGraph = $this->createDependencyGraph(
             $output,
             $input->getArgument('paths'),
-            !is_null($input->getOption('exclude')) ? [$input->getOption('exclude')] : []
+            !is_null($input->getOption('exclude')) ? $input->getOption('exclude') : []
         );
 
         return $this->inspectDependencyGraph($dependencyGraph, $output);
