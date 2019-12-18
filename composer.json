@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "~7.1",
-        "phpstan/phpstan": "~0.11",
+        "phpstan/phpstan": "~0.11.0",
         "clue/graph": "~0.9",
         "symfony/console": "~4",
         "phplucidframe/console-table": "~1.2"
